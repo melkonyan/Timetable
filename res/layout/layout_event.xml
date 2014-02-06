@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- <merge xmlns:android="http://schemas.android.com/apk/res/android"> -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   	android:layout_width="fill_parent"
+    android:layout_height="100dp" 
+	android:id="@+id/event_layout"
+	android:clickable="True"
+	android:onClick="onEventViewClick"
+	android:background="#FFFFFF">
+	<TextView 
+	    android:id="@+id/layout_event_id"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:visibility="invisible"
+	   	android:text=""
+	   />
+	<TextView
+	    android:id="@+id/layout_event_place"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_below="@+id/layout_event_name"
+	    android:layout_marginLeft="100dp" />
+
+	<TextView
+	    android:id="@+id/layout_event_name"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignLeft="@+id/layout_event_place"
+	    android:layout_alignParentTop="true"
+	    android:layout_marginTop="16dp"
+	    android:textAppearance="?android:attr/textAppearanceMedium"  />
+
+	<TextView
+	    android:id="@+id/layout_event_note"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignLeft="@+id/layout_event_place"
+	    android:layout_below="@+id/layout_event_place" />
+	
+	<TextView
+	    android:id="@+id/layout_event_start_time"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignTop="@+id/layout_event_name"
+	    android:layout_marginRight="22dp"
+	    android:layout_toLeftOf="@+id/layout_event_name"
+	    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+<TextView
+	    android:id="@+id/layout_event_end_time"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignRight="@+id/layout_event_start_time"
+	    android:layout_below="@+id/layout_event_start_time"
+	    android:textAppearance="?android:attr/textAppearanceSmall" />
+	<View 
+	    android:layout_width="fill_parent"
+	    android:layout_height="0.2dp"
+	    android:background="#808080"
+	    />
+</RelativeLayout>
+<!-- </merge> -->
