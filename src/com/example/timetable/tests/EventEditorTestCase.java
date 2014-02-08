@@ -9,10 +9,10 @@ import android.test.RenamingDelegatingContext;
 
 import com.example.timetable.Event;
 import com.example.timetable.EventEditor;
-import com.example.timetable.TimetableActivity;
+import com.example.timetable.EventDayViewActivity;
 import com.example.timetable.TimetableLogger;
 
-public class EventEditorTestCase extends ActivityInstrumentationTestCase2<TimetableActivity> {
+public class EventEditorTestCase extends ActivityInstrumentationTestCase2<EventDayViewActivity> {
 	
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 	
@@ -21,7 +21,7 @@ public class EventEditorTestCase extends ActivityInstrumentationTestCase2<Timeta
 	private Context mContext;
 	
 	public EventEditorTestCase() {
-		super(TimetableActivity.class);
+		super(EventDayViewActivity.class);
 	}
 
 	@Override

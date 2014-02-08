@@ -9,7 +9,10 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 /*
  * Activity that displays all events of certain day
@@ -114,19 +117,18 @@ public class EventDayViewActivity extends ActionBarActivity {
 	    }
 	}
 	
-	/*public void onEventViewClick(View v) {
+	public void onEventViewClick(View v) {
 		try {
 			String idString = ((TextView) (((RelativeLayout) v).getChildAt(0))).getText().toString();
-			TimetableDatabase db = new TimetableDatabase(this);
-			Event event = db.searchEventById(Integer.parseInt(idString));
-			db.close();
-			setEventEditor(new EventEditor(this, event, getEventPager().getDate()));
-			switchPage(Page.EVENT_EDIT);
+			Intent eventEditIntent = new Intent(this, EventEditActivity.class);
+			eventEditIntent.putExtra("event_id", Integer.parseInt(idString));
+			eventEditIntent.putExtra("date", EventEditActivity.INIT_DATE_FORMAT.format(getEventPager().getDate()));
+			startActivity(eventEditIntent);
 		} catch (Exception e) {
 			TimetableLogger.log(e.getMessage());
 			return;
 		}
-	}*/
+	}
 	
 	
 }

@@ -79,7 +79,7 @@ public class EventAdder extends RelativeLayout {
 		this.resources = context.getResources();
 		eventPeriodWeekDayNames = resources.getStringArray(R.array.event_period_week_day_names_array);
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE );	
-		layoutInflater.inflate(R.layout.layout_event_add, this, true);
+		layoutInflater.inflate(R.layout.activity_event_add, this, true);
 		eventNameVal = (EditText) findViewById(R.id.event_add_name_val);
 		eventPlaceVal = (EditText) findViewById(R.id.event_add_place_val);
 		eventDateVal = (EditText) findViewById(R.id.event_add_date_val);

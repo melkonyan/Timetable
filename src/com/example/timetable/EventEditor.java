@@ -9,7 +9,7 @@ import android.content.DialogInterface;
 
 public class EventEditor extends EventAdder {
 	
-	private TimetableActivity context;
+	private EventDayViewActivity context;
 	
 	private Event event;
 	
@@ -17,7 +17,7 @@ public class EventEditor extends EventAdder {
 	
 	private Date date;
 	
-	public EventEditor(TimetableActivity context, Event event, Date date) {
+	public EventEditor(EventDayViewActivity context, Event event, Date date) {
 		super(context);
 		this.context = context;
 		this.event = event;
@@ -26,7 +26,7 @@ public class EventEditor extends EventAdder {
 		showEventPeriod();
 	}
 	
-	
+/*	
 	@Override 
 	//return true, if page should be changed, false otherwise
 	public boolean saveEvent() throws IllegalEventDataException {
@@ -153,4 +153,4 @@ public class EventEditor extends EventAdder {
 			}
 		}
 	}
-}
+*/}

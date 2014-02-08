@@ -19,8 +19,6 @@ public class EventPager extends ViewPager {
 	
 	private EventActionBar eventActionBar;
 	
-	private TimetableLogger logger = new TimetableLogger(); 
-	
 	private final SimpleDateFormat actionBarDateFormat = new SimpleDateFormat("EEE, dd.MM"); 
 	
 	private Date initDate; 
@@ -73,7 +71,7 @@ public class EventPager extends ViewPager {
 		private int pageNumber = EventPager.this.initPageNumber;
 		
 		public EventPagerAdapter(Date currentDate) {
-			logger.log("EventPagerAdapter created");
+			TimetableLogger.log("EventPagerAdapter created");
 			this.currentDate = currentDate;
 		}
 		
@@ -123,7 +121,7 @@ public class EventPager extends ViewPager {
 			
 			((ViewPager) viewPager).addView(externalLayout,0);
 			
-			logger.log("EventPagerAdapter displays page # "+ this.pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
+			TimetableLogger.log("EventPagerAdapter displays page # "+ this.pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
 			//logger.log("Events added to layout: " + internalLayout.getChildCount());
 			db.close();
 			return externalLayout;
@@ -136,7 +134,7 @@ public class EventPager extends ViewPager {
 		
 		@Override
 	    public void destroyItem(View viewPager, int pageNumber, Object view) {
-	            logger.log("EventPagerAdapter destroys page number " + pageNumber);
+	            TimetableLogger.log("EventPagerAdapter destroys page number " + pageNumber);
 	            ((ViewPager) viewPager).removeView((View) view);
 	    }
 	}
@@ -147,15 +145,15 @@ public class EventPager extends ViewPager {
 		
 		public EventPagerListener() {
 			super();
-			logger.log("EventPagerListener successfully created.");
+			TimetableLogger.log("EventPagerListener successfully created.");
 		}
 		
 		@Override
 		public void  onPageSelected(int pageNumber) {
-			logger.log("EventPagerListener detected page # " + pageNumber + " selection.");
+			TimetableLogger.log("EventPagerListener detected page # " + pageNumber + " selection.");
 			currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			//update action bar
-			eventActionBar.setTitle(Page.EVENT_VIEW,actionBarDateFormat.format(currentDate));
+			eventActionBar.setTitle(actionBarDateFormat.format(currentDate));
 			eventActionBar.showTitle(Page.EVENT_VIEW);
 		}
 	}

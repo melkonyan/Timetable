@@ -4,15 +4,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
 import com.example.timetable.Event;
-import com.example.timetable.TimetableActivity;
+import com.example.timetable.EventDayViewActivity;
 import com.example.timetable.TimetableDatabase;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.RenamingDelegatingContext;
 
-public class TimetableDatabaseTestCase extends ActivityInstrumentationTestCase2<TimetableActivity> {
+public class TimetableDatabaseTestCase extends ActivityInstrumentationTestCase2<EventDayViewActivity> {
 
 	public TimetableDatabaseTestCase() {
-		super(TimetableActivity.class);
+		super(EventDayViewActivity.class);
 	}
 
 	private RenamingDelegatingContext mContext;

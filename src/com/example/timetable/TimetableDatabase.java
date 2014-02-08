@@ -186,6 +186,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	String query = String.format("DELETE FROM Events WHERE evt_id = \'%s\'", event.id);
     	return execSQL(query);
         }
+    
     private Event getEvent(Cursor cursor) {
     	Event event = new Event(cursor.getInt(cursor.getColumnIndex("evt_id")));
     	event.name = cursor.getString(cursor.getColumnIndex("evt_name"));

@@ -11,4 +11,10 @@ public class TimetableLogger {
 			Log.i(logTag, message);
 		}
 	}
+	
+	public static void error(String message) {
+		if (debugging && message != null) {
+			Log.e(logTag, message);
+		}
+	}
 }

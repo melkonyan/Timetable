@@ -6,7 +6,15 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
+/*
+ * Activity provides user interface to edit event
+ * Should be started with extra field 'event_id' that contains id of event,
+ * that should be edited and field 'date', that contains date, when event was edited
+ */
 public class EventEditActivity extends EventAddActivity {
 
 	//event that should be edited
@@ -21,8 +29,55 @@ public class EventEditActivity extends EventAddActivity {
 	@Override 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		try {
+			Bundle extras = getIntent().getExtras();
+			int eventId = extras.getInt("event_id");
+			TimetableDatabase db = new TimetableDatabase(this);
+			event = db.searchEventById(eventId);
+			if (event == null) {
+				TimetableLogger.error("EventEditActivity: event not found. " + Integer.toString(eventId));
+				finish();
+			}
+			date = INIT_DATE_FORMAT.parse(extras.getString("date"));
+			
+			setEvent(event);
+			showEventPeriod();
+			eventDateVal.setText(dateFormat.format(date));
+		} catch(Exception e) {
+			TimetableLogger.error("EventEditActivity received illegal data.");
+			finish();
+		}
+		
 	}
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_event_edit, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.action_save_event:
+	        	TimetableLogger.log("EventEditActivity: try to save event.");
+	        	try {
+	        		saveEvent();
+	        	} catch (IllegalEventDataException e) {
+	            	Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+	            }
+	        	return true;
+	        case R.id.action_delete_event:
+	        	TimetableLogger.log("EventEditActivity: try to delete event.");
+	        	deleteEvent();
+	        	return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+
 	@Override 
 	public void saveEvent() throws IllegalEventDataException {
 		editedEvent = getEvent();
@@ -68,7 +123,6 @@ public class EventEditActivity extends EventAddActivity {
 			new DeleteDialog(this);
 			return;
 		}
-	
 		TimetableDatabase db = new TimetableDatabase(this);
 		db.deleteEvent(event);
 		db.close();
@@ -109,6 +163,7 @@ public class EventEditActivity extends EventAddActivity {
 					case DialogInterface.BUTTON_POSITIVE:
 						int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
 						saveRepeatableEvent(selectedPosition == 1); 
+						finish();
 						break;
 				}
 			}
@@ -134,6 +189,7 @@ public class EventEditActivity extends EventAddActivity {
 					case DialogInterface.BUTTON_POSITIVE:
 						int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
 						deleteRepeatableEvent(selectedPosition == 1); 
+						finish();
 						break;
 				}
 			}
