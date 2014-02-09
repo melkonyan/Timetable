@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="446dp" >
+
+    <TextView
+        android:id="@+id/event_add_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="25dp"
+        android:text="@string/event_add_name"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/event_add_name_val"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/event_add_name"
+        android:layout_alignBottom="@+id/event_add_name"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="text" />
+
+    <TextView
+        android:id="@+id/event_add_place"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_add_name"
+        android:layout_below="@+id/event_add_name"
+        android:layout_marginTop="20dp"
+        android:text="@string/event_add_place"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/event_add_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_add_start_time"
+        android:layout_below="@+id/event_add_place"
+        android:layout_marginTop="20dp"
+        android:text="@string/event_add_date"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/event_add_start_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_add_place"
+        android:layout_below="@+id/event_add_date_val"
+        android:layout_marginTop="20dp"
+        android:text="@string/event_add_start_time"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/event_add_end_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_add_start_time"
+        android:layout_below="@+id/event_add_start_time_val"
+        android:layout_marginTop="20dp"
+        android:text="@string/event_add_end_time"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/event_add_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_add_end_time"
+        android:layout_below="@+id/event_add_end_time"
+        android:layout_marginTop="20dp"
+        android:text="@string/event_add_note"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/event_add_period"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_add_note"
+        android:layout_below="@+id/event_add_note"
+        android:layout_marginTop="30dp"
+        android:text="@string/event_add_period"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/event_add_date_val"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/event_add_date"
+        android:layout_alignBottom="@+id/event_add_date"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="date" />
+
+    <EditText
+        android:id="@+id/event_add_start_time_val"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/event_add_start_time"
+        android:layout_alignBottom="@+id/event_add_start_time"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="time" />
+
+    <EditText
+        android:id="@+id/event_add_end_time_val"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/event_add_end_time"
+        android:layout_alignBottom="@+id/event_add_end_time"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="time" />
+
+    <EditText
+        android:id="@+id/event_add_note_val"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/event_add_note"
+        android:layout_alignBottom="@+id/event_add_note"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="textMultiLine" />
+
+    <EditText
+        android:id="@+id/event_add_place_val"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/event_add_place"
+        android:layout_alignBottom="@+id/event_add_place"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:inputType="text" />
+    
+    <EditText
+        android:id="@+id/event_period_inteval_val"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/event_period_interval_text_left"
+        android:layout_alignBottom="@+id/event_period_interval_text_left"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/event_period_interval_text_left"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="number"
+        android:width="60dp" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/event_period_interval_text_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/event_period_inteval_val"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/event_period_inteval_val"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/event_period_interval_text_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_add_period"
+        android:layout_below="@+id/event_period_weekdays_table"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="30dp"
+        android:text="@string/event_add_interval"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Spinner
+        android:id="@+id/event_period_end_date_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_period_interval_text_left"
+        android:layout_alignRight="@+id/event_period_inteval_val"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/event_period_interval_text_left" />
+
+    <EditText
+        android:id="@+id/event_period_end_date_val"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/event_period_end_date_spinner"
+        android:layout_toRightOf="@+id/event_period_end_date_spinner"
+        android:ems="10"
+        android:inputType="date" >
+
+        <requestFocus />
+    </EditText>
+
+    <Spinner
+        android:id="@+id/event_period_type_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_add_note_val"
+        android:layout_alignBottom="@+id/event_add_period"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/event_add_note_val"
+        android:layout_marginTop="10dp"
+        android:gravity="bottom" />
+
+    <LinearLayout
+        android:id="@+id/event_period_weekdays_table"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_add_period"
+        android:layout_below="@+id/event_add_period"
+        android:layout_marginTop="21dp"
+        android:layout_marginLeft="30dp"
+        android:orientation="horizontal" >
+    </LinearLayout>
+    
+</RelativeLayout>
+
+</ScrollView>

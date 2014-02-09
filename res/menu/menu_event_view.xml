@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+   	  xmlns:yourapp="http://schemas.android.com/apk/res-auto">
+
+    <item 
+        android:id="@+id/action_add_event"
+        android:title="@string/menu_add_event"
+        yourapp:showAsAction="always" 
+        android:icon="@drawable/ic_content_new"
+        />
+	<item 
+	    android:id="@+id/action_view_today"
+	    android:title="@string/menu_view_today"
+	    />
+</menu>
