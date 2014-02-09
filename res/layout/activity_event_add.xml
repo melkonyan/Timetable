@@ -90,22 +90,13 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <EditText
-        android:id="@+id/event_add_date_val"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/event_add_date"
-        android:layout_alignBottom="@+id/event_add_date"
-        android:layout_alignParentRight="true"
-        android:ems="10"
-        android:inputType="date" />
-
-    <EditText
         android:id="@+id/event_add_start_time_val"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/event_add_start_time"
         android:layout_alignBottom="@+id/event_add_start_time"
-        android:layout_alignParentRight="true"
+        android:layout_alignLeft="@+id/event_add_end_time_val"
+        android:layout_alignRight="@+id/event_add_date_val"
         android:ems="10"
         android:inputType="time" />
 
@@ -115,7 +106,8 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/event_add_end_time"
         android:layout_alignBottom="@+id/event_add_end_time"
-        android:layout_alignParentRight="true"
+        android:layout_alignLeft="@+id/event_add_note_val"
+        android:layout_alignRight="@+id/event_add_date_val"
         android:ems="10"
         android:inputType="time" />
 
@@ -190,9 +182,7 @@
         android:layout_toRightOf="@+id/event_period_end_date_spinner"
         android:ems="10"
         android:inputType="date" >
-
-        <requestFocus />
-    </EditText>
+ </EditText>
 
     <Spinner
         android:id="@+id/event_period_type_spinner"
@@ -215,6 +205,44 @@
         android:layout_marginLeft="30dp"
         android:orientation="horizontal" >
     </LinearLayout>
+
+    <EditText
+        android:id="@+id/event_add_date_val"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/event_add_date"
+        android:layout_alignBottom="@+id/event_add_date"
+        android:layout_alignLeft="@+id/event_add_place_val"
+        android:ems="10"
+        android:inputType="date" />
+
+    <ImageButton
+        android:id="@+id/event_add_date_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/event_add_place_val"
+        android:layout_toRightOf="@+id/event_add_date_val"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_button_calendar" />
+
+    <ImageButton
+        android:id="@+id/event_add_start_time_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/event_add_end_time"
+        android:layout_alignLeft="@+id/event_add_date_picker"
+       	android:layout_marginLeft="10dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_button_watches" />
+
+    <ImageButton
+        android:id="@+id/event_add_end_time_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/event_add_end_time_val"
+        android:layout_alignLeft="@+id/event_add_start_time_picker"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_button_watches" />
     
 </RelativeLayout>
 

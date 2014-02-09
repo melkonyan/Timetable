@@ -1,9 +1,12 @@
 package com.example.timetable;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputFilter;
@@ -15,8 +18,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TimePicker;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -57,8 +63,18 @@ public class EventAddActivity extends ActionBarActivity {
 	public TextView eventPeriodIntervalTextRight;
 	public EditText eventPeriodIntervalVal;
 	public Spinner eventPeriodEndDateSpinner;
-	public EditText eventPeriodEndDateVal;
-	public LinearLayout eventPeriodWeekDaysTable; //table containing checkboxes of weekdays
+	public EditText eventPeriodEndDateVal; 
+	
+	//table containing checkboxes of weekdays
+	public LinearLayout eventPeriodWeekDaysTable;
+	
+	public ImageButton eventDatePickerButton;
+	public ImageButton eventStartTimePickerButton;
+	public ImageButton eventEndTimePickerButton;
+	
+	
+	//Date when event is being created
+	public Date initDate;
 	
 	EventChecker checker = new EventChecker();
 	
@@ -129,6 +145,74 @@ public class EventAddActivity extends ActionBarActivity {
 		
 		showEventPeriod();
 		
+		eventDatePickerButton = (ImageButton) findViewById(R.id.event_add_date_picker);
+		eventDatePickerButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				TimetableLogger.log("Creating DatePickerDialog");
+				DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
+
+					@Override
+					public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+						Calendar cal = Calendar.getInstance();
+						cal.set(Calendar.YEAR, year);
+						cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+						cal.set(Calendar.MONTH, monthOfYear);
+						eventDateVal.setText(dateFormat.format(cal.getTime()));
+					}
+					
+				};
+				new DatePickerDialog(EventAddActivity.this, mOnDateSetListener, 
+						getDate().get(Calendar.YEAR), getDate().get(Calendar.MONTH), getDate().get(Calendar.DAY_OF_MONTH)).show();
+				
+			}
+		});
+		
+		eventStartTimePickerButton = (ImageButton) findViewById(R.id.event_add_start_time_picker);
+		eventStartTimePickerButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				TimetableLogger.log("Creating StartTimePickerDialog");
+				TimePickerDialog.OnTimeSetListener mOnTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+					
+					@Override
+					public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+						Calendar cal = Calendar.getInstance();
+						cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+						cal.set(Calendar.MINUTE, minute);
+						eventStartTimeVal.setText(timeFormat.format(cal.getTime()));
+						}
+				};
+				
+				new TimePickerDialog(EventAddActivity.this, mOnTimeSetListener, 
+										getStartTime().get(Calendar.HOUR_OF_DAY), getStartTime().get(Calendar.MINUTE), true).show();
+			}
+		});
+		
+		eventEndTimePickerButton = (ImageButton) findViewById(R.id.event_add_end_time_picker);
+		eventEndTimePickerButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				TimetableLogger.log("Creating EndTimePickerDialog");
+				TimePickerDialog.OnTimeSetListener mOnTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+					
+					@Override
+					public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+						Calendar cal = Calendar.getInstance();
+						cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+						cal.set(Calendar.MINUTE, minute);
+						eventEndTimeVal.setText(timeFormat.format(cal.getTime()));
+						}
+				};
+				
+				new TimePickerDialog(EventAddActivity.this, mOnTimeSetListener, 
+										getEndTime().get(Calendar.HOUR_OF_DAY), getEndTime().get(Calendar.MINUTE), true).show();
+			}
+		});
+		
 		setMaxLength(eventPeriodIntervalVal, Event.MAX_PERIOD_INTERVAL_LENGTH);
 		setMaxLength(eventNameVal, Event.MAX_NAME_LENGTH);
 		setMaxLength(eventPlaceVal, Event.MAX_PLACE_LENGTH);
@@ -148,10 +232,10 @@ public class EventAddActivity extends ActionBarActivity {
 			return;
 		}
 		try {
-			Date date = INIT_DATE_FORMAT.parse(extras.getString("date"));
-			eventDateVal.setText(dateFormat.format(date));
+			initDate = INIT_DATE_FORMAT.parse(extras.getString("date"));
+			eventDateVal.setText(dateFormat.format(initDate));
 			Calendar cal = Calendar.getInstance();
-			cal.setTime(date);
+			cal.setTime(initDate);
 			cal.add(Calendar.HOUR, 1);
 			cal.set(Calendar.MINUTE, 0);
 			eventStartTimeVal.setText(timeFormat.format(cal.getTime()));
@@ -189,6 +273,39 @@ public class EventAddActivity extends ActionBarActivity {
 
 	private void setMaxLength(EditText view, int length) {
 		view.setFilters(new InputFilter[] {new InputFilter.LengthFilter(length)});
+	}
+	
+	public Calendar getDate() {
+		Calendar cal = Calendar.getInstance();
+		try {
+			cal.setTime(dateFormat.parse(eventDateVal.getText().toString()));
+		} catch (ParseException e) {
+			cal.setTime(initDate);
+		}
+		return cal;
+	}
+	
+	public Calendar getStartTime() {
+		Calendar cal = Calendar.getInstance();
+		try {
+			cal.setTime(timeFormat.parse(eventStartTimeVal.getText().toString()));
+		} catch (ParseException e) {
+			cal.setTime(initDate);
+			cal.add(Calendar.HOUR_OF_DAY, 1);
+			cal.set(Calendar.MINUTE, 0);
+		}
+		return cal;
+	}
+	
+	public Calendar getEndTime() {
+		Calendar cal = Calendar.getInstance();
+		try {
+			cal.setTime(timeFormat.parse(eventEndTimeVal.getText().toString()));
+		} catch (ParseException e) {
+			cal = getStartTime();
+			cal.add(Calendar.HOUR_OF_DAY, 1);
+		}
+		return cal;
 	}
 	
 	public  void showEventPeriodIntervalText() {
