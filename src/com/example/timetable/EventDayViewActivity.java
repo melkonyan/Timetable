@@ -20,68 +20,36 @@ import android.widget.TextView;
  */
 public class EventDayViewActivity extends ActionBarActivity {
 	
-	Menu menu; 
-	
 	private LinearLayout eventLayout;
 	
 	private EventPager eventPager;
-	
-	private EventAdder eventAdder;
-	
-	private EventEditor eventEditor;
-	
-	private EventActionBar eventActionBar;
-	
-	private Page currentPage = Page.EVENT_VIEW;
-	
-	private MenuItem menuSaveEvent;
-    
-	private MenuItem menuAddEvent;
-	
-	private MenuItem menuDeleteEvent;
-	
-	public EventAdder getEventAdder() {
-		return eventAdder;
-	}
-	
-	public void setEventAdder(EventAdder eventAdder) {
-		this.eventAdder = eventAdder;
-	}
-	
-	public EventEditor getEventEditor() {
-		return eventEditor;
-	}
-	
-	public void setEventEditor(EventEditor eventEditor) {
-		this.eventEditor = eventEditor;
-	}
 	
 	public EventPager getEventPager() {
 		return eventPager;
 	}
 	
 	public void setEventPager(EventPager eventPager) {
+		if (eventPager != null) {
+			eventLayout.removeView(eventPager);
+		}
 		this.eventPager = eventPager;
+		eventLayout.addView(eventPager,0);
+		
 	}
 	
 	public Date getCurrentTime() {
-		Calendar cal = Calendar.getInstance();
-		return cal.getTime();
+		return Calendar.getInstance().getTime();
 	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		setContentView(R.layout.activity_event_day_view);
 		
 		//enable debugging
 		TimetableLogger.debugging = true;
-		
-		setContentView(R.layout.activity_event_day_view);
-		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
-		eventActionBar = new EventActionBar(this);
-		setEventPager(new EventPager(this, eventActionBar, getCurrentTime()));
-		eventLayout.addView(eventPager,0);
+		setEventPager(new EventPager(this, getCurrentTime()));
 	}
 
 
@@ -96,10 +64,6 @@ public class EventDayViewActivity extends ActionBarActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_event_view, menu);
-		this.menu = menu;
-		//menuSaveEvent = menu.findItem(R.id.action_save_event);
-		menuAddEvent = menu.findItem(R.id.action_add_event);
-		//menuDeleteEvent = menu.findItem(R.id.action_delete_event);
 		return true;
 	}
 	
@@ -109,10 +73,13 @@ public class EventDayViewActivity extends ActionBarActivity {
 	    switch (item.getItemId()) {
 	        case R.id.action_add_event:
 	            Intent eventAddIntent = new Intent(this, EventAddActivity.class);
-	            eventAddIntent.putExtra("date", EventAddActivity.INIT_DATE_FORMAT.format(getCurrentTime()));
+	            eventAddIntent.putExtra("date", EventAddActivity.INIT_DATE_FORMAT.format(getEventPager().getDate()));
 	            startActivity(eventAddIntent);
 	        	return true;
-	       default:
+	        case R.id.action_view_today:
+	        	setEventPager(new EventPager(this, getCurrentTime()));
+	        	return true;
+	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
@@ -129,6 +96,4 @@ public class EventDayViewActivity extends ActionBarActivity {
 			return;
 		}
 	}
-	
-	
 }

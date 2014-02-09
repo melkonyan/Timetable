@@ -991,7 +991,7 @@ containing a value of this type.
         public static final int ic_navigation_accept=0x7f02005a;
     }
     public static final class id {
-        public static final int action_add_event=0x7f05005d;
+        public static final int action_add_event=0x7f05005c;
         public static final int action_bar=0x7f05001c;
         public static final int action_bar_activity_content=0x7f050015;
         public static final int action_bar_container=0x7f05001b;
@@ -1005,7 +1005,7 @@ containing a value of this type.
         public static final int action_menu_presenter=0x7f050017;
         public static final int action_mode_close_button=0x7f050024;
         public static final int action_save_event=0x7f05005a;
-        public static final int action_settings=0x7f05005c;
+        public static final int action_view_today=0x7f05005d;
         public static final int activity_chooser_view_content=0x7f050025;
         public static final int always=0x7f05000b;
         public static final int beginning=0x7f050011;
@@ -1190,6 +1190,9 @@ containing a value of this type.
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0a000b;
         public static final int action_settings=0x7f0a000e;
+        public static final int actionbar_add_event=0x7f0a0021;
+        public static final int actionbar_date_today=0x7f0a0020;
+        public static final int actionbar_edit_event=0x7f0a0022;
         public static final int app_name=0x7f0a000d;
         public static final int event_add_date=0x7f0a0011;
         public static final int event_add_end_time=0x7f0a0013;
@@ -1204,6 +1207,10 @@ containing a value of this type.
         public static final int event_add_place=0x7f0a0010;
         public static final int event_add_start_time=0x7f0a0012;
         public static final int event_pager_no_events=0x7f0a001b;
+        public static final int menu_add_event=0x7f0a001e;
+        public static final int menu_delete_event=0x7f0a001d;
+        public static final int menu_save_event=0x7f0a001c;
+        public static final int menu_view_today=0x7f0a001f;
     }
     public static final class style {
         /** 

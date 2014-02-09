@@ -38,6 +38,8 @@ public class EventEditActivity extends EventAddActivity {
 				TimetableLogger.error("EventEditActivity: event not found. " + Integer.toString(eventId));
 				finish();
 			}
+			getSupportActionBar().setTitle(getResources().getString(R.string.actionbar_edit_event));
+			
 			date = INIT_DATE_FORMAT.parse(extras.getString("date"));
 			
 			setEvent(event);
@@ -95,6 +97,7 @@ public class EventEditActivity extends EventAddActivity {
 		TimetableDatabase db = new TimetableDatabase(this);
 		db.updateEvent(editedEvent);
 		db.close();
+		finish();
 	}
 	
 	private void saveRepeatableEvent(boolean overrideFutureEvents) {
@@ -102,7 +105,6 @@ public class EventEditActivity extends EventAddActivity {
 		
 		if (overrideFutureEvents) {
 			//from today on this event ends
-			//TODO: fix this shit
 			TimetableLogger.log("saving event:" + editedEvent.toString());
 			long day = 1000*60*60*24;
 			event.period.endDate = new Date();
@@ -189,6 +191,7 @@ public class EventEditActivity extends EventAddActivity {
 					case DialogInterface.BUTTON_POSITIVE:
 						int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
 						deleteRepeatableEvent(selectedPosition == 1); 
+						TimetableLogger.log("Event was saved. Leaving EventEditActivity.");
 						finish();
 						break;
 				}

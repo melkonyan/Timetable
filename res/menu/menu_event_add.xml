@@ -3,7 +3,7 @@
     
 <item 
 	android:id="@+id/action_save_event"
-    android:title="Done"
+    android:title="@string/menu_save_event"
     yourapp:showAsAction="always" 
     android:icon="@drawable/ic_navigation_accept" />
     

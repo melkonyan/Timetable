@@ -9,6 +9,10 @@ public class EventChecker {
 	
 	public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 	
+	private String replaceSpecialCharacters(String text) {
+		//return text.replaceAll("'","\\'");
+		return text;
+	}
 	public void checkEvent(Event event) {
 	}
 	
@@ -16,8 +20,7 @@ public class EventChecker {
 		if (nameString == null || nameString.length() == 0) {
 			throw new IllegalEventNameException("Event name is empty.");
 		}
-		//TODO: remove special char in event's name
-		return nameString;
+		return replaceSpecialCharacters(nameString);
 	}
 	
 	public String getPlaceFromString(String placeString) throws IllegalEventPlaceException {

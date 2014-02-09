@@ -39,6 +39,12 @@
 	
 	<string name = "event_pager_no_events">No events today.</string>
 	
-	
+	<string name = "menu_save_event">Save</string>
+	<string name = "menu_delete_event">Delete</string>
+	<string name = "menu_add_event">Add event</string>
+	<string name = "menu_view_today">Today</string>
+	<string name = "actionbar_date_today">Today</string>
+	<string name = "actionbar_add_event">Add event</string>
+	<string name = "actionbar_edit_event">Edit event</string>
 	
 </resources>

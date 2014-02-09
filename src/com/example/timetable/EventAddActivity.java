@@ -44,33 +44,35 @@ public class EventAddActivity extends ActionBarActivity {
 	
 	private String eventPeriodWeekDayNames [];
 
-	protected CheckBox eventPeriodWeekDayCheckBoxes [] = new CheckBox[7]; 
+	public CheckBox eventPeriodWeekDayCheckBoxes [] = new CheckBox[7]; 
 	
-	protected EditText eventNameVal;
-	protected EditText eventPlaceVal;
-	protected EditText eventDateVal;
-	protected EditText eventStartTimeVal;
-	protected EditText eventEndTimeVal;
-	protected EditText eventNoteVal;
-	protected Spinner eventPeriodTypeSpinner;
-	protected TextView eventPeriodIntervalTextLeft;
-	protected TextView eventPeriodIntervalTextRight;
-	protected EditText eventPeriodIntervalVal;
-	protected Spinner eventPeriodEndDateSpinner;
-	protected EditText eventPeriodEndDateVal;
-	protected LinearLayout eventPeriodWeekDaysTable; //table containing checkboxes of weekdays
+	public EditText eventNameVal;
+	public EditText eventPlaceVal;
+	public EditText eventDateVal;
+	public EditText eventStartTimeVal;
+	public EditText eventEndTimeVal;
+	public EditText eventNoteVal;
+	public Spinner eventPeriodTypeSpinner;
+	public TextView eventPeriodIntervalTextLeft;
+	public TextView eventPeriodIntervalTextRight;
+	public EditText eventPeriodIntervalVal;
+	public Spinner eventPeriodEndDateSpinner;
+	public EditText eventPeriodEndDateVal;
+	public LinearLayout eventPeriodWeekDaysTable; //table containing checkboxes of weekdays
 	
 	EventChecker checker = new EventChecker();
 	
-	protected static final SimpleDateFormat dateFormat = EventChecker.dateFormat;
+	public static final SimpleDateFormat dateFormat = EventChecker.dateFormat;
 	
-	protected static final SimpleDateFormat timeFormat = EventChecker.timeFormat;	
+	public static final SimpleDateFormat timeFormat = EventChecker.timeFormat;	
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_event_add);
+		getSupportActionBar().setTitle(getResources().getString(R.string.actionbar_add_event));
+		
 		eventPeriodWeekDayNames = getResources().getStringArray(R.array.event_period_week_day_names_array);
 		
 		eventNameVal = (EditText) findViewById(R.id.event_add_name_val);
@@ -148,10 +150,11 @@ public class EventAddActivity extends ActionBarActivity {
 		try {
 			Date date = INIT_DATE_FORMAT.parse(extras.getString("date"));
 			eventDateVal.setText(dateFormat.format(date));
-			//TODO: round start time to next hour
-			eventStartTimeVal.setText(timeFormat.format(date));
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(date);
+			cal.add(Calendar.HOUR, 1);
+			cal.set(Calendar.MINUTE, 0);
+			eventStartTimeVal.setText(timeFormat.format(cal.getTime()));
 			cal.add(Calendar.HOUR, 1);
 			eventEndTimeVal.setText(timeFormat.format(cal.getTime()));
 		} catch (Exception e) {
@@ -188,7 +191,7 @@ public class EventAddActivity extends ActionBarActivity {
 		view.setFilters(new InputFilter[] {new InputFilter.LengthFilter(length)});
 	}
 	
-	protected  void showEventPeriodIntervalText() {
+	public  void showEventPeriodIntervalText() {
 		int string_id;
 		switch (getEventPeriodType()) {
 			case DAILY:
@@ -209,7 +212,7 @@ public class EventAddActivity extends ActionBarActivity {
 		eventPeriodIntervalTextRight.setText(getResources().getString(string_id));
 	}
 	
-	protected EventPeriod getEventPeriod() throws IllegalEventDataException {
+	public EventPeriod getEventPeriod() throws IllegalEventDataException {
 		EventPeriod period = new EventPeriod();
 		period.type = getEventPeriodType();
 		if (period.isRepeatable()) {
@@ -222,7 +225,7 @@ public class EventAddActivity extends ActionBarActivity {
 		return period;
 	}
 
-	protected void setEventPeriod(EventPeriod period) {
+	public void setEventPeriod(EventPeriod period) {
 		setEventPeriodType(period.type);
 		if (period.isRepeatable()) {
 			eventPeriodIntervalVal.setText(Integer.toString(period.interval));
@@ -233,7 +236,7 @@ public class EventAddActivity extends ActionBarActivity {
 		}
 	}
 
-	protected void showEventPeriod() {
+	public void showEventPeriod() {
 		EventPeriod.Type type = getEventPeriodType();
 		int isVisible = (type == EventPeriod.Type.NONE ? View.GONE : View.VISIBLE); 
 		eventPeriodIntervalVal.setVisibility(isVisible);
@@ -245,18 +248,18 @@ public class EventAddActivity extends ActionBarActivity {
 		showEventPeriodWeekOccurrences();
 	}
 	
-	protected void showEventPeriodWeekOccurrences() {
+	public void showEventPeriodWeekOccurrences() {
 		int isVisible = (getEventPeriodType() == EventPeriod.Type.WEEKLY ?  View.VISIBLE : View.GONE);
 		eventPeriodWeekDaysTable.setVisibility(isVisible);
 	}
 	
-	protected void setEventPeriodWeekOccurrences(boolean [] weekOccurrences) {
+	public void setEventPeriodWeekOccurrences(boolean [] weekOccurrences) {
 		for (int i = 0; i < 7; i++) {
 			eventPeriodWeekDayCheckBoxes[i].setChecked(weekOccurrences[i]);
 		}
 	}
 	
-	protected boolean [] getEventPeriodWeekOccurrences() {
+	public boolean [] getEventPeriodWeekOccurrences() {
 		boolean [] weekOccurrences = new boolean[7];
 		for (int i = 0; i < 7; i++) {
 			weekOccurrences[i] = eventPeriodWeekDayCheckBoxes[i].isChecked();
@@ -267,14 +270,14 @@ public class EventAddActivity extends ActionBarActivity {
 	/*
 	 * returns true if PeriodEndDateSpinner has item "until a date" selected 
 	 */
-	protected boolean isSetEventPeriodEndDate() {
+	public boolean isSetEventPeriodEndDate() {
 		return (eventPeriodEndDateSpinner.getSelectedItemPosition() == 1);
 	}
 	
 	/*
 	 * shows period end date if it is set
 	 */
-	protected void showPeriodEndDate() {
+	public void showPeriodEndDate() {
 		if (isSetEventPeriodEndDate()  && getEventPeriodType() != EventPeriod.Type.NONE) {
 			eventPeriodEndDateVal.setVisibility(View.VISIBLE);
 		}
@@ -283,7 +286,7 @@ public class EventAddActivity extends ActionBarActivity {
 		}
 	}
 	
-	protected void setEventPeriodEndDate(Date endDate) {
+	public void setEventPeriodEndDate(Date endDate) {
 		if (endDate != null) {
 			//set spinner to show "until a date"
 			eventPeriodEndDateSpinner.setSelection(1);
@@ -291,7 +294,7 @@ public class EventAddActivity extends ActionBarActivity {
 		}
 	}
 
-	protected Date getEventPeriodEndDate() throws EventChecker.IllegalEventPeriodEndDateException {
+	public Date getEventPeriodEndDate() throws EventChecker.IllegalEventPeriodEndDateException {
 		if (isSetEventPeriodEndDate()) {
 			return checker.getPeriodEndDateFromString(eventPeriodEndDateVal.getText().toString());
 		}
@@ -303,15 +306,15 @@ public class EventAddActivity extends ActionBarActivity {
 	/*
 	 * set spinner to show event period type
 	 */
-	protected void setEventPeriodType(EventPeriod.Type type) {
+	public void setEventPeriodType(EventPeriod.Type type) {
 		eventPeriodTypeSpinner.setSelection(type.ordinal());
 	}
 	
-	protected EventPeriod.Type getEventPeriodType() {
+	public EventPeriod.Type getEventPeriodType() {
 		return EVENT_PERIOD_TYPE_IDS[eventPeriodTypeSpinner.getSelectedItemPosition()];
 	}
 	
-	protected void setEventEndTime(Date endTime) {
+	public void setEventEndTime(Date endTime) {
 		if (endTime != null) {
 			eventEndTimeVal.setText(timeFormat.format(endTime));
 		}
@@ -320,7 +323,7 @@ public class EventAddActivity extends ActionBarActivity {
 		}
 	}
 	
-	protected void setEvent(Event event) {
+	public void setEvent(Event event) {
 		eventNameVal.setText(event.name);
 		eventPlaceVal.setText(event.place);
 		
@@ -332,7 +335,7 @@ public class EventAddActivity extends ActionBarActivity {
 		setEventPeriod(event.period);
 	}
 	
-	protected Event getEvent() throws IllegalEventDataException {
+	public Event getEvent() throws IllegalEventDataException {
 		Event event = new Event();
 		//TODO: set focus on invalid text fields
 		try {
@@ -361,7 +364,7 @@ public class EventAddActivity extends ActionBarActivity {
 		db.close();
 	}
 	
-	protected class PeriodTypeListener implements OnItemSelectedListener {
+	public class PeriodTypeListener implements OnItemSelectedListener {
 
 		@Override
 		public void onItemSelected(AdapterView<?> arg0, View arg1, int pos,
@@ -376,7 +379,7 @@ public class EventAddActivity extends ActionBarActivity {
 		
 	}
 	
-	protected class PeriodEndDateListener implements OnItemSelectedListener {
+	public class PeriodEndDateListener implements OnItemSelectedListener {
 
 		@Override
 		public void onItemSelected(AdapterView<?> arg0, View arg1, int pos,
