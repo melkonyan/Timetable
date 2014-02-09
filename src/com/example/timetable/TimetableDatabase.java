@@ -1,14 +1,15 @@
 package com.example.timetable;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Vector;
+
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Vector;
 
 public class TimetableDatabase extends SQLiteOpenHelper {
 	
@@ -60,6 +61,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
     
+    
     private boolean execSQL(String query) {
     	try {
     		dbWrite.execSQL(query);
@@ -70,48 +72,35 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	}
     }
     
+    private ContentValues createContentValuesFromEventPeriod(EventPeriod period) {
+    	ContentValues values = new ContentValues();
+    	values.put("per_type", period.type.ordinal());
+    	values.put("per_interval", period.interval);
+    	values.put("per_week_occurences", period.getWeekOccurrences());
+    	values.put("per_end_date", period.endDate == null ? "" : dateFormat.format(period.endDate));
+    	values.put("per_num_of_repeats", period.numberOfRepeats);
+    	return values;
+    }
+    
     /*
      * returns id of inserted period
      * returns -1 if insertion was unsuccessful
      */
-    public int insertEventPeriod(EventPeriod period) {
+    public long insertEventPeriod(EventPeriod period) {
     	if (!period.isOk()) {
     		return -1;
     	}
-    		String query = String.format("INSERT INTO Periods "
-	    			+ "(per_type, per_interval, per_week_occurences, per_end_date, per_num_of_repeats) "
-	    			+ "VALUES (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\')",
-	    			period.type.ordinal(), period.interval, period.getWeekOccurrences(), 
-	    			(period.endDate == null ? null : dateFormat.format(period.endDate)), period.numberOfRepeats);
-	    	if (!execSQL(query)) {
-	    		return -1;
-	    	}
-    		query = "SELECT per_id from Periods where per_id = (SELECT MAX(per_id) FROM Periods)";
-	    	Cursor cursor = dbRead.rawQuery(query, null);
-	    	cursor.moveToFirst();
-	    	int id = cursor.getInt(0);
-	    	cursor.close();
-	    	return id;
+    	return dbWrite.insert("Periods",null, createContentValuesFromEventPeriod(period));
     	
     }
     
-    public boolean updateEventPeriod(EventPeriod period) {
-    	String query = String.format("UPDATE Periods SET "
-    			+ "per_type = \'%s\',"
-    			+ "per_interval = \'%s\', "
-    			+ "per_week_occurences = \'%s\',"
-    			+ "per_end_date = \'%s\',"
-    			+ "per_num_of_repeats = \'%s\'"
-    			+ "WHERE per_id = \'%s\'",
-    			period.type.ordinal(), period.interval, period.getWeekOccurrences(), 
-    			(period.endDate == null ? null : dateFormat.format(period.endDate)), period.numberOfRepeats, period.id);
-    	return execSQL(query);
+    public int updateEventPeriod(EventPeriod period) {
+    	return dbWrite.update("Periods", createContentValuesFromEventPeriod(period), "per_id = ?", new String [] {Integer.toString(period.id)} );
     }
     
-    public boolean deleteEventPeriod(EventPeriod period) {
-    	String query = String.format("DELETE from Period WHERE per_id = %s", period.id);
-    	return execSQL(query);
-        }
+    public int deleteEventPeriod(EventPeriod period) {
+    	return dbWrite.delete("Periods", "per_id = ?", new String [] {Integer.toString(period.id)} );
+    }
     
     public EventPeriod searchEventPeriodById(int id) {
     	String query = "SELECT * FROM Periods WHERE per_id = ?";
@@ -134,16 +123,16 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	return period;
     }
     
-    public boolean insertException(Event event, Date date) {
-    	String query = String.format("INSERT INTO Exceptions (evt_id, ex_date) values (\'%s\',\'%s\')", 
-    								event.id, dateFormat.format(date));
-    	return execSQL(query);
-        }
+    public long insertException(Event event, Date date) {
+    	ContentValues values = new ContentValues();
+    	values.put("evt_id", event.id);
+    	values.put("ex_date", dateFormat.format(date));
+    	return dbWrite.insert("Exceptions", null, values);
+    	}
     
-    public boolean deleteAllEventExceptions(Event event) {
-    	String query = String.format("DELETE FROM Exceptions WHERE evt_id = \'%s\'", event.id);
-    	return execSQL(query);
-        }
+    public int deleteAllEventExceptions(Event event) {
+    	return dbWrite.delete("Exceptions", "evt_id = ?", new String [] { Integer.toString(event.id) } );
+    	}
     
     //Check if periodic event has no session todays
     public boolean isException(Event event, Date date) {
@@ -154,38 +143,32 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	return isException;
     }
     
-    public boolean insertEvent(Event event) {
-    	event.period.id = insertEventPeriod(event.period);
+    private ContentValues createContentValuesFromEvent(Event event) {
+    	ContentValues values = new ContentValues();
+    	values.put("evt_name", event.name);
+    	values.put("evt_place", event.place);
+    	values.put("evt_start_time", timeFormat.format(event.startTime));
+    	values.put("evt_end_time", (event.endTime != null ? timeFormat.format(event.endTime) : ""));
+    	values.put("evt_date", dateFormat.format(event.date));
+    	values.put("per_id", event.period.id);
+    	values.put("evt_note", event.note);
     	
-    	String query = String.format("INSERT INTO Events "
-    									+ "(evt_name, evt_place, evt_start_time, evt_end_time, evt_date, per_id, evt_note) "
-    									+ "values (\'%s\', \'%s\', \'%s\', \'%s\', \'%s\', %d, \'%s\')", 
-    									event.name, event.place, timeFormat.format(event.startTime), 
-    									(event.endTime != null ? timeFormat.format(event.endTime) : null), 
-    									dateFormat.format(event.date), event.period.id, event.note);
-    	return execSQL(query);
-        }
+    	return values;
+    }
+    public long insertEvent(Event event) {
+    	event.period.id = (int) insertEventPeriod(event.period);
+    	return dbWrite.insert("Events", null, createContentValuesFromEvent(event));
+    }
     
-    public boolean updateEvent(Event event) {
+    public int updateEvent(Event event) {
     	updateEventPeriod(event.period);
-    	String query = String.format("UPDATE Events SET "
-    									+ "evt_name = \'%s\', "
-    									+ "evt_place = \'%s\', "
-    									+ "evt_start_time = \'%s\', "
-    									+ "evt_end_time = \'%s\',"
-    									+ "evt_date = \'%s\',"
-    									+ "evt_note = \'%s\' "
-    									+ " WHERE evt_id = %s",
-    									event.name, event.place, timeFormat.format(event.startTime), 
-    									(event.endTime != null ? timeFormat.format(event.endTime) : null), 
-    									dateFormat.format(event.date), event.note, event.id);
-    	return execSQL(query);
-        }
+    	return dbWrite.update("Events", createContentValuesFromEvent(event), "evt_id = ?", new String [] {Integer.toString(event.id)});
+    	}
     
-    public boolean deleteEvent(Event event) {
-    	String query = String.format("DELETE FROM Events WHERE evt_id = \'%s\'", event.id);
-    	return execSQL(query);
-        }
+    public int deleteEvent(Event event) {
+    	return dbWrite.delete("Events", "evt_id = ?", new String [] {Integer.toString(event.id)});
+    }
+    
     private Event getEvent(Cursor cursor) {
     	Event event = new Event(cursor.getInt(cursor.getColumnIndex("evt_id")));
     	event.name = cursor.getString(cursor.getColumnIndex("evt_name"));

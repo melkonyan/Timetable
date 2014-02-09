@@ -18,7 +18,6 @@ public class EventView extends RelativeLayout {
 		this.event = event;
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE );	
 		layoutInflater.inflate(R.layout.layout_event, this, true);
-		//TODO: fix onclick(edit page is not showed)
 		TextView textViewEventId = (TextView) findViewById(R.id.layout_event_id);
 		TextView textViewEventName = (TextView) findViewById(R.id.layout_event_name); 
 		TextView textViewEventPlace = (TextView) findViewById(R.id.layout_event_place); 

@@ -13,6 +13,7 @@ public class MyInstrumentationTestRunner extends InstrumentationTestRunner {
 			suite.addTestSuite(EventTestCase.class);
 			suite.addTestSuite(EventPeriodTestCase.class);
 			suite.addTestSuite(TimetableFunctionalTestCase.class);
+			suite.addTestSuite(EventAddActivityTestCase.class);
 			return suite;
 		}
 }

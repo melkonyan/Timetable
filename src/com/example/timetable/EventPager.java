@@ -3,6 +3,8 @@ package com.example.timetable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -15,11 +17,7 @@ import android.widget.TextView;
 
 public class EventPager extends ViewPager {
 
-	private final Context context;
-	
-	private EventActionBar eventActionBar;
-	
-	private TimetableLogger logger = new TimetableLogger(); 
+	private final EventDayViewActivity activity;
 	
 	private final SimpleDateFormat actionBarDateFormat = new SimpleDateFormat("EEE, dd.MM"); 
 	
@@ -31,13 +29,10 @@ public class EventPager extends ViewPager {
 	
 	EventPagerListener eventPagerListener;
 	
-	EventScrollView eventScrollView;
-	
-	public EventPager(Context context, EventActionBar eventActionBar, Date initDate) {
+	public EventPager(Context context, Date initDate) {
 		super(context);
 		this.setId(1000);
-		this.context = context;
-		this.eventActionBar = eventActionBar;
+		this.activity = (EventDayViewActivity) context;
 		this.initDate = initDate;
 		
 		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE );	
@@ -73,7 +68,7 @@ public class EventPager extends ViewPager {
 		private int pageNumber = EventPager.this.initPageNumber;
 		
 		public EventPagerAdapter(Date currentDate) {
-			logger.log("EventPagerAdapter created");
+			TimetableLogger.log("EventPagerAdapter created");
 			this.currentDate = currentDate;
 		}
 		
@@ -93,25 +88,25 @@ public class EventPager extends ViewPager {
 			this.currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			this.pageNumber = pageNumber;
 			
-			TimetableDatabase db = new TimetableDatabase(EventPager.this.context);
+			TimetableDatabase db = new TimetableDatabase(EventPager.this.activity);
 		
-			LinearLayout externalLayout = new LinearLayout(context);
+			LinearLayout externalLayout = new LinearLayout(activity);
 			externalLayout.setOrientation(LinearLayout.HORIZONTAL);
-			ScrollView scrollView = new ScrollView(context);
+			ScrollView scrollView = new ScrollView(activity);
 			scrollView.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 			scrollView.setFillViewport(true);
 			
-			LinearLayout internalLayout = new LinearLayout(context); 
+			LinearLayout internalLayout = new LinearLayout(activity); 
 			internalLayout.setOrientation(LinearLayout.VERTICAL);
 			internalLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 			
 			List<Event> events = db.searchEventsByDate(currentDate);
 			for (Event event: events) {
-				EventView eventView = new EventView(EventPager.this.context, event);
+				EventView eventView = new EventView(EventPager.this.activity, event);
 				internalLayout.addView(eventView);
 			}
 			if (events.size() == 0) {
-				TextView textView = new TextView(context);
+				TextView textView = new TextView(activity);
 				textView.setPadding(0,60,0,0);
 				textView.setGravity(Gravity.CENTER_HORIZONTAL);
 				textView.setText(R.string.event_pager_no_events);
@@ -123,7 +118,7 @@ public class EventPager extends ViewPager {
 			
 			((ViewPager) viewPager).addView(externalLayout,0);
 			
-			logger.log("EventPagerAdapter displays page # "+ this.pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
+			TimetableLogger.log("EventPagerAdapter displays page # "+ this.pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
 			//logger.log("Events added to layout: " + internalLayout.getChildCount());
 			db.close();
 			return externalLayout;
@@ -136,7 +131,7 @@ public class EventPager extends ViewPager {
 		
 		@Override
 	    public void destroyItem(View viewPager, int pageNumber, Object view) {
-	            logger.log("EventPagerAdapter destroys page number " + pageNumber);
+	            TimetableLogger.log("EventPagerAdapter destroys page number " + pageNumber);
 	            ((ViewPager) viewPager).removeView((View) view);
 	    }
 	}
@@ -147,16 +142,19 @@ public class EventPager extends ViewPager {
 		
 		public EventPagerListener() {
 			super();
-			logger.log("EventPagerListener successfully created.");
+			TimetableLogger.log("EventPagerListener successfully created.");
 		}
 		
 		@Override
 		public void  onPageSelected(int pageNumber) {
-			logger.log("EventPagerListener detected page # " + pageNumber + " selection.");
+			TimetableLogger.log("EventPagerListener detected page # " + pageNumber + " selection.");
 			currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			//update action bar
-			eventActionBar.setTitle(Page.EVENT_VIEW,actionBarDateFormat.format(currentDate));
-			eventActionBar.showTitle(Page.EVENT_VIEW);
+			String dateString = actionBarDateFormat.format(currentDate);
+			if (TimetableFunctional.areSameDates(currentDate, activity.getCurrentTime())) {
+				dateString = getResources().getString(R.string.actionbar_date_today);
+			}
+			activity.getSupportActionBar().setTitle(dateString);
 		}
 	}
 
