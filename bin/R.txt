@@ -248,6 +248,7 @@ int id action_bar_subtitle 0x7f050023
 int id action_bar_title 0x7f050022
 int id action_context_bar 0x7f05001d
 int id action_delete_event 0x7f05005e
+int id action_go_to_date 0x7f050061
 int id action_menu_divider 0x7f050016
 int id action_menu_presenter 0x7f050017
 int id action_mode_close_button 0x7f050024
@@ -383,9 +384,9 @@ int string abc_searchview_description_voice 0x7f0a0008
 int string abc_shareactionprovider_share_with 0x7f0a000c
 int string abc_shareactionprovider_share_with_application 0x7f0a000b
 int string action_settings 0x7f0a000e
-int string actionbar_add_event 0x7f0a0021
-int string actionbar_date_today 0x7f0a0020
-int string actionbar_edit_event 0x7f0a0022
+int string actionbar_add_event 0x7f0a0022
+int string actionbar_date_today 0x7f0a0021
+int string actionbar_edit_event 0x7f0a0023
 int string app_name 0x7f0a000d
 int string event_add_date 0x7f0a0011
 int string event_add_end_time 0x7f0a0013
@@ -402,6 +403,7 @@ int string event_add_start_time 0x7f0a0012
 int string event_pager_no_events 0x7f0a001b
 int string menu_add_event 0x7f0a001e
 int string menu_delete_event 0x7f0a001d
+int string menu_go_to_date 0x7f0a0020
 int string menu_save_event 0x7f0a001c
 int string menu_view_today 0x7f0a001f
 int style AppBaseTheme 0x7f0b0083

@@ -11,4 +11,7 @@
 	    android:id="@+id/action_view_today"
 	    android:title="@string/menu_view_today"
 	    />
+	<item 
+	    android:id="@+id/action_go_to_date"
+	    android:title="@string/menu_go_to_date"/>
 </menu>

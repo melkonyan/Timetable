@@ -4,12 +4,14 @@ package com.example.timetable;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,6 +25,8 @@ public class EventDayViewActivity extends ActionBarActivity {
 	private LinearLayout eventLayout;
 	
 	private EventPager eventPager;
+	
+	private DatePickerDialog datePickerDialog;
 	
 	public EventPager getEventPager() {
 		return eventPager;
@@ -50,6 +54,24 @@ public class EventDayViewActivity extends ActionBarActivity {
 		TimetableLogger.debugging = true;
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
 		setEventPager(new EventPager(this, getCurrentTime()));
+		
+		DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
+
+			@Override
+			public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+				Calendar cal = Calendar.getInstance();
+				cal.set(Calendar.YEAR, year);
+				cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+				cal.set(Calendar.MONTH, monthOfYear);
+				setEventPager(new EventPager(EventDayViewActivity.this, cal.getTime()));
+			}
+			
+		};
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(getEventPager().getDate());
+		datePickerDialog = new DatePickerDialog(EventDayViewActivity.this, mOnDateSetListener, 
+				cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+
 	}
 
 
@@ -78,6 +100,9 @@ public class EventDayViewActivity extends ActionBarActivity {
 	        	return true;
 	        case R.id.action_view_today:
 	        	setEventPager(new EventPager(this, getCurrentTime()));
+	        	return true;
+	        case R.id.action_go_to_date:
+	        	datePickerDialog.show();
 	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);

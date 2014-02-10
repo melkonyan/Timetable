@@ -43,6 +43,7 @@
 	<string name = "menu_delete_event">Delete</string>
 	<string name = "menu_add_event">Add event</string>
 	<string name = "menu_view_today">Today</string>
+	<string name = "menu_go_to_date">Go to date</string>
 	<string name = "actionbar_date_today">Today</string>
 	<string name = "actionbar_add_event">Add event</string>
 	<string name = "actionbar_edit_event">Edit event</string>
