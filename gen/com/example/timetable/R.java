@@ -799,10 +799,11 @@ containing a value of this type.
         public static final int abc_split_action_bar_is_narrow=0x7f060002;
     }
     public static final class color {
-        public static final int abc_search_url_text_holo=0x7f070003;
+        public static final int abc_search_url_text_holo=0x7f070004;
         public static final int abc_search_url_text_normal=0x7f070000;
         public static final int abc_search_url_text_pressed=0x7f070002;
         public static final int abc_search_url_text_selected=0x7f070001;
+        public static final int light_gray=0x7f070003;
     }
     public static final class dimen {
         /**  Default height of an action bar. 
@@ -985,12 +986,14 @@ containing a value of this type.
         public static final int abc_textfield_searchview_holo_light=0x7f020054;
         public static final int abc_textfield_searchview_right_holo_dark=0x7f020055;
         public static final int abc_textfield_searchview_right_holo_light=0x7f020056;
-        public static final int ic_button_calendar=0x7f020057;
-        public static final int ic_button_watches=0x7f020058;
-        public static final int ic_content_discard=0x7f020059;
-        public static final int ic_content_new=0x7f02005a;
-        public static final int ic_launcher=0x7f02005b;
-        public static final int ic_navigation_accept=0x7f02005c;
+        public static final int button_background=0x7f020057;
+        public static final int event_day_view_background=0x7f020058;
+        public static final int ic_button_calendar=0x7f020059;
+        public static final int ic_button_watches=0x7f02005a;
+        public static final int ic_content_discard=0x7f02005b;
+        public static final int ic_content_new=0x7f02005c;
+        public static final int ic_launcher=0x7f02005d;
+        public static final int ic_navigation_accept=0x7f02005e;
     }
     public static final class id {
         public static final int action_add_event=0x7f05005f;
@@ -1020,7 +1023,7 @@ containing a value of this type.
         public static final int edit_query=0x7f050030;
         public static final int end=0x7f050013;
         public static final int event_add_date=0x7f05003f;
-        public static final int event_add_date_picker=0x7f050050;
+        public static final int event_add_date_picker=0x7f050051;
         public static final int event_add_date_val=0x7f050041;
         public static final int event_add_end_time=0x7f050042;
         public static final int event_add_end_time_picker=0x7f050052;
@@ -1033,7 +1036,7 @@ containing a value of this type.
         public static final int event_add_place=0x7f05003e;
         public static final int event_add_place_val=0x7f050048;
         public static final int event_add_start_time=0x7f050040;
-        public static final int event_add_start_time_picker=0x7f050051;
+        public static final int event_add_start_time_picker=0x7f050050;
         public static final int event_add_start_time_val=0x7f050043;
         public static final int event_layout=0x7f050056;
         public static final int event_pager=0x7f050054;

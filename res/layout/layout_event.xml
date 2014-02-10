@@ -7,7 +7,7 @@
 	android:id="@+id/event_layout"
 	android:clickable="True"
 	android:onClick="onEventViewClick"
-	android:background="#FFFFFF">
+	android:background="@drawable/event_day_view_background">
 	<TextView 
 	    android:id="@+id/layout_event_id"
 	    android:layout_width="wrap_content"

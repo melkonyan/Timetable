@@ -217,33 +217,33 @@
         android:inputType="date" />
 
     <ImageButton
-        android:id="@+id/event_add_date_picker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/event_add_place_val"
-        android:layout_toRightOf="@+id/event_add_date_val"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_button_calendar" />
-
-    <ImageButton
         android:id="@+id/event_add_start_time_picker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_above="@+id/event_add_end_time"
         android:layout_alignLeft="@+id/event_add_date_picker"
-       	android:layout_marginLeft="10dp"
-        android:background="@android:color/transparent"
+       	android:background="@drawable/button_background"
         android:src="@drawable/ic_button_watches" />
 
     <ImageButton
         android:id="@+id/event_add_end_time_picker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_alignBottom="@+id/event_add_end_time_val"
         android:layout_alignLeft="@+id/event_add_start_time_picker"
-        android:background="@android:color/transparent"
+        android:background="@drawable/button_background"
         android:src="@drawable/ic_button_watches" />
-    
+
+    <ImageButton
+        android:id="@+id/event_add_date_picker"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/event_add_place_val"
+        android:layout_toRightOf="@+id/event_add_date_val"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/button_background"
+        android:src="@drawable/ic_button_calendar" />
+
 </RelativeLayout>
 
 </ScrollView>
