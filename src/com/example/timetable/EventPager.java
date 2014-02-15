@@ -4,16 +4,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import android.app.Activity;
+import org.holoeverywhere.LayoutInflater;
+import org.holoeverywhere.widget.LinearLayout;
+import org.holoeverywhere.widget.TextView;
+import org.holoeverywhere.widget.ViewPager;
+
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 public class EventPager extends ViewPager {
 
@@ -34,8 +34,8 @@ public class EventPager extends ViewPager {
 		this.setId(1000);
 		this.activity = (EventDayViewActivity) context;
 		this.initDate = initDate;
-		
-		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE );	
+	
+		LayoutInflater layoutInflater = LayoutInflater.from(activity);	
 		layoutInflater.inflate(R.layout.event_pager, this, true);
 		this.eventPagerAdapter = new EventPagerAdapter(initDate);
 		this.eventPagerListener = new EventPagerListener();

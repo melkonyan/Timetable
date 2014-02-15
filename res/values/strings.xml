@@ -48,4 +48,13 @@
 	<string name = "actionbar_add_event">Add event</string>
 	<string name = "actionbar_edit_event">Edit event</string>
 	
+	<string name = "dialog_button_save">Save</string>
+	<string name = "dialog_button_delete">Delete</string>
+	<string name = "dialog_button_cancel">Cancel</string>
+	<string name = "dialog_title_delete_event">Delete event?</string>
+	<string name = "dialog_title_save_event">Save event?</string>
+	<string name = "dialog_option_change_this_event">Change only this event</string>
+	<string name = "dialog_option_change_all_events">Change all future events</string>
+	<string name = "dialog_option_delete_this_event">Delete only this event</string>
+	<string name = "dialog_option_delete_all_events">Delete all future events</string>
 </resources>

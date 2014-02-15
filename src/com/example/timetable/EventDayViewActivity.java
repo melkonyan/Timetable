@@ -4,6 +4,9 @@ package com.example.timetable;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.holoeverywhere.widget.LinearLayout;
+import org.holoeverywhere.widget.TextView;
+
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,9 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
+
 
 /*
  * Activity that displays all events of certain day
@@ -117,7 +119,7 @@ public class EventDayViewActivity extends ActionBarActivity {
 			eventEditIntent.putExtra("date", EventEditActivity.INIT_DATE_FORMAT.format(getEventPager().getDate()));
 			startActivity(eventEditIntent);
 		} catch (Exception e) {
-			TimetableLogger.log(e.getMessage());
+			TimetableLogger.error(e.toString());
 			return;
 		}
 	}

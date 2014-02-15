@@ -49,7 +49,7 @@ public class EventEditActivity extends EventAddActivity {
 			TimetableLogger.error("EventEditActivity received illegal data.");
 			finish();
 		}
-		
+		TimetableLogger.log("EventEditActivity successfully created.");
 	}
 	
 	@Override
@@ -151,11 +151,12 @@ public class EventEditActivity extends EventAddActivity {
 		public SaveDialog(Context context) {
 			super(context);
 			AlertDialog.Builder saveDialogBuilder = new AlertDialog.Builder(context);
-			saveDialogBuilder.setTitle("Save changes?");
+			saveDialogBuilder.setTitle(R.string.dialog_title_save_event);
 			SaveDialogOnClickListener mListener = new SaveDialogOnClickListener(); 
-			saveDialogBuilder.setPositiveButton("Save", mListener);
-			saveDialogBuilder.setNeutralButton("Cancel", mListener);
-			saveDialogBuilder.setSingleChoiceItems(new String [] {"Change only this event","Change all future events"}, 1, null);
+			saveDialogBuilder.setPositiveButton(R.string.dialog_button_save, mListener);
+			saveDialogBuilder.setNeutralButton(R.string.dialog_button_cancel, mListener);
+			saveDialogBuilder.setSingleChoiceItems(new String [] {getResources().getString(R.string.dialog_option_change_this_event),
+																	getResources().getString(R.string.dialog_option_change_all_events)}, 1, null);
 			saveDialogBuilder.show(); 
 		}
 		
@@ -177,11 +178,12 @@ public class EventEditActivity extends EventAddActivity {
 		public DeleteDialog(Context context) {
 			super(context);
 			AlertDialog.Builder saveDialogBuilder = new AlertDialog.Builder(context);
-			saveDialogBuilder.setTitle("Delete event?");
+			saveDialogBuilder.setTitle(R.string.dialog_title_delete_event);
 			SaveDialogOnClickListener mListener = new SaveDialogOnClickListener(); 
-			saveDialogBuilder.setPositiveButton("Delete", mListener);
-			saveDialogBuilder.setNeutralButton("Cancel", mListener);
-			saveDialogBuilder.setSingleChoiceItems(new String [] {"Delete only this event","Delete all future events"}, 1, null);
+			saveDialogBuilder.setPositiveButton(R.string.dialog_button_delete, mListener);
+			saveDialogBuilder.setNeutralButton(R.string.dialog_button_cancel, mListener);
+			saveDialogBuilder.setSingleChoiceItems(new String [] {getResources().getString(R.string.dialog_option_delete_this_event),
+																	getResources().getString(R.string.dialog_option_delete_all_events)}, 1, null);
 			saveDialogBuilder.show(); 
 		}
 		
@@ -198,5 +200,5 @@ public class EventEditActivity extends EventAddActivity {
 			}
 		}
 	}
-
+	
 }

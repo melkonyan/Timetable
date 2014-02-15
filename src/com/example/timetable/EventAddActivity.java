@@ -5,6 +5,17 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.holoeverywhere.widget.AdapterView;
+import org.holoeverywhere.widget.AdapterView.OnItemSelectedListener;
+import org.holoeverywhere.widget.ArrayAdapter;
+import org.holoeverywhere.widget.CheckBox;
+import org.holoeverywhere.widget.EditText;
+import org.holoeverywhere.widget.ImageButton;
+import org.holoeverywhere.widget.LinearLayout;
+import org.holoeverywhere.widget.Spinner;
+import org.holoeverywhere.widget.TextView;
+import org.holoeverywhere.widget.Toast;
+
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
@@ -14,19 +25,10 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout.LayoutParams;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.example.timetable.EventChecker.IllegalEventDateException;
 
@@ -52,6 +54,7 @@ public class EventAddActivity extends ActionBarActivity {
 
 	public CheckBox eventPeriodWeekDayCheckBoxes [] = new CheckBox[7]; 
 	
+	public RelativeLayout mContainer;
 	public EditText eventNameVal;
 	public EditText eventPlaceVal;
 	public EditText eventDateVal;
@@ -91,6 +94,7 @@ public class EventAddActivity extends ActionBarActivity {
 		
 		eventPeriodWeekDayNames = getResources().getStringArray(R.array.event_period_week_day_names_array);
 		
+		mContainer = (RelativeLayout) findViewById(R.id.event_add_container);
 		eventNameVal = (EditText) findViewById(R.id.event_add_name_val);
 		eventPlaceVal = (EditText) findViewById(R.id.event_add_place_val);
 		eventDateVal = (EditText) findViewById(R.id.event_add_date_val);
@@ -221,8 +225,14 @@ public class EventAddActivity extends ActionBarActivity {
 		//set initial date if it is given
 		setInitDate();
 		TimetableLogger.log("EventAddActivity created.");
+		
 	}
 	
+	@Override 
+	public void onResume() {
+		super.onResume();
+		TimetableLogger.log("onResume()");
+	}
 	/*
 	 * try to get event date from intent extras and fill appropriate fields
 	 */
@@ -356,13 +366,14 @@ public class EventAddActivity extends ActionBarActivity {
 	public void showEventPeriod() {
 		EventPeriod.Type type = getEventPeriodType();
 		int isVisible = (type == EventPeriod.Type.NONE ? View.GONE : View.VISIBLE); 
+		showEventPeriodWeekOccurrences();
+		//TimetableLogger.log("EventAddActivity. Show event type: " + type.toString() + Boolean.toString(isVisible == View.VISIBLE));
 		eventPeriodIntervalVal.setVisibility(isVisible);
 		eventPeriodIntervalTextLeft.setVisibility(isVisible);
 		eventPeriodIntervalTextRight.setVisibility(isVisible);
 		eventPeriodEndDateSpinner.setVisibility(isVisible);
 		showPeriodEndDate();
 		showEventPeriodIntervalText();
-		showEventPeriodWeekOccurrences();
 	}
 	
 	public void showEventPeriodWeekOccurrences() {
@@ -391,10 +402,11 @@ public class EventAddActivity extends ActionBarActivity {
 		return (eventPeriodEndDateSpinner.getSelectedItemPosition() == 1);
 	}
 	
-	/*
-	 * shows period end date if it is set
-	 */
-	public void showPeriodEndDate() {
+	
+	 /*
+	  *  shows period end date if it is set
+	  */
+	 public void showPeriodEndDate() {
 		if (isSetEventPeriodEndDate()  && getEventPeriodType() != EventPeriod.Type.NONE) {
 			eventPeriodEndDateVal.setVisibility(View.VISIBLE);
 		}
@@ -420,9 +432,11 @@ public class EventAddActivity extends ActionBarActivity {
 		}
 	}
 	
-	/*
-	 * set spinner to show event period type
-	 */
+	
+	 /*
+	  * set spinner to show event period type
+	  */
+	 
 	public void setEventPeriodType(EventPeriod.Type type) {
 		eventPeriodTypeSpinner.setSelection(type.ordinal());
 	}
@@ -471,9 +485,10 @@ public class EventAddActivity extends ActionBarActivity {
 		}
 	}
 	
-	/*
-	 * save event to database
-	 */
+	
+	 /*
+	  *  save event to database
+	  */
 	public void saveEvent() throws IllegalEventDataException {
 		Event event = getEvent();
 		TimetableDatabase db = new TimetableDatabase(this);
@@ -487,13 +502,21 @@ public class EventAddActivity extends ActionBarActivity {
 		public void onItemSelected(AdapterView<?> arg0, View arg1, int pos,
 				long id) {
 			showEventPeriod();
+			//bug in HoloEverywhere. Need to do this, to resize layout.
+			mContainer.post(new Runnable() {
+                 @Override
+                 public void run() {
+                     mContainer.requestLayout();
+                 }
+             });  
+
 		}
-		
+
 		@Override
-		public void onNothingSelected(AdapterView<?> arg0) {
-			return;
+		public void onNothingSelected(AdapterView<?> parent) {
+			// TODO Auto-generated method stub
+			
 		}
-		
 	}
 	
 	public class PeriodEndDateListener implements OnItemSelectedListener {
@@ -502,11 +525,19 @@ public class EventAddActivity extends ActionBarActivity {
 		public void onItemSelected(AdapterView<?> arg0, View arg1, int pos,
 				long arg3) {
 			showPeriodEndDate();
+			//bug in HoloEverywhere. Need to do this, to resize layout.
+			mContainer.post(new Runnable() {
+                 @Override
+                 public void run() {
+                     mContainer.requestLayout();
+                 }
+             });  
+
 		}
 
 		@Override
 		public void onNothingSelected(AdapterView<?> arg0) {
-		
+			
 		}
 		
 	}

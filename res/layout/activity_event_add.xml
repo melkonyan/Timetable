@@ -5,8 +5,9 @@
     >
 
 <RelativeLayout
+    android:id="@+id/event_add_container"
     android:layout_width="wrap_content"
-    android:layout_height="446dp" >
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/event_add_name"
@@ -74,7 +75,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/event_add_end_time"
-        android:layout_below="@+id/event_add_end_time"
+        android:layout_below="@+id/event_add_end_time_val"
         android:layout_marginTop="20dp"
         android:text="@string/event_add_note"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -84,7 +85,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/event_add_note"
-        android:layout_below="@+id/event_add_note"
+        android:layout_below="@+id/event_add_note_val"
         android:layout_marginTop="30dp"
         android:text="@string/event_add_period"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -118,8 +119,8 @@
         android:layout_alignBaseline="@+id/event_add_note"
         android:layout_alignBottom="@+id/event_add_note"
         android:layout_alignParentRight="true"
-        android:ems="10"
-        android:inputType="textMultiLine" />
+        android:ems="10" 
+        android:inputType="text"/>
 
     <EditText
         android:id="@+id/event_add_place_val"

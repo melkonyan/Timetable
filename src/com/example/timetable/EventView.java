@@ -2,10 +2,11 @@ package com.example.timetable;
 
 import java.text.SimpleDateFormat;
 
+import org.holoeverywhere.LayoutInflater;
+import org.holoeverywhere.widget.TextView;
+
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 public class EventView extends RelativeLayout {
 
@@ -16,7 +17,7 @@ public class EventView extends RelativeLayout {
 	public EventView(Context context, Event event) {
 		super(context);
 		this.event = event;
-		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE );	
+		LayoutInflater layoutInflater =  LayoutInflater.from(context);	
 		layoutInflater.inflate(R.layout.layout_event, this, true);
 		TextView textViewEventId = (TextView) findViewById(R.id.layout_event_id);
 		TextView textViewEventName = (TextView) findViewById(R.id.layout_event_name); 
