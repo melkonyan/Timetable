@@ -7,7 +7,10 @@
 <RelativeLayout
     android:id="@+id/event_add_container"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:focusable="true" 
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true">
 
     <TextView
         android:id="@+id/event_add_name"

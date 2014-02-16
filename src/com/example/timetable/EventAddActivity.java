@@ -515,8 +515,6 @@ public class EventAddActivity extends ActionBarActivity {
 
 		@Override
 		public void onNothingSelected(AdapterView<?> parent) {
-			// TODO Auto-generated method stub
-			
 		}
 	}
 	
