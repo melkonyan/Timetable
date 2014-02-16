@@ -13,6 +13,7 @@ import com.example.timetable.EventAddActivity;
 import com.example.timetable.IllegalEventDataException;
 import com.example.timetable.TimetableDatabase;
 import com.example.timetable.TimetableLogger;
+import com.timetable.app.R;
 
 public class EventAddActivityTestCase extends ActivityInstrumentationTestCase2<EventAddActivity> {
 	

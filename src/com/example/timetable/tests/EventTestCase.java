@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 
 import com.example.timetable.Event;
 import com.example.timetable.EventPeriod;
+import com.timetable.app.R;
 
 public class EventTestCase extends TestCase {
 	

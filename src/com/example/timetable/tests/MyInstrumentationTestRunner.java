@@ -3,6 +3,7 @@ package com.example.timetable.tests;
 import junit.framework.TestSuite;
 import android.test.InstrumentationTestRunner;
 import android.test.InstrumentationTestSuite;
+import com.timetable.app.R;
 
 public class MyInstrumentationTestRunner extends InstrumentationTestRunner {
 

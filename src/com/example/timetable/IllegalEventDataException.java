@@ -1,5 +1,6 @@
 package com.example.timetable;
 
+
 public class IllegalEventDataException extends Exception{
 
 	/**

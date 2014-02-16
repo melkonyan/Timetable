@@ -1,5 +1,6 @@
 package com.example.timetable;
 
+import com.timetable.app.R;
 import java.util.Date;
 
 public class EventPeriod {

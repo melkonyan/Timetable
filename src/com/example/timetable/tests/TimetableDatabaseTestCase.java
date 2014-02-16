@@ -6,6 +6,7 @@ import java.util.Vector;
 import com.example.timetable.Event;
 import com.example.timetable.EventDayViewActivity;
 import com.example.timetable.TimetableDatabase;
+import com.timetable.app.R;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.RenamingDelegatingContext;
 
