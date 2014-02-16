@@ -11,6 +11,7 @@ import org.holoeverywhere.widget.ViewPager;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
+import com.timetable.app.R;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ScrollView;

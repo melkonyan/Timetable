@@ -21,6 +21,7 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputFilter;
+import com.timetable.app.R;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;

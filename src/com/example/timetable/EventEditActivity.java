@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import com.timetable.app.R;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;

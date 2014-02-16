@@ -6,6 +6,7 @@ import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.TextView;
 
 import android.content.Context;
+import com.timetable.app.R;
 import android.widget.RelativeLayout;
 
 public class EventView extends RelativeLayout {
