@@ -3,28 +3,34 @@ package com.example.timetable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.content.Context;
+import android.content.res.Resources;
+
+import com.timetable.app.R;
+
 public class EventChecker {
 	
 	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 	
 	public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 	
-	private String replaceSpecialCharacters(String text) {
-		//return text.replaceAll("'","\\'");
-		return text;
+	private Resources resources;
+	
+	EventChecker(Context context) {
+		resources = context.getResources();
 	}
+	
 	public void checkEvent(Event event) {
 	}
 	
 	public String getNameFromString(String nameString) throws IllegalEventNameException {
 		if (nameString == null || nameString.length() == 0) {
-			throw new IllegalEventNameException("Event name is empty.");
+			throw new IllegalEventNameException(resources.getString(R.string.event_checker_empty_name));
 		}
-		return replaceSpecialCharacters(nameString);
+		return nameString;
 	}
 	
 	public String getPlaceFromString(String placeString) throws IllegalEventPlaceException {
-		//TODO: remove special char in event's place
 		return placeString;
 	}
 	
@@ -33,7 +39,7 @@ public class EventChecker {
 			return dateFormat.parse(dateString);
 		}
 		catch (Exception e) {
-			throw new IllegalEventDateException("Event date is invalid.");
+			throw new IllegalEventDateException(resources.getString(R.string.event_checker_invalid_date));
 		}
 	}
 	
@@ -42,7 +48,7 @@ public class EventChecker {
 			return timeFormat.parse(startTimeString);
 		}
 		catch (Exception e) {
-			throw new IllegalEventStartTimeException("Event start time is invalid.");
+			throw new IllegalEventStartTimeException(resources.getString(R.string.event_checker_invalid_start_time));
 		}
 	}
 	
@@ -54,7 +60,7 @@ public class EventChecker {
 			return timeFormat.parse(endTimeString);
 		}
 		catch (Exception e) {
-			throw new IllegalEventEndTimeException("Event end time is invalid.");
+			throw new IllegalEventEndTimeException(resources.getString(R.string.event_checker_invalid_end_time));
 		}
 	}
 	
@@ -66,22 +72,22 @@ public class EventChecker {
 		try {
 			int interval = Integer.parseInt(periodIntervalString);
 			if (interval == 0) {
-				throw new IllegalEventPeriodIntervalException("Event period interval should be greater than zero.");
+				throw new IllegalEventPeriodIntervalException(resources.getString(R.string.event_checker_interval_less_than_zero));
 			}
 			return interval;
 		} catch (Exception e) {
-			throw new IllegalEventPeriodIntervalException("Event period interval in invalid.");
+			throw new IllegalEventPeriodIntervalException(resources.getString(R.string.event_checker_invalid_interval));
 		}
 	}
 	
 	public Date getPeriodEndDateFromString(String periodEndDateString) throws IllegalEventPeriodEndDateException {
 		if (periodEndDateString == null || periodEndDateString.length() == 0) {
-			throw new IllegalEventPeriodEndDateException("Event period end date is empty.");
+			throw new IllegalEventPeriodEndDateException(resources.getString(R.string.event_checker_empty_period_end_date));
 		}
 		try {
 			return dateFormat.parse(periodEndDateString);
 		} catch (Exception e) {
-			throw new IllegalEventPeriodEndDateException("Event period end date is invalid.");
+			throw new IllegalEventPeriodEndDateException(resources.getString(R.string.event_checker_invalid_period_end_date));
 		}
 	}
 	
@@ -152,10 +158,11 @@ public class EventChecker {
 		 * 
 		 */
 		private static final long serialVersionUID = -5698714595824081580L;
-
+		
 		IllegalEventPeriodIntervalException(String message) {
 			super(message);
 		}
+	
 	}
 	
 	class IllegalEventPeriodEndDateException extends IllegalEventDataException {

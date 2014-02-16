@@ -80,7 +80,7 @@ public class EventAddActivity extends ActionBarActivity {
 	//Date when event is being created
 	public Date initDate;
 	
-	EventChecker checker = new EventChecker();
+	EventChecker checker;
 	
 	public static final SimpleDateFormat dateFormat = EventChecker.dateFormat;
 	
@@ -92,6 +92,8 @@ public class EventAddActivity extends ActionBarActivity {
 		
 		setContentView(R.layout.activity_event_add);
 		getSupportActionBar().setTitle(getResources().getString(R.string.actionbar_add_event));
+		
+		checker = new EventChecker(this);
 		
 		eventPeriodWeekDayNames = getResources().getStringArray(R.array.event_period_week_day_names_array);
 		

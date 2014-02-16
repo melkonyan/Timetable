@@ -41,7 +41,16 @@
 		<item>Until a date</item>
 	</string-array>
 	
-	<string name = "event_pager_no_events">No events today.</string>
+    <string name = "event_checker_invalid_date">"Event date is invalid."</string>
+	<string name = "event_checker_invalid_start_time">Event start time is invalid.</string>
+	<string name = "event_checker_invalid_end_time">Event end time is invalid.</string>
+	<string name = "event_checker_interval_less_than_zero">Event period interval should be greater than zero.</string>
+	<string name = "event_checker_invalid_interval">Event period interval invalid.</string>
+	<string name = "event_checker_invalid_period_end_date">Event period end date is invalid.</string>
+	<string name = "event_checker_empty_period_end_date">Event period end date is empty.</string>
+	<string name = "event_checker_empty_name">Event name is empty.</string>
+		
+	<string name ="event_pager_no_events">No events today.</string>
 	
 	<string name = "menu_save_event">Save</string>
 	<string name = "menu_delete_event">Delete</string>
