@@ -227,7 +227,8 @@
         android:layout_above="@+id/event_add_end_time"
         android:layout_alignLeft="@+id/event_add_date_picker"
        	android:background="@drawable/button_background"
-        android:src="@drawable/ic_button_watches" />
+        android:src="@drawable/ic_button_watches"
+        android:contentDescription="@string/event_add_start_time_picker_description" />
 
     <ImageButton
         android:id="@+id/event_add_end_time_picker"
@@ -236,7 +237,8 @@
         android:layout_alignBottom="@+id/event_add_end_time_val"
         android:layout_alignLeft="@+id/event_add_start_time_picker"
         android:background="@drawable/button_background"
-        android:src="@drawable/ic_button_watches" />
+        android:src="@drawable/ic_button_watches" 
+        android:contentDescription="@string/event_add_end_time_picker_description"/>
 
     <ImageButton
         android:id="@+id/event_add_date_picker"
@@ -246,7 +248,8 @@
         android:layout_toRightOf="@+id/event_add_date_val"
         android:layout_marginTop="8dp"
         android:background="@drawable/button_background"
-        android:src="@drawable/ic_button_calendar" />
+        android:src="@drawable/ic_button_calendar"
+        android:contentDescription="@string/event_add_date_picker_description" />
 
 </RelativeLayout>
 
