@@ -146,7 +146,8 @@
         android:ems="10"
         android:gravity="center"
         android:inputType="number"
-        android:width="60dp" >
+        android:width="60dp" 
+        android:text="@string/event_add_interval_init_value">
     </EditText>
 
     <TextView

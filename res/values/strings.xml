@@ -19,7 +19,7 @@
 	<string name="event_add_date_picker_description">Choose date</string>
 	<string name="event_add_start_time_picker_description">Choose start time</string>
 	<string name="event_add_end_time_picker_description">Choose end time</string>
-	
+	<string name="event_add_interval_init_value">1</string>
 	<string-array name="event_period_week_day_names_array">
 	    <item>Su</item>
 	    <item>Mo</item>
