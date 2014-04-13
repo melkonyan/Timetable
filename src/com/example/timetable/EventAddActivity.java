@@ -236,6 +236,7 @@ public class EventAddActivity extends ActionBarActivity {
 		super.onResume();
 		TimetableLogger.log("onResume()");
 	}
+	
 	/*
 	 * try to get event date from intent extras and fill appropriate fields
 	 */
@@ -254,6 +255,9 @@ public class EventAddActivity extends ActionBarActivity {
 			eventStartTimeVal.setText(timeFormat.format(cal.getTime()));
 			cal.add(Calendar.HOUR, 1);
 			eventEndTimeVal.setText(timeFormat.format(cal.getTime()));
+			boolean [] initWeekOccurences = new boolean[7];
+			initWeekOccurences[cal.get(Calendar.DAY_OF_WEEK) - 1] = true;
+			setEventPeriodWeekOccurrences(initWeekOccurences);
 		} catch (Exception e) {
 			TimetableLogger.log("Invalid date was given to EventAddActivity.");
 		}

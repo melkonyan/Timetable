@@ -47,6 +47,7 @@ public class EventDayViewActivity extends ActionBarActivity {
 	public Date getCurrentTime() {
 		return Calendar.getInstance().getTime();
 	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
