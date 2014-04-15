@@ -1,4 +1,4 @@
-package com.example.timetable;
+package com.timetable.app;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputFilter;
 import com.timetable.app.R;
+import com.timetable.app.EventChecker.IllegalEventDateException;
+
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,7 +33,6 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
 
-import com.example.timetable.EventChecker.IllegalEventDateException;
 
 /*
  * Activity that provides an user interface to add event.
@@ -41,6 +42,8 @@ import com.example.timetable.EventChecker.IllegalEventDateException;
 public class EventAddActivity extends ActionBarActivity {
 	
 	public static final SimpleDateFormat INIT_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+	
+	public static final String INTENT_EXTRA_DATE = "date";
 	
 	private static final EventPeriod.Type EVENT_PERIOD_TYPE_IDS [] = 
 			new EventPeriod.Type[] {
@@ -243,10 +246,11 @@ public class EventAddActivity extends ActionBarActivity {
 	private void setInitDate() {
 		Bundle extras = getIntent().getExtras();
 		if (extras == null) {
+			TimetableLogger.log("Error");
 			return;
 		}
 		try {
-			initDate = INIT_DATE_FORMAT.parse(extras.getString("date"));
+			initDate = INIT_DATE_FORMAT.parse(extras.getString(EventAddActivity.INTENT_EXTRA_DATE));
 			eventDateVal.setText(dateFormat.format(initDate));
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(initDate);

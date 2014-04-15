@@ -1,4 +1,4 @@
-package com.example.timetable;
+package com.timetable.app;
 
 
 public class IllegalEventDataException extends Exception{

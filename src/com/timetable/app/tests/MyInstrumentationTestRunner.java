@@ -1,4 +1,4 @@
-package com.example.timetable.tests;
+package com.timetable.app.tests;
 
 import junit.framework.TestSuite;
 import android.test.InstrumentationTestRunner;

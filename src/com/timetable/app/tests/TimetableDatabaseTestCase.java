@@ -1,12 +1,14 @@
-package com.example.timetable.tests;
+package com.timetable.app.tests;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
-import com.example.timetable.Event;
-import com.example.timetable.EventDayViewActivity;
-import com.example.timetable.TimetableDatabase;
+
+import com.timetable.app.Event;
+import com.timetable.app.EventDayViewActivity;
 import com.timetable.app.R;
+import com.timetable.app.TimetableDatabase;
+
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.RenamingDelegatingContext;
 

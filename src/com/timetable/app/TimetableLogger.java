@@ -1,4 +1,4 @@
-package com.example.timetable;
+package com.timetable.app;
 
 import android.util.Log;
 import com.timetable.app.R;

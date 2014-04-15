@@ -15,7 +15,7 @@
         android:label="@string/app_name"
        	android:theme="@style/Holo.Theme.Light.DarkActionBar">
         <activity
-            android:name="com.example.timetable.EventDayViewActivity"
+            android:name="com.timetable.app.EventDayViewActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,10 +23,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.timetable.EventAddActivity">
+            android:name="com.timetable.app.EventAddActivity">
         </activity>
         <activity
-            android:name="com.example.timetable.EventEditActivity">
+            android:name="com.timetable.app.EventEditActivity">
         </activity>
         
     	<!--  include tests -->
@@ -36,6 +36,6 @@
 
     <instrumentation 
         android:label="All Tests"
-        android:name="com.example.timetable.tests.MyInstrumentationTestRunner"
-        android:targetPackage="com.example.timetable" />
+        android:name = "com.timetable.app.tests.MyInstrumentationTestRunner"
+        android:targetPackage="com.timetable.app" />
 </manifest>

@@ -1,4 +1,4 @@
-package com.example.timetable;
+package com.timetable.app;
 
 import com.timetable.app.R;
 import java.util.Date;

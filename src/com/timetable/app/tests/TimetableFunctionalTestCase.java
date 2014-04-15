@@ -1,9 +1,10 @@
-package com.example.timetable.tests;
+package com.timetable.app.tests;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import com.example.timetable.TimetableFunctional;
 import com.timetable.app.R;
+import com.timetable.app.TimetableFunctional;
+
 import junit.framework.TestCase;
 
 public class TimetableFunctionalTestCase extends TestCase {

@@ -1,12 +1,12 @@
-package com.example.timetable.tests;
+package com.timetable.app.tests;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import junit.framework.TestCase;
 
-import com.example.timetable.Event;
-import com.example.timetable.EventPeriod;
+import com.timetable.app.Event;
+import com.timetable.app.EventPeriod;
 import com.timetable.app.R;
 
 public class EventTestCase extends TestCase {

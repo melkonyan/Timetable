@@ -1,4 +1,4 @@
-package com.example.timetable;
+package com.timetable.app;
 
 
 import java.util.Calendar;
@@ -99,7 +99,7 @@ public class EventDayViewActivity extends ActionBarActivity {
 	    switch (item.getItemId()) {
 	        case R.id.action_add_event:
 	            Intent eventAddIntent = new Intent(this, EventAddActivity.class);
-	            eventAddIntent.putExtra("date", EventAddActivity.INIT_DATE_FORMAT.format(getEventPager().getDate()));
+	            eventAddIntent.putExtra(EventAddActivity.INTENT_EXTRA_DATE, EventAddActivity.INIT_DATE_FORMAT.format(getEventPager().getDate()));
 	            startActivity(eventAddIntent);
 	        	return true;
 	        case R.id.action_view_today:
@@ -115,6 +115,8 @@ public class EventDayViewActivity extends ActionBarActivity {
 	
 	public void onEventViewClick(View v) {
 		try {
+			EventView vv = (EventView) v;
+			TimetableLogger.log(vv.event.name);
 			String idString = ((TextView) (((RelativeLayout) v).getChildAt(0))).getText().toString();
 			Intent eventEditIntent = new Intent(this, EventEditActivity.class);
 			eventEditIntent.putExtra("event_id", Integer.parseInt(idString));
