@@ -8,6 +8,7 @@ import java.util.Date;
 import org.holoeverywhere.widget.AdapterView;
 import org.holoeverywhere.widget.AdapterView.OnItemSelectedListener;
 import org.holoeverywhere.widget.ArrayAdapter;
+import org.holoeverywhere.widget.Button;
 import org.holoeverywhere.widget.CheckBox;
 import org.holoeverywhere.widget.EditText;
 import org.holoeverywhere.widget.ImageButton;
@@ -21,9 +22,6 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputFilter;
-import com.timetable.app.R;
-import com.timetable.app.EventChecker.IllegalEventDateException;
-
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +30,9 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
+
+import com.timetable.app.EventAlarmManager.AlarmCreationErrorException;
+import com.timetable.app.EventChecker.IllegalEventDateException;
 
 
 /*
@@ -56,6 +57,8 @@ public class EventAddActivity extends ActionBarActivity {
 	
 	private String eventPeriodWeekDayNames [];
 
+	private boolean isSetEventAlarm = false;
+	
 	public CheckBox eventPeriodWeekDayCheckBoxes [] = new CheckBox[7]; 
 	
 	public RelativeLayout mContainer;
@@ -71,6 +74,9 @@ public class EventAddActivity extends ActionBarActivity {
 	public EditText eventPeriodIntervalVal;
 	public Spinner eventPeriodEndDateSpinner;
 	public EditText eventPeriodEndDateVal; 
+	public Button eventAlarmAddButton;
+	public EditText eventAlarmTime;
+	public Spinner eventAlarmTypeSpinner;
 	
 	//table containing checkboxes of weekdays
 	public LinearLayout eventPeriodWeekDaysTable;
@@ -78,16 +84,18 @@ public class EventAddActivity extends ActionBarActivity {
 	public ImageButton eventDatePickerButton;
 	public ImageButton eventStartTimePickerButton;
 	public ImageButton eventEndTimePickerButton;
+	public ImageButton eventAlarmDeleteButton;
 	
-	
-	//Date when event is being created
-	public Date initDate;
+	//Initial event date and time
+	public Calendar initDate;
 	
 	EventChecker checker;
 	
 	public static final SimpleDateFormat dateFormat = EventChecker.dateFormat;
 	
 	public static final SimpleDateFormat timeFormat = EventChecker.timeFormat;	
+	
+	public static final SimpleDateFormat alarmTimeFormat = EventChecker.alarmTimeFormat;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -107,6 +115,34 @@ public class EventAddActivity extends ActionBarActivity {
 		eventStartTimeVal = (EditText) findViewById(R.id.event_add_start_time_val);
 		eventEndTimeVal = (EditText) findViewById(R.id.event_add_end_time_val);
 		eventNoteVal = (EditText) findViewById(R.id.event_add_note_val);
+		eventAlarmAddButton = (Button) findViewById(R.id.event_add_alarm);
+		eventAlarmAddButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				isSetEventAlarm = true;
+				showEventAlarm();
+			}
+		});
+		
+		eventAlarmDeleteButton = (ImageButton) findViewById(R.id.event_delete_alarm);
+		eventAlarmDeleteButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				isSetEventAlarm = false;
+				showEventAlarm();
+			}
+		});
+		eventAlarmTime = (EditText) findViewById(R.id.event_alarm_time_val);
+		eventAlarmTypeSpinner = (Spinner) findViewById(R.id.event_alarm_type_spinner);
+		ArrayAdapter<CharSequence> eventAlarmTypeSpinnerAdapter = ArrayAdapter.createFromResource(this,
+		        R.array.event_alarm_type_array, android.R.layout.simple_spinner_item);
+		
+		eventAlarmTypeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		// Apply the adapter to the spinner
+		eventAlarmTypeSpinner.setAdapter(eventAlarmTypeSpinnerAdapter);
+		
 		
 		eventPeriodTypeSpinner = (Spinner) findViewById(R.id.event_period_type_spinner);
 		ArrayAdapter<CharSequence> eventPeriodTypeSpinnerAdapter = ArrayAdapter.createFromResource(this,
@@ -117,7 +153,7 @@ public class EventAddActivity extends ActionBarActivity {
 		eventPeriodTypeSpinner.setAdapter(eventPeriodTypeSpinnerAdapter);
 		PeriodTypeListener eventPeriodTypeSpinnerListener = new PeriodTypeListener();
 		eventPeriodTypeSpinner.setOnItemSelectedListener(eventPeriodTypeSpinnerListener);
-		eventPeriodIntervalVal = (EditText) findViewById(R.id.event_period_inteval_val);
+		eventPeriodIntervalVal = (EditText) findViewById(R.id.event_period_interval_val);
 		eventPeriodIntervalTextLeft = (TextView) findViewById(R.id.event_period_interval_text_left);
 		eventPeriodIntervalTextRight = (TextView) findViewById(R.id.event_period_interval_text_right);
 		
@@ -132,28 +168,7 @@ public class EventAddActivity extends ActionBarActivity {
 		eventPeriodEndDateSpinner.setOnItemSelectedListener(EventPeriodEndDateSpinnerListener);
 		eventPeriodEndDateVal = (EditText) findViewById(R.id.event_period_end_date_val);
 		
-		eventPeriodWeekDaysTable = (LinearLayout) findViewById(R.id.event_period_weekdays_table);
-		for (int i = 0; i < 7; i++) {
-			TextView weekdayName = new TextView(this);
-			weekdayName.setText(eventPeriodWeekDayNames[i]);
-			eventPeriodWeekDayCheckBoxes[i] = new CheckBox(this);
-			
-			LinearLayout weekdayLayout = new LinearLayout(this);
-			LinearLayout.LayoutParams weekdayLayoutParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			weekdayLayout.setLayoutParams(weekdayLayoutParams);
-			
-			LinearLayout.LayoutParams weekdayParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			weekdayParams.gravity = Gravity.CENTER_HORIZONTAL;
-			weekdayName.setLayoutParams(weekdayParams);
-			eventPeriodWeekDayCheckBoxes[i].setLayoutParams(weekdayParams);
-			
-			weekdayLayout.setOrientation(LinearLayout.VERTICAL);
-			weekdayLayout.addView(weekdayName);
-			weekdayLayout.addView(eventPeriodWeekDayCheckBoxes[i]);
-			eventPeriodWeekDaysTable.addView(weekdayLayout);
-		}
-		
-		showEventPeriod();
+		createEventPeriodWeekDaysTable();
 		
 		eventDatePickerButton = (ImageButton) findViewById(R.id.event_add_date_picker);
 		eventDatePickerButton.setOnClickListener(new View.OnClickListener() {
@@ -169,12 +184,12 @@ public class EventAddActivity extends ActionBarActivity {
 						cal.set(Calendar.YEAR, year);
 						cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 						cal.set(Calendar.MONTH, monthOfYear);
-						eventDateVal.setText(dateFormat.format(cal.getTime()));
+						setEventDate(cal);
 					}
 					
 				};
 				new DatePickerDialog(EventAddActivity.this, mOnDateSetListener, 
-						getDate().get(Calendar.YEAR), getDate().get(Calendar.MONTH), getDate().get(Calendar.DAY_OF_MONTH)).show();
+						getEventDate().get(Calendar.YEAR), getEventDate().get(Calendar.MONTH), getEventDate().get(Calendar.DAY_OF_MONTH)).show();
 				
 			}
 		});
@@ -197,7 +212,7 @@ public class EventAddActivity extends ActionBarActivity {
 				};
 				
 				new TimePickerDialog(EventAddActivity.this, mOnTimeSetListener, 
-										getStartTime().get(Calendar.HOUR_OF_DAY), getStartTime().get(Calendar.MINUTE), true).show();
+										getEventStartTime().get(Calendar.HOUR_OF_DAY), getEventStartTime().get(Calendar.MINUTE), true).show();
 			}
 		});
 		
@@ -219,7 +234,7 @@ public class EventAddActivity extends ActionBarActivity {
 				};
 				
 				new TimePickerDialog(EventAddActivity.this, mOnTimeSetListener, 
-										getEndTime().get(Calendar.HOUR_OF_DAY), getEndTime().get(Calendar.MINUTE), true).show();
+										getEventEndTime().get(Calendar.HOUR_OF_DAY), getEventEndTime().get(Calendar.MINUTE), true).show();
 			}
 		});
 		
@@ -228,10 +243,34 @@ public class EventAddActivity extends ActionBarActivity {
 		setMaxLength(eventPlaceVal, Event.MAX_PLACE_LENGTH);
 		setMaxLength(eventNoteVal, Event.MAX_NOTE_LENGTH);
 		
-		//set initial date if it is given
-		setInitDate();
+		setInitValues();
+		showEventPeriod();
+		showEventAlarm();
 		TimetableLogger.log("EventAddActivity created.");
 		
+	}
+
+	private void createEventPeriodWeekDaysTable() {
+		eventPeriodWeekDaysTable = (LinearLayout) findViewById(R.id.event_period_weekdays_table);
+		for (int i = 0; i < 7; i++) {
+			TextView weekdayName = new TextView(this);
+			weekdayName.setText(eventPeriodWeekDayNames[i]);
+			eventPeriodWeekDayCheckBoxes[i] = new CheckBox(this);
+			
+			LinearLayout weekdayLayout = new LinearLayout(this);
+			LinearLayout.LayoutParams weekdayLayoutParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			weekdayLayout.setLayoutParams(weekdayLayoutParams);
+			
+			LinearLayout.LayoutParams weekdayParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			weekdayParams.gravity = Gravity.CENTER_HORIZONTAL;
+			weekdayName.setLayoutParams(weekdayParams);
+			eventPeriodWeekDayCheckBoxes[i].setLayoutParams(weekdayParams);
+			
+			weekdayLayout.setOrientation(LinearLayout.VERTICAL);
+			weekdayLayout.addView(weekdayName);
+			weekdayLayout.addView(eventPeriodWeekDayCheckBoxes[i]);
+			eventPeriodWeekDaysTable.addView(weekdayLayout);
+		}
 	}
 	
 	@Override 
@@ -243,30 +282,64 @@ public class EventAddActivity extends ActionBarActivity {
 	/*
 	 * try to get event date from intent extras and fill appropriate fields
 	 */
-	private void setInitDate() {
+	private void setInitValues() {
 		Bundle extras = getIntent().getExtras();
 		if (extras == null) {
-			TimetableLogger.log("Error");
 			return;
 		}
 		try {
-			initDate = INIT_DATE_FORMAT.parse(extras.getString(EventAddActivity.INTENT_EXTRA_DATE));
-			eventDateVal.setText(dateFormat.format(initDate));
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(initDate);
-			cal.add(Calendar.HOUR, 1);
-			cal.set(Calendar.MINUTE, 0);
-			eventStartTimeVal.setText(timeFormat.format(cal.getTime()));
-			cal.add(Calendar.HOUR, 1);
-			eventEndTimeVal.setText(timeFormat.format(cal.getTime()));
-			boolean [] initWeekOccurences = new boolean[7];
-			initWeekOccurences[cal.get(Calendar.DAY_OF_WEEK) - 1] = true;
-			setEventPeriodWeekOccurrences(initWeekOccurences);
+			initDate = Calendar.getInstance();
+			initDate.setTime(INIT_DATE_FORMAT.parse(extras.getString(EventAddActivity.INTENT_EXTRA_DATE)));
+			setEventDate(getInitDate());
+			setEventStartTime(getInitStartTime());
+			setEventEndTime(getInitEndTime());
+			setEventAlarmTime(getInitAlarmTime());
+			setEventPeriodWeekOccurrences(getInitWeekOccurences());
+			
 		} catch (Exception e) {
-			TimetableLogger.log("Invalid date was given to EventAddActivity.");
+			TimetableLogger.error("EventAddActivity.setInitValues:\n" + e.getMessage());
 		}
 	}
 	
+	/*
+	 * returns date, that was set by default
+	 */
+	public Calendar getInitDate() {
+		return initDate;
+	}
+	
+	/*
+	 * returns event's start time, that was set by default 
+	 */
+	public Calendar getInitStartTime() {
+		Calendar initStartTime = Calendar.getInstance();
+		initStartTime.setTime(initDate.getTime());
+		initStartTime.add(Calendar.HOUR, 1);
+		initStartTime.set(Calendar.MINUTE, 0);
+		return initStartTime;
+	}
+	
+	public Calendar getInitEndTime() {
+		Calendar initEndTime = Calendar.getInstance();
+		initEndTime.setTime(getInitStartTime().getTime());
+		initEndTime.add(Calendar.HOUR, 1);
+		return initEndTime;
+	}
+	
+
+	public Calendar getInitAlarmTime() {
+		Calendar initAlarmTime = Calendar.getInstance();
+		initAlarmTime.setTime(initDate.getTime());
+		initAlarmTime.add(Calendar.HOUR, -1);
+		return initAlarmTime;
+	}
+	
+	public boolean [] getInitWeekOccurences() {
+		boolean [] initWeekOccurences = new boolean[7];
+		initWeekOccurences[initDate.get(Calendar.DAY_OF_WEEK) - 1] = true;
+		setEventPeriodWeekOccurrences(initWeekOccurences);
+		return initWeekOccurences;
+	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -296,40 +369,84 @@ public class EventAddActivity extends ActionBarActivity {
 		view.setFilters(new InputFilter[] {new InputFilter.LengthFilter(length)});
 	}
 	
-	public Calendar getDate() {
+	public void setEventDate(Calendar date) {
+		eventDateVal.setText(dateFormat.format(date.getTime()));	
+	}
+	public Calendar getEventDate() {
 		Calendar cal = Calendar.getInstance();
 		try {
 			cal.setTime(dateFormat.parse(eventDateVal.getText().toString()));
 		} catch (ParseException e) {
-			cal.setTime(initDate);
+			return getInitDate();
 		}
 		return cal;
 	}
 	
-	public Calendar getStartTime() {
+	public void setEventStartTime(Calendar startTime) {
+		eventStartTimeVal.setText(timeFormat.format(startTime.getTime()));
+	}
+	
+	public Calendar getEventStartTime() {
 		Calendar cal = Calendar.getInstance();
 		try {
 			cal.setTime(timeFormat.parse(eventStartTimeVal.getText().toString()));
 		} catch (ParseException e) {
-			cal.setTime(initDate);
-			cal.add(Calendar.HOUR_OF_DAY, 1);
-			cal.set(Calendar.MINUTE, 0);
+			return getInitStartTime();
 		}
 		return cal;
 	}
 	
-	public Calendar getEndTime() {
+	public void setEventEndTime(Calendar endTime) {
+		eventEndTimeVal.setText(timeFormat.format(endTime.getTime()));
+	}
+	
+	public Calendar getEventEndTime() {
 		Calendar cal = Calendar.getInstance();
 		try {
 			cal.setTime(timeFormat.parse(eventEndTimeVal.getText().toString()));
 		} catch (ParseException e) {
-			cal = getStartTime();
-			cal.add(Calendar.HOUR_OF_DAY, 1);
+			return getEventEndTime();
 		}
 		return cal;
 	}
 	
-	public  void showEventPeriodIntervalText() {
+	public boolean isSetEventAlarm() {
+		return isSetEventAlarm;
+	}
+	
+	public EventAlarm getEventAlarm() throws IllegalEventDataException {
+		if (!isSetEventAlarm()) {
+			return null;
+		}
+		EventAlarm eventAlarm = new EventAlarm();
+		eventAlarm.time = checker.getAlarmTimeFromString(eventAlarmTime.getText().toString());
+		return eventAlarm;
+	}
+	
+	public void setEventAlarm(EventAlarm alarm) {
+		isSetEventAlarm = true;
+		eventAlarmTime.setText(alarmTimeFormat.format(alarm.time));
+	}
+	
+	public void showEventAlarm() {
+		if (isSetEventAlarm == false) {
+			eventAlarmAddButton.setVisibility(View.VISIBLE);
+			eventAlarmTypeSpinner.setVisibility(View.GONE);
+			eventAlarmTime.setVisibility(View.GONE);
+			eventAlarmDeleteButton.setVisibility(View.GONE);
+		} else {
+			eventAlarmAddButton.setVisibility(View.GONE);
+			eventAlarmTypeSpinner.setVisibility(View.VISIBLE);
+			eventAlarmTime.setVisibility(View.VISIBLE);
+			eventAlarmDeleteButton.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	public void setEventAlarmTime(Calendar alarmTime) {
+		eventAlarmTime.setText(alarmTimeFormat.format(alarmTime.getTime()));
+	}
+	
+	public void showEventPeriodIntervalText() {
 		int string_id;
 		switch (getEventPeriodType()) {
 			case DAILY:
@@ -475,6 +592,9 @@ public class EventAddActivity extends ActionBarActivity {
 		setEventEndTime(event.endTime);
 		eventNoteVal.setText(event.note);
 		setEventPeriod(event.period);
+		if (event.hasAlarm()) {
+			setEventAlarm(event.alarm);
+		}
 	}
 	
 	public Event getEvent() throws IllegalEventDataException {
@@ -487,6 +607,7 @@ public class EventAddActivity extends ActionBarActivity {
 			event.startTime = checker.getStartTimeFromString(eventStartTimeVal.getText().toString());
 			event.endTime = checker.getEndTimeFromString(eventEndTimeVal.getText().toString());
 			event.note = checker.getNoteFromString(eventNoteVal.getText().toString());
+			event.alarm = getEventAlarm();
 			event.period = getEventPeriod();
 			
 			TimetableLogger.log(event.toString());
@@ -503,7 +624,17 @@ public class EventAddActivity extends ActionBarActivity {
 	public void saveEvent() throws IllegalEventDataException {
 		Event event = getEvent();
 		TimetableDatabase db = new TimetableDatabase(this);
-		db.insertEvent(event);
+		if (db.insertEvent(event) == -1) {
+			Toast.makeText(this, "Error occured while saving event.", Toast.LENGTH_SHORT).show();
+		}
+		EventAlarmManager mManager = new EventAlarmManager(this);
+		if (event.hasAlarm()) {
+			try {
+				mManager.createAlarm(event.alarm);
+			} catch (AlarmCreationErrorException e) {
+				TimetableLogger.log("Unable to create alarm:\n" + e.getMessage());
+			}
+		}
 		db.close();
 	}
 	

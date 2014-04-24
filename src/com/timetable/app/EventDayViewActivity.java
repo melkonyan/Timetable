@@ -11,7 +11,6 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import com.timetable.app.R;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -115,8 +114,6 @@ public class EventDayViewActivity extends ActionBarActivity {
 	
 	public void onEventViewClick(View v) {
 		try {
-			EventView vv = (EventView) v;
-			TimetableLogger.log(vv.event.name);
 			String idString = ((TextView) (((RelativeLayout) v).getChildAt(0))).getText().toString();
 			Intent eventEditIntent = new Intent(this, EventEditActivity.class);
 			eventEditIntent.putExtra("event_id", Integer.parseInt(idString));

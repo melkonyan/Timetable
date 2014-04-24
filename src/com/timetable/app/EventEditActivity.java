@@ -45,6 +45,7 @@ public class EventEditActivity extends EventAddActivity {
 			
 			setEvent(event);
 			showEventPeriod();
+			showEventAlarm();
 			eventDateVal.setText(dateFormat.format(date));
 		} catch(Exception e) {
 			TimetableLogger.error("EventEditActivity received illegal data.");
@@ -86,6 +87,10 @@ public class EventEditActivity extends EventAddActivity {
 		editedEvent = getEvent();
 		editedEvent.id = event.id;
 		editedEvent.period.id = event.period.id;
+		if (editedEvent.hasAlarm()) {
+			editedEvent.alarm.id = event.hasAlarm() ? event.alarm.id: -1;
+			editedEvent.alarm.eventId = editedEvent.id;
+		}
 		// event event hasn't changed we do not to save it
 		if (event.equals(editedEvent)) {
 			finish();

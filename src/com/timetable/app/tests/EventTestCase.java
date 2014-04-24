@@ -6,8 +6,8 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import com.timetable.app.Event;
+import com.timetable.app.EventAlarm;
 import com.timetable.app.EventPeriod;
-import com.timetable.app.R;
 
 public class EventTestCase extends TestCase {
 	
@@ -307,6 +307,16 @@ public class EventTestCase extends TestCase {
 			event2.startTime = timeFormat.parse("11:00:01");
 			
 			assertEquals(false, event1.equals(event2));
+			
+			event2.startTime = event1.startTime;
+			event1.alarm = new EventAlarm();
+			
+			assertEquals(false, event1.equals(event2));
+			
+			event2.alarm = event1.alarm;
+			
+			assertEquals(true, event1.equals(event2));
+			
 			
 		} catch(Exception e) {
 			fail(e.getMessage());

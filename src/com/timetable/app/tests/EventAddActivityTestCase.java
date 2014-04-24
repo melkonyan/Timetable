@@ -3,19 +3,19 @@ package com.timetable.app.tests;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import org.holoeverywhere.widget.EditText;
+import org.holoeverywhere.widget.Spinner;
 
 import android.content.Context;
 import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.RenamingDelegatingContext;
 import android.test.UiThreadTest;
-import com.timetable.app.R;
-import com.timetable.app.Event;
+import android.view.View;
+
 import com.timetable.app.EventAddActivity;
-import com.timetable.app.IllegalEventDataException;
+import com.timetable.app.R;
 import com.timetable.app.TimetableDatabase;
 
 public class EventAddActivityTestCase extends ActivityInstrumentationTestCase2<EventAddActivity> {
@@ -33,6 +33,7 @@ public class EventAddActivityTestCase extends ActivityInstrumentationTestCase2<E
 	private EventAddActivity mActivity;
 	
 	private TimetableDatabase db;
+	
 	
 	public EventAddActivityTestCase() {
 		super(EventAddActivity.class);
@@ -71,41 +72,21 @@ public class EventAddActivityTestCase extends ActivityInstrumentationTestCase2<E
 		assertEquals("", getFieldText(R.id.event_add_name_val));
 		assertEquals("", getFieldText(R.id.event_add_place_val));
 		assertEquals("", getFieldText(R.id.event_add_note_val));
-		assertEquals(mContext.getResources().getString(R.string.event_add_interval_init_value), getFieldText(R.id.event_period_inteval_val));
-	}
+		assertEquals(mContext.getResources().getString(R.string.event_add_interval_init_value), getFieldText(R.id.event_period_interval_val));
+		boolean [] initWeekOccurances = mActivity.getEventPeriodWeekOccurrences(); 
+		assertEquals(true, initWeekOccurances[initDate.get(Calendar.DAY_OF_WEEK) - 1]);
 	
-	public void testViewVisibility() {
-	
-	}
-	/*@UiThreadTest
-	public void testGetEvent() {
-		try {
-			
-			try {
-				mActivity.saveEvent();
-				fail("Invalid event was saved.");
-			} catch (IllegalEventDataException e) {	
-			}
-				Date date = dateFormat.parse("08.02.2014");
-				mActivity.eventDateVal.setText(dateFormat.format(date));
-			try {
-				mActivity.saveEvent();
-				fail("Invalid event was saved.");
-			} catch (IllegalEventDataException e) {	
-			
-			}
-			Event event = new Event();
-			event.date = date;
-			event.name = "Name";
-			event.place = "Place";
-			event.startTime = timeFormat.parse("20:29");
-			mActivity.setEvent(event);
-			assertEquals(true, event.equals(mActivity.getEvent()));
-			mActivity.eventPeriodIntervalVal.setText(Integer.toString(2));
-			assertEquals(true, event.equals(mActivity.getEvent()));
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
 		
-	}*/
+	}
+	
+	@UiThreadTest
+	public void testViewVisibility() {
+		assertEquals(View.GONE, mActivity.findViewById(R.id.event_period_interval_text_left).getVisibility());
+		assertEquals(View.GONE, mActivity.findViewById(R.id.event_period_interval_text_right).getVisibility());
+		assertEquals(View.GONE, mActivity.findViewById(R.id.event_period_interval_val).getVisibility());
+		assertEquals(View.GONE, mActivity.findViewById(R.id.event_period_end_date_spinner).getVisibility());
+		assertEquals(View.GONE, mActivity.findViewById(R.id.event_period_end_date_val).getVisibility());
+		
+	}
+	
 }

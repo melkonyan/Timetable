@@ -1,5 +1,6 @@
 package com.timetable.app;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -13,6 +14,8 @@ public class EventChecker {
 	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 	
 	public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+	
+	public static final SimpleDateFormat alarmTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 	
 	private Resources resources;
 	
@@ -68,6 +71,13 @@ public class EventChecker {
 		return string;
 	}
 
+	public Date getAlarmTimeFromString(String alarmTimeString) throws IllegalEventAlarmTimeException {
+		try {
+			return alarmTimeFormat.parse(alarmTimeString);
+		} catch (ParseException e) {
+			throw new IllegalEventAlarmTimeException(resources.getString(R.string.event_checker_invalid_alarm_time));
+		}
+	}
 	public int getPeriodIntervalFromString(String periodIntervalString) throws IllegalEventPeriodIntervalException {
 		try {
 			int interval = Integer.parseInt(periodIntervalString);
@@ -152,6 +162,17 @@ public class EventChecker {
 		}
 	}
 	
+	class IllegalEventAlarmTimeException extends IllegalEventDataException {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -7849748397479123194L;
+		
+		public IllegalEventAlarmTimeException(String message) {
+			super(message);
+		}
+	}
 	class IllegalEventPeriodIntervalException extends IllegalEventDataException {
 	
 		/**

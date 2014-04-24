@@ -29,6 +29,8 @@ public class Event {
 	
 	public Date date;
 	
+	public EventAlarm alarm;
+	
 	public EventPeriod period;
 	
 	public String note = "";
@@ -79,6 +81,10 @@ public class Event {
 		return false;
 	}
 	
+	public boolean hasAlarm() {
+		return alarm != null;
+	}
+	
 	public boolean isRepeatable() {
 		return period.isRepeatable();
 	}
@@ -91,7 +97,7 @@ public class Event {
 	 * return true if event is valid
 	 */
 	public boolean isOk() {
-		if (period == null || !period.isOk() || date == null ||
+		if (period == null || !period.isOk()  || hasAlarm() && !alarm.isOk() || date == null ||
 			name == null || place == null || note == null || 
 			name.length() > Event.MAX_NAME_LENGTH || name.length() < Event.MIN_NAME_LENGTH || 
 			note.length() > Event.MAX_NOTE_LENGTH || place.length() > Event.MAX_PLACE_LENGTH) {
@@ -115,12 +121,14 @@ public class Event {
 	        && TimetableFunctional.areEqualOrNulls(this.startTime, that.startTime)
 	        && TimetableFunctional.areEqualOrNulls(this.endTime, that.endTime)
 	        && TimetableFunctional.areEqualOrNulls(this.note, that.note)
-	        && TimetableFunctional.areEqualOrNulls(this.period, that.period);
+	        && TimetableFunctional.areEqualOrNulls(this.period, that.period)
+	        && TimetableFunctional.areEqualOrNulls(this.alarm, that.alarm);
 	}
 	
 	@Override 
 	public String toString() {
 		return "---------------\nName: " + name + "\nPlace: " + place + 
-				"\nDate: " + date.toString() + "\nNote: " + note + "\n" + period.toString()+ "\n---------------\n";
+				"\nDate: " + date.toString() + "\nNote: " + note + "\n" + period.toString()+ 
+				(hasAlarm() ? "\n" + alarm.toString() : "") + "\n---------------\n";
 	}
 }

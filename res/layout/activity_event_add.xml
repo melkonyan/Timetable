@@ -7,10 +7,10 @@
 <RelativeLayout
     android:id="@+id/event_add_container"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:focusable="true" 
+    android:layout_height="fill_parent"
     android:descendantFocusability="beforeDescendants"
-    android:focusableInTouchMode="true">
+    android:focusable="true"
+    android:focusableInTouchMode="true" >
 
     <org.holoeverywhere.widget.TextView
         android:id="@+id/event_add_name"
@@ -83,16 +83,6 @@
         android:text="@string/event_add_note"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <org.holoeverywhere.widget.TextView
-        android:id="@+id/event_add_period"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_add_note"
-        android:layout_below="@+id/event_add_note_val"
-        android:layout_marginTop="30dp"
-        android:text="@string/event_add_period"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
     <org.holoeverywhere.widget.EditText
         android:id="@+id/event_add_start_time_val"
         android:layout_width="wrap_content"
@@ -136,7 +126,7 @@
         android:inputType="text" />
     
     <org.holoeverywhere.widget.EditText
-        android:id="@+id/event_period_inteval_val"
+        android:id="@+id/event_period_interval_val"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/event_period_interval_text_left"
@@ -153,20 +143,9 @@
         android:id="@+id/event_period_interval_text_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/event_period_inteval_val"
+        android:layout_alignBottom="@+id/event_period_interval_val"
         android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/event_period_inteval_val"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <org.holoeverywhere.widget.TextView
-        android:id="@+id/event_period_interval_text_left"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_add_period"
-        android:layout_below="@+id/event_period_weekdays_table"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="30dp"
-        android:text="@string/event_add_interval"
+        android:layout_toRightOf="@+id/event_period_interval_val"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <org.holoeverywhere.widget.Spinner
@@ -174,30 +153,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/event_period_interval_text_left"
-        android:layout_alignRight="@+id/event_period_inteval_val"
+        android:layout_alignRight="@+id/event_period_interval_val"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         android:layout_below="@+id/event_period_interval_text_left" />
-
-    <org.holoeverywhere.widget.EditText
-        android:id="@+id/event_period_end_date_val"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/event_period_end_date_spinner"
-        android:layout_toRightOf="@+id/event_period_end_date_spinner"
-        android:ems="10"
-        android:inputType="date" />
-
 
     <org.holoeverywhere.widget.Spinner
         android:id="@+id/event_period_type_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_add_note_val"
         android:layout_alignBottom="@+id/event_add_period"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/event_add_note_val"
-        android:layout_marginTop="10dp"
-        android:gravity="bottom" />
+        android:layout_alignLeft="@+id/event_add_note_val"
+        android:layout_alignRight="@+id/event_add_end_time_picker"
+        android:layout_below="@+id/event_alarm_time_val" />
 
     <org.holoeverywhere.widget.LinearLayout
         android:id="@+id/event_period_weekdays_table"
@@ -250,6 +218,78 @@
         android:background="@drawable/button_background"
         android:src="@drawable/ic_button_calendar"
         android:contentDescription="@string/event_add_date_picker_description" />
+
+    <org.holoeverywhere.widget.Button
+        android:id="@+id/event_add_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_add_note_val"
+        android:layout_below="@+id/event_add_note_val"
+        android:layout_marginTop="11dp"
+        android:text="Add reminder" />
+
+    <org.holoeverywhere.widget.EditText
+        android:id="@+id/event_alarm_time_val"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_period_type_spinner"
+        android:layout_alignRight="@+id/event_add_end_time_val"
+        android:layout_below="@+id/event_add_alarm"
+        android:layout_marginTop="12dp"
+        android:ems="10"
+        android:inputType="time" >
+
+    </org.holoeverywhere.widget.EditText>
+
+    <org.holoeverywhere.widget.Spinner
+        android:id="@+id/event_alarm_type_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/event_alarm_time_val"
+        android:layout_alignLeft="@+id/event_add_period"
+        android:layout_below="@+id/event_add_alarm"
+        android:layout_toLeftOf="@+id/event_alarm_time_val"
+        android:gravity="bottom" />
+
+    <org.holoeverywhere.widget.TextView
+        android:id="@+id/event_period_interval_text_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/event_add_start_time"
+        android:layout_below="@+id/event_period_weekdays_table"
+        android:layout_marginTop="15dp"
+        android:text="@string/event_add_interval"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <org.holoeverywhere.widget.EditText
+        android:id="@+id/event_period_end_date_val"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_period_interval_text_right"
+        android:layout_below="@+id/event_period_interval_val"
+        android:ems="10"
+        android:inputType="date" />
+
+    <org.holoeverywhere.widget.TextView
+        android:id="@+id/event_add_period"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_add_note"
+        android:layout_below="@+id/event_alarm_type_spinner"
+        android:layout_marginTop="30dp"
+        android:text="@string/event_add_period"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <org.holoeverywhere.widget.ImageButton
+        android:id="@+id/event_delete_alarm"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignBottom="@+id/event_alarm_time_val"
+        android:layout_alignLeft="@+id/event_add_end_time_picker"
+        android:layout_marginLeft="11dp"
+        android:background="@drawable/button_background"
+        android:contentDescription="@string/event_add_end_time_picker_description"
+        android:src="@drawable/ic_button_watches" />
 
 </RelativeLayout>
 
