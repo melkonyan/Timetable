@@ -1,6 +1,5 @@
 package com.timetable.app;
 
-import org.holoeverywhere.widget.Toast;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -12,7 +11,10 @@ public class EventAlarmManager extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Toast.makeText(context, "Test", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(context, "Test", Toast.LENGTH_SHORT).show();
+		Intent alarmDialogIntent = new Intent(context, EventAlarmDialogActivity.class);
+		alarmDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+		context.startActivity(alarmDialogIntent);
 		TimetableLogger.log("Alarm received.");
 	}
 	
@@ -20,7 +22,12 @@ public class EventAlarmManager extends BroadcastReceiver {
 	
 	private Context context;
 	
+	public EventAlarmManager() {
+		super();
+	}
+	
 	public EventAlarmManager(Context context) {
+		super();
 		alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		this.context = context;
 	}
@@ -29,6 +36,7 @@ public class EventAlarmManager extends BroadcastReceiver {
 		Intent intent = new Intent(context, EventAlarmManager.class);
 		PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
 		alarmManager.set(AlarmManager.RTC_WAKEUP, alarm.time.getTime(), sender);
+		TimetableLogger.log("Alarm successfully created.");
 	}
 	
 	public class AlarmCreationErrorException extends Exception {

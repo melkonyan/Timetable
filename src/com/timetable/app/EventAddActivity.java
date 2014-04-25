@@ -95,8 +95,6 @@ public class EventAddActivity extends ActionBarActivity {
 	
 	public static final SimpleDateFormat timeFormat = EventChecker.timeFormat;	
 	
-	public static final SimpleDateFormat alarmTimeFormat = EventChecker.alarmTimeFormat;
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -425,7 +423,7 @@ public class EventAddActivity extends ActionBarActivity {
 	
 	public void setEventAlarm(EventAlarm alarm) {
 		isSetEventAlarm = true;
-		eventAlarmTime.setText(alarmTimeFormat.format(alarm.time));
+		eventAlarmTime.setText(EventAlarm.timeFormat.format(alarm.time));
 	}
 	
 	public void showEventAlarm() {
@@ -443,7 +441,7 @@ public class EventAddActivity extends ActionBarActivity {
 	}
 	
 	public void setEventAlarmTime(Calendar alarmTime) {
-		eventAlarmTime.setText(alarmTimeFormat.format(alarmTime.getTime()));
+		eventAlarmTime.setText(EventAlarm.timeFormat.format(alarmTime.getTime()));
 	}
 	
 	public void showEventPeriodIntervalText() {
@@ -632,7 +630,7 @@ public class EventAddActivity extends ActionBarActivity {
 			try {
 				mManager.createAlarm(event.alarm);
 			} catch (AlarmCreationErrorException e) {
-				TimetableLogger.log("Unable to create alarm:\n" + e.getMessage());
+				TimetableLogger.error("Unable to create alarm:\n" + e.getMessage());
 			}
 		}
 		db.close();

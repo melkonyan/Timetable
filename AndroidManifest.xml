@@ -3,8 +3,9 @@
     package="com.timetable.app"
     android:versionCode="1"
     android:versionName="1.0" >
-
-    <uses-sdk
+	<uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+   
+	<uses-sdk
         android:minSdkVersion="7"
         android:targetSdkVersion="18"/>
 
@@ -28,12 +29,18 @@
         <activity
             android:name="com.timetable.app.EventEditActivity">
         </activity>
-        
+        <activity 
+            android:name="com.timetable.app.EventAlarmDialogActivity">
+            
+        </activity>
     	<!--  include tests -->
     	<uses-library android:name="android.test.runner"/>
-	
+		
+    	<receiver android:name=".EventAlarmManager"/> 
 	</application>
-
+	
+     
+     
     <instrumentation 
         android:label="All Tests"
         android:name = "com.timetable.app.tests.MyInstrumentationTestRunner"

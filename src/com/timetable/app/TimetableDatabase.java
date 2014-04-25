@@ -219,7 +219,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	event.period.id = (int) insertEventPeriod(event.period);
     	long id = dbWrite.insert("Events", null, createContentValuesFromEvent(event));
     	if (event.hasAlarm()) {
-    		event.alarm.id = (int) id;
+    		event.alarm.eventId = (int) id;
         	if (insertEventAlarm(event.alarm) == -1) {
         		TimetableLogger.log("Error inserting alarm");
         		return -1;

@@ -1,5 +1,6 @@
 package com.timetable.app;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class EventAlarm {
@@ -16,6 +17,8 @@ public class EventAlarm {
 
 	//Id if event which has this alarm
 	public int eventId = 0;
+
+	public static final SimpleDateFormat timeFormat = EventChecker.alarmTimeFormat;
 	
 	public EventAlarm() {
 		
