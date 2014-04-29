@@ -622,16 +622,12 @@ public class EventAddActivity extends ActionBarActivity {
 	public void saveEvent() throws IllegalEventDataException {
 		Event event = getEvent();
 		TimetableDatabase db = new TimetableDatabase(this);
-		if (db.insertEvent(event) == -1) {
+		if (db.insertEvent(event) == null) {
 			Toast.makeText(this, "Error occured while saving event.", Toast.LENGTH_SHORT).show();
 		}
 		EventAlarmManager mManager = new EventAlarmManager(this);
 		if (event.hasAlarm()) {
-			try {
-				mManager.createAlarm(event.alarm);
-			} catch (AlarmCreationErrorException e) {
-				TimetableLogger.error("Unable to create alarm:\n" + e.getMessage());
-			}
+			mManager.createAlarm(event.alarm);
 		}
 		db.close();
 	}

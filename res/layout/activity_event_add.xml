@@ -288,7 +288,7 @@
         android:layout_alignLeft="@+id/event_add_end_time_picker"
         android:layout_marginLeft="11dp"
         android:background="@drawable/button_background"
-        android:src="@drawable/ic_content_discard" />
+        android:src="@drawable/ic_action_cancel" />
 
 </RelativeLayout>
 

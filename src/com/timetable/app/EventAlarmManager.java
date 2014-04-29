@@ -2,12 +2,16 @@ package com.timetable.app;
 
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
 
 public class EventAlarmManager extends BroadcastReceiver {
+	
+	private static final int NOTIFICATION_REQUEST_CODE = 123;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -32,11 +36,51 @@ public class EventAlarmManager extends BroadcastReceiver {
 		this.context = context;
 	}
 	
-	public void createAlarm(EventAlarm alarm) throws AlarmCreationErrorException {
+	private PendingIntent getPendingIntentFromAlarm(EventAlarm alarm) {
 		Intent intent = new Intent(context, EventAlarmManager.class);
-		PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
-		alarmManager.set(AlarmManager.RTC_WAKEUP, alarm.time.getTime(), sender);
+		return PendingIntent.getBroadcast(context, alarm.id, intent, 0);
+	}
+	
+	public void createAlarm(EventAlarm alarm) {
+		
+		alarmManager.set(AlarmManager.RTC_WAKEUP, alarm.time.getTime(), getPendingIntentFromAlarm(alarm));
+		updateNotification();
 		TimetableLogger.log("Alarm successfully created.");
+		
+	}
+
+	
+	public void deleteAlarm(EventAlarm alarm) {
+		alarmManager.cancel(getPendingIntentFromAlarm(alarm));
+	}
+	
+	public void updateAlarm(EventAlarm alarm) {
+		if (alarm != null) {
+			createAlarm(alarm);
+		} else {
+			deleteAlarm(alarm);
+		}
+	}
+	
+	private NotificationManager getNotificationManager() {
+		return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+	}
+	
+	public void updateNotification() {
+		PendingIntent mIntent = PendingIntent.getBroadcast(context, NOTIFICATION_REQUEST_CODE, 
+								new Intent(context, EventDayViewActivity.class), 0);
+		NotificationCompat.Builder mBuilder = new NotificationCompat
+			.Builder(context)
+			.setSmallIcon(R.drawable.ic_action_alarms)
+			.setContentTitle("alarm title")
+			.setContentText("alarmtext")
+			.setContentIntent(mIntent);
+		NotificationManager mManager = getNotificationManager();
+		mManager.notify(NOTIFICATION_REQUEST_CODE, mBuilder.build());
+	}
+	
+	public void deleteNotification() {
+		getNotificationManager().cancel(NOTIFICATION_REQUEST_CODE);
 	}
 	
 	public class AlarmCreationErrorException extends Exception {

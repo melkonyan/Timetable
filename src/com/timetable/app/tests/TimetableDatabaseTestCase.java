@@ -1,5 +1,6 @@
 package com.timetable.app.tests;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
@@ -12,6 +13,7 @@ import com.timetable.app.EventAlarm;
 import com.timetable.app.EventDayViewActivity;
 import com.timetable.app.EventPeriod;
 import com.timetable.app.TimetableDatabase;
+import com.timetable.app.TimetableLogger;
 
 public class TimetableDatabaseTestCase extends ActivityInstrumentationTestCase2<EventDayViewActivity> {
 
@@ -57,7 +59,7 @@ public class TimetableDatabaseTestCase extends ActivityInstrumentationTestCase2<
 			event2.alarm = new EventAlarm();
 			event2.alarm.time = EventAlarm.timeFormat.parse("24.04.2014 19:22");
 			
-			foundEvents.add(event1);
+			foundEvents.add(event2);
 			
 		} catch (Exception e) {
 			fail(e.getMessage());
@@ -66,29 +68,13 @@ public class TimetableDatabaseTestCase extends ActivityInstrumentationTestCase2<
 	}
 
 	public void testTimetableDatabase() {
-		for(Event event: foundEvents) {
-			db.insertEvent(event);
-		}
-		
-		for (Event event: notFoundEvents) {
-			db.insertEvent(event);
+		for(int i = 0; i < foundEvents.size(); i++) {
+			foundEvents.setElementAt(db.insertEvent(foundEvents.get(i)), i);
 		}
 		
 		Vector<Event> events = db.searchEventsByDate(searchDate);
 		
-		assertEquals(foundEvents.size(), events.size());
-		
-		for (int i = 0; i < events.size(); i++) {
-			Event curEvent = foundEvents.get(i), foundEvent = events.get(events.size() - i - 1);
-			curEvent.id = foundEvent.id;
-			if (curEvent.period != null) {
-				curEvent.period.id = foundEvent.period.id;
-			}
-			
-			if (curEvent.hasAlarm()) {
-				curEvent.alarm.id = foundEvent.alarm.id;
-				curEvent.alarm.eventId = curEvent.id;
-			}
+		for (int i = 0; i < foundEvents.size(); i++) {
 			assertEquals(true, foundEvents.get(i).equals(events.get(events.size() - 1 - i)));
 		}
 		
@@ -101,6 +87,42 @@ public class TimetableDatabaseTestCase extends ActivityInstrumentationTestCase2<
 		assertEquals(0, events.size());
 		
 		
+	}
+	
+	public void testUpdateEvent() {
+		try {
+		Event oldEvent = new Event();
+		oldEvent.name = "old name";
+		oldEvent.date = dateFormat.parse("25.04.2014");
+		oldEvent.startTime = timeFormat.parse("22:46");
+		oldEvent.period = new EventPeriod();
+		oldEvent.period.type = EventPeriod.Type.DAILY;
+		oldEvent.period.interval = 2;
+		oldEvent = db.insertEvent(oldEvent);
+		
+		Event newEvent = db.insertEvent(oldEvent);
+		newEvent.name = "new name";
+		newEvent.period.interval = 3;
+		newEvent.alarm = new EventAlarm();
+		newEvent.alarm.time = EventAlarm.timeFormat.parse("25.04.2014 21:46");
+		newEvent = db.updateEvent(newEvent);
+		
+		assertEquals(true, newEvent.equals(db.searchEventById(newEvent.id)));
+		
+		newEvent.alarm.time = EventAlarm.timeFormat.parse("25.04.2014 20:46");
+		newEvent = db.updateEvent(newEvent);
+		
+		assertEquals(true, newEvent.equals(db.searchEventById(newEvent.id)));
+		
+		newEvent.alarm = null;
+		newEvent = db.updateEvent(newEvent);
+		
+		assertEquals(true, newEvent.equals(db.searchEventById(newEvent.id)));
+		assertNull(db.searchEventAlarmByEventId(newEvent.id));
+		
+		} catch (ParseException e) {
+			fail(e.getMessage());
+		}
 	}
 	
 	public void tearDown() {
