@@ -23,6 +23,7 @@
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentLeft="true"
 	    android:layout_below="@+id/layout_event_name"
+	    android:text="place"
 	    android:layout_marginLeft="100dp" />
 
 	<TextView
@@ -32,6 +33,7 @@
 	    android:layout_alignLeft="@+id/layout_event_place"
 	    android:layout_alignParentTop="true"
 	    android:layout_marginTop="16dp"
+	    android:text="name"
 	    android:textAppearance="?android:attr/textAppearanceMedium"  />
 
 	<TextView
@@ -39,6 +41,7 @@
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_alignLeft="@+id/layout_event_place"
+	    android:text="note"
 	    android:layout_below="@+id/layout_event_place" />
 	
 	<TextView
@@ -62,5 +65,21 @@
 	    android:layout_height="0.2dp"
 	    android:background="#808080"
 	    />
+
+	<ImageView
+	    android:id="@+id/layout_event_image_alarm"
+	    android:layout_alignParentRight="true"
+	    android:layout_alignTop="@+id/layout_event_image_repeat"
+	    android:layout_marginRight="22dp"
+	    style="@style/EventViewImageStyle"
+	    android:src="@drawable/ic_action_alarms" />
+
+	<ImageView
+	    android:id="@+id/layout_event_image_repeat"
+	    style="@style/EventViewImageStyle"
+	    android:layout_alignTop="@+id/layout_event_name"
+	    android:layout_toLeftOf="@+id/layout_event_image_alarm"
+	    android:src="@drawable/ic_action_refresh" />
+	
 </RelativeLayout>
 <!-- </merge> -->

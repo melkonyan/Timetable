@@ -55,6 +55,9 @@ public class EventDayViewActivity extends ActionBarActivity {
 		
 		//enable debugging
 		TimetableLogger.debugging = true;
+		//update alarms
+		new EventAlarmManager(this).checkAlarms();
+		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
 		setEventPager(new EventPager(this, getCurrentTime()));
 		

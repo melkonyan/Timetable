@@ -88,7 +88,9 @@ public class EventEditActivity extends EventAddActivity {
 		editedEvent.id = event.id;
 		editedEvent.period.id = event.period.id;
 		if (editedEvent.hasAlarm()) {
-			editedEvent.alarm.id = event.hasAlarm() ? event.alarm.id: -1;
+			if (event.hasAlarm()) {
+				editedEvent.alarm.id = event.hasAlarm() ? event.alarm.id: -1;	
+			}
 			editedEvent.alarm.eventId = editedEvent.id;
 		}
 		// event event hasn't changed we do not to save it
@@ -96,12 +98,15 @@ public class EventEditActivity extends EventAddActivity {
 			finish();
 			return;
 		}
+		
 		if (event.isRepeatable()) {
 			new SaveDialog(this); 
 			return;
 		}
+		
 		TimetableDatabase db = new TimetableDatabase(this);
-		db.updateEvent(editedEvent);
+		editedEvent = db.updateEvent(editedEvent);
+		updateEventAlarmManager();
 		db.close();
 		finish();
 	}
@@ -116,13 +121,14 @@ public class EventEditActivity extends EventAddActivity {
 			event.period.endDate = new Date();
 			event.period.endDate.setTime(date.getTime() - day);
 			db.updateEvent(event);
-			db.insertEvent(editedEvent);
+			editedEvent = db.insertEvent(editedEvent);
 		} else {
 			//today there is no session of this event
 			db.insertException(event, date);
 			editedEvent.period.type = EventPeriod.Type.NONE;
-			db.insertEvent(editedEvent);
+			editedEvent = db.insertEvent(editedEvent);
 		}
+		updateEventAlarmManager();
 		db.close();
 	}
 	
@@ -149,6 +155,15 @@ public class EventEditActivity extends EventAddActivity {
 		} else {
 			//today there is no session of this event
 			db.insertException(event, date);
+		}
+	}
+	
+	private void updateEventAlarmManager() {
+		EventAlarmManager mManager = new EventAlarmManager(this);
+		if (editedEvent.hasAlarm()) {
+			mManager.updateAlarm(editedEvent.alarm);
+		} else if (event.hasAlarm()) {
+			mManager.deleteAlarm(event.alarm);
 		}
 	}
 	

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Vector;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
 
 import com.timetable.app.Event;
@@ -15,11 +16,8 @@ import com.timetable.app.EventPeriod;
 import com.timetable.app.TimetableDatabase;
 import com.timetable.app.TimetableLogger;
 
-public class TimetableDatabaseTestCase extends ActivityInstrumentationTestCase2<EventDayViewActivity> {
+public class TimetableDatabaseTestCase extends AndroidTestCase {
 
-	public TimetableDatabaseTestCase() {
-		super(EventDayViewActivity.class);
-	}
 
 	private RenamingDelegatingContext mContext;
 	
@@ -37,7 +35,7 @@ public class TimetableDatabaseTestCase extends ActivityInstrumentationTestCase2<
 	
 	
 	public void setUp() {
-		mContext = new RenamingDelegatingContext(getActivity(), "test_");
+		mContext = new RenamingDelegatingContext(getContext(), "test_");
 		db = new TimetableDatabase(mContext);
 		try {
 			searchDate = dateFormat.parse("27.12.2013");
@@ -73,6 +71,10 @@ public class TimetableDatabaseTestCase extends ActivityInstrumentationTestCase2<
 		}
 		
 		Vector<Event> events = db.searchEventsByDate(searchDate);
+		assertEquals(foundEvents.size(), events.size());
+		
+		int alarmsNum = 1;
+		assertEquals(alarmsNum, db.getEventAlarmCount());
 		
 		for (int i = 0; i < foundEvents.size(); i++) {
 			assertEquals(true, foundEvents.get(i).equals(events.get(events.size() - 1 - i)));
@@ -94,7 +96,7 @@ public class TimetableDatabaseTestCase extends ActivityInstrumentationTestCase2<
 		Event oldEvent = new Event();
 		oldEvent.name = "old name";
 		oldEvent.date = dateFormat.parse("25.04.2014");
-		oldEvent.startTime = timeFormat.parse("22:46");
+		oldEvent.startTime = timeFormat.parse("22:46:00");
 		oldEvent.period = new EventPeriod();
 		oldEvent.period.type = EventPeriod.Type.DAILY;
 		oldEvent.period.interval = 2;
@@ -107,7 +109,10 @@ public class TimetableDatabaseTestCase extends ActivityInstrumentationTestCase2<
 		newEvent.alarm.time = EventAlarm.timeFormat.parse("25.04.2014 21:46");
 		newEvent = db.updateEvent(newEvent);
 		
-		assertEquals(true, newEvent.equals(db.searchEventById(newEvent.id)));
+		Event foundEvent = db.searchEventById(newEvent.id);
+		
+		assertEquals(true, foundEvent.hasAlarm());
+		assertEquals(true, newEvent.equals(foundEvent));
 		
 		newEvent.alarm.time = EventAlarm.timeFormat.parse("25.04.2014 20:46");
 		newEvent = db.updateEvent(newEvent);
@@ -125,8 +130,55 @@ public class TimetableDatabaseTestCase extends ActivityInstrumentationTestCase2<
 		}
 	}
 	
+	
+	public void testAlarm() {
+		try {
+			int eventId = 10;
+			EventAlarm alarm = new EventAlarm();
+			alarm.time = EventAlarm.timeFormat.parse("01.05.2014 15:17");
+			alarm.eventId = eventId;
+			alarm.id = (int) db.insertEventAlarm(alarm);
+			assertNotSame(-1, alarm.id);
+			assertEquals(true, alarm.equals(db.searchEventAlarmById(alarm.id)));
+			assertEquals(true, alarm.equals(db.searchEventAlarmByEventId(eventId)));
+			
+			alarm.time = EventAlarm.timeFormat.parse("01.05.2014 15:22");
+			assertEquals(1, db.updateEventAlarm(alarm));
+			assertEquals(true, alarm.equals(db.searchEventAlarmById(alarm.id)));
+			assertEquals(true, alarm.equals(db.searchEventAlarmByEventId(eventId)));
+			
+			EventAlarm alarm1 = new EventAlarm();
+			alarm1.time = EventAlarm.timeFormat.parse("01.05.2014 17:28");
+			alarm1.id = (int) db.insertEventAlarm(alarm1);
+			
+			assertNotSame(-1, alarm1.id);
+			
+			Vector<EventAlarm> insertedAlarms = new Vector<EventAlarm>();
+			insertedAlarms.add(alarm);
+			insertedAlarms.add(alarm1);
+			Vector<EventAlarm> foundAlarms = db.getAllAlarms();
+			
+			assertEquals(insertedAlarms.size(), db.getEventAlarmCount());
+			assertEquals(insertedAlarms.size(), foundAlarms.size());
+			
+			for (EventAlarm insertedAlarm: insertedAlarms) {
+				boolean isFound = false;
+				for (EventAlarm foundAlarm: foundAlarms) {
+					if (insertedAlarm.equals(foundAlarm)) {
+						isFound = true;
+						break;
+					}
+				}
+				assertEquals(true, isFound);
+			}
+		} catch (ParseException e) {
+			fail(e.getMessage());
+		}
+		
+	}
+	
 	public void tearDown() {
-		db.close();
+		//db.close();
 	}
 }
 

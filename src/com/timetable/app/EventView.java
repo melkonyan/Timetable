@@ -6,7 +6,8 @@ import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.TextView;
 
 import android.content.Context;
-import com.timetable.app.R;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 public class EventView extends RelativeLayout {
@@ -26,6 +27,9 @@ public class EventView extends RelativeLayout {
 		TextView textViewEventNote = (TextView) findViewById(R.id.layout_event_note); 
 		TextView textViewEventStartTime = (TextView) findViewById(R.id.layout_event_start_time);
 		TextView textViewEventEndTime = (TextView) findViewById(R.id.layout_event_end_time);
+		ImageView imageRepeat = (ImageView) findViewById(R.id.layout_event_image_repeat);
+		ImageView imageAlarm = (ImageView) findViewById(R.id.layout_event_image_alarm);
+		
 		textViewEventId.setText(Integer.toString(event.id));
 		textViewEventName.setText(event.name);
 		textViewEventPlace.setText(event.place);
@@ -37,6 +41,10 @@ public class EventView extends RelativeLayout {
 		else {
 			textViewEventEndTime.setText("");
 		}
+		
+		imageRepeat.setVisibility(event.isRepeatable() ? View.VISIBLE : View.INVISIBLE);
+		imageAlarm.setVisibility(event.hasAlarm() ? View.VISIBLE : View.INVISIBLE);
+		
 		TimetableLogger.log("event " + event.id + " successfully drawed");
 	}
 	

@@ -31,7 +31,6 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
 
-import com.timetable.app.EventAlarmManager.AlarmCreationErrorException;
 import com.timetable.app.EventChecker.IllegalEventDateException;
 
 
@@ -89,7 +88,9 @@ public class EventAddActivity extends ActionBarActivity {
 	//Initial event date and time
 	public Calendar initDate;
 	
-	EventChecker checker;
+	private EventChecker checker;
+	
+	public EventAlarmManager eventAlarmManager;
 	
 	public static final SimpleDateFormat dateFormat = EventChecker.dateFormat;
 	
@@ -103,7 +104,8 @@ public class EventAddActivity extends ActionBarActivity {
 		getSupportActionBar().setTitle(getResources().getString(R.string.actionbar_add_event));
 		
 		checker = new EventChecker(this);
-		
+		eventAlarmManager = new EventAlarmManager(this);
+
 		eventPeriodWeekDayNames = getResources().getStringArray(R.array.event_period_week_day_names_array);
 		
 		mContainer = (RelativeLayout) findViewById(R.id.event_add_container);
@@ -625,15 +627,14 @@ public class EventAddActivity extends ActionBarActivity {
 		if (db.insertEvent(event) == null) {
 			Toast.makeText(this, "Error occured while saving event.", Toast.LENGTH_SHORT).show();
 		}
-		EventAlarmManager mManager = new EventAlarmManager(this);
 		if (event.hasAlarm()) {
-			mManager.createAlarm(event.alarm);
+			eventAlarmManager.createAlarm(event.alarm);
 		}
 		db.close();
 	}
 	
 	public class PeriodTypeListener implements OnItemSelectedListener {
-
+	
 		@Override
 		public void onItemSelected(AdapterView<?> arg0, View arg1, int pos,
 				long id) {

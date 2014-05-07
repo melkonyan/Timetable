@@ -9,7 +9,9 @@ public class EventAlarm {
 		ALARM
 	}
 	
-	public int id = 0;
+	public static int INITIAL_ALARM_ID = -1;
+	
+	public int id = INITIAL_ALARM_ID;
 	
 	public EventAlarm.Type type = EventAlarm.Type.ALARM;
 	
