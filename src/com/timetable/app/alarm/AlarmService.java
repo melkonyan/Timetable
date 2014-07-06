@@ -1,8 +1,10 @@
 package com.timetable.app.alarm;
 
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.PriorityQueue;
 import java.util.Vector;
 
@@ -12,6 +14,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -29,6 +32,8 @@ public class AlarmService extends Service {
 	public static final String EXTRA_ALARM_ID_STRING = "alarm_id"; 
 
 	public static final int MAX_QUEUE_SIZE = 10000;
+	
+	public static final SimpleDateFormat alarmTimeFormat = new SimpleDateFormat("EEE, d. MMM yyyy 'at' HH:mm", Locale.UK);
 	
 	private final AlarmServiceBinder mBinder = new AlarmServiceBinder(); 
 
@@ -133,6 +138,10 @@ public class AlarmService extends Service {
 		return PendingIntent.getBroadcast(this, alarm.id, getIntentFromAlarm(alarm), PendingIntent.FLAG_NO_CREATE) != null;
 	}
 	
+	public EventAlarm getNextAlarm() {
+		return alarmQueue.peek();
+	}
+	
 	private void loadAlarms() {
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
 		
@@ -159,9 +168,10 @@ public class AlarmService extends Service {
 		PendingIntent mIntent = getNotificationIntent(); 
 		NotificationCompat.Builder mBuilder = new NotificationCompat
 			.Builder(this)
-			.setSmallIcon(R.drawable.ic_action_alarms)
-			.setContentTitle("alarm title")
-			.setContentText("alarmtext")
+			.setSmallIcon(R.drawable.ic_action_alarms_light)
+			.setContentTitle("Timetable")
+			.setContentText("Next alarm is on: " + alarmTimeFormat.format(getNextAlarm().getNextOccurrence(TimetableFunctional.getCurrentTime())))
+			.setLargeIcon(((BitmapDrawable)this.getResources().getDrawable(R.drawable.ic_action_alarms)).getBitmap())
 			.setContentIntent(mIntent);
 		notificationManager.notify(ALARM_NOTIFICATION_CODE, mBuilder.build());
 		TimetableLogger.log("Creating notification");
@@ -176,10 +186,10 @@ public class AlarmService extends Service {
 	}
 	
 	private void updateNotification() {
-		if (alarmQueue.size() == 1) {
-			createNotification();
-		} else if (alarmQueue.size() == 0) {
+		if (alarmQueue.size() == 0) {
 			deleteNotification();
+		} else {
+			createNotification();
 		}
 		
 	}
