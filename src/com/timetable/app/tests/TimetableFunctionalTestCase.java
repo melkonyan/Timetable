@@ -3,13 +3,14 @@ package com.timetable.app.tests;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import com.timetable.app.R;
-import com.timetable.app.TimetableFunctional;
+import com.timetable.app.functional.TimetableFunctional;
 
 import junit.framework.TestCase;
 
 public class TimetableFunctionalTestCase extends TestCase {
 	
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	
 	
 	public void testAreEqualOrNulls() {
 		String t1 = "String1";

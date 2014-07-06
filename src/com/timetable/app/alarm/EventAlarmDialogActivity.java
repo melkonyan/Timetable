@@ -1,6 +1,13 @@
-package com.timetable.app;
+package com.timetable.app.alarm;
 
 import java.io.IOException;
+
+import com.timetable.app.Event;
+import com.timetable.app.R;
+import com.timetable.app.TimetableDatabase;
+import com.timetable.app.TimetableLogger;
+import com.timetable.app.R.raw;
+import com.timetable.app.functional.TimetableFunctional;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,9 +27,9 @@ public class EventAlarmDialogActivity extends Activity {
 	public static final int DEFAULT_ALARM_SOUND = R.raw.new_gitar;
 	private TimetableDatabase db;
 	
-	private EventAlarm eventAlarm;
+	private EventAlarm alarm;
 	
-	private EventAlarmManager eventAlarmManager;
+	private AlarmServiceManager mManager;
 	
 	private MediaPlayer mediaPlayer;
 	
@@ -32,11 +39,15 @@ public class EventAlarmDialogActivity extends Activity {
 	{
 	    super.onCreate(savedInstanceState);
 	    
-	    db = new TimetableDatabase(this);
-		eventAlarmManager = new EventAlarmManager(this);
-		eventAlarm = getEventAlarmFromIntent();
-		Event event = db.searchEventById(eventAlarm.eventId);
-	    mediaPlayer = MediaPlayer.create(this, DEFAULT_ALARM_SOUND);
+	    db = TimetableDatabase.getInstance(this);
+		alarm = getEventAlarmFromIntent();
+		alarm.event = db.searchEventById(alarm.eventId);
+		if (db.isException(alarm.event, alarm.getEventOccurrence(TimetableFunctional.getCurrentTime()))) {
+			finish();
+		}
+		mManager = new AlarmServiceManager(this);
+		mManager.bindService();
+		mediaPlayer = MediaPlayer.create(this, DEFAULT_ALARM_SOUND);
 		try {
 			mediaPlayer.prepare();
 		} catch (Exception e) {
@@ -49,19 +60,20 @@ public class EventAlarmDialogActivity extends Activity {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				eventAlarmManager.deleteAlarm(eventAlarm);
+				AlarmService alarmService = mManager.getService();
+				alarmService.updateAlarm(alarm);
 				mediaPlayer.stop();
 				mediaPlayer.release();
 				EventAlarmDialogActivity.this.finish();
 				
 			}
 		});
-	    builder.setTitle(event.name).create().show();
+	    builder.setTitle(alarm.event.name).create().show();
 	    
 	}
 	
 	private EventAlarm getEventAlarmFromIntent() {
-		int alarmId = getIntent().getExtras().getInt(EventAlarmManager.EXTRA_ALARM_ID_STRING);
+		int alarmId = getIntent().getExtras().getInt(AlarmService.EXTRA_ALARM_ID_STRING);
 		return db.searchEventAlarmById(alarmId);
 	}
 }

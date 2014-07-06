@@ -6,14 +6,16 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import com.timetable.app.Event;
-import com.timetable.app.EventAlarm;
 import com.timetable.app.EventPeriod;
+import com.timetable.app.alarm.EventAlarm;
 
 public class EventTestCase extends TestCase {
 	
 	SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 	
 	SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+	
+	SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 	
 	public void setUp() {
 		
@@ -95,11 +97,11 @@ public class EventTestCase extends TestCase {
 			
 			assertEquals(false, event.isToday(searchDate));
 			
-			event.period.setWeekOccurrences(64); // every Sunday
+			event.period.addWeekOccurrence(EventPeriod.SUNDAY); // every Sunday
 			
 			assertEquals(false, event.isToday(searchDate));
 			
-			event.period.setWeekOccurrences(1); // every Saturday
+			event.period.addWeekOccurrence(EventPeriod.SATURDAY); // every Saturday
 			
 			assertEquals(true, event.isToday(searchDate));
 			
@@ -114,6 +116,18 @@ public class EventTestCase extends TestCase {
 			event.period.endDate = dateFormat.parse("10.01.2014");
 			
 			assertEquals(false, event.isToday(searchDate));
+			
+			event.period.endDate = null;
+			event.period.interval = 2;
+			event.date = dateFormat.parse("30.06.2014");
+			event.period.addWeekOccurrence(EventPeriod.MONDAY);
+			searchDate = dateFormat.parse("07.07.2014");
+			
+			assertEquals(false, event.isToday(searchDate));
+			
+			searchDate = dateFormat.parse("14.07.2014");
+			
+			assertEquals(true, event.isToday(searchDate));
 			
 		} catch (Exception e) {
 			fail(e.getMessage());
@@ -190,6 +204,7 @@ public class EventTestCase extends TestCase {
 		}
 	}
 	
+	
 	public void testIsOk() {
 		try {
 			Event event = new Event();
@@ -233,7 +248,7 @@ public class EventTestCase extends TestCase {
 			
 			event.period.type = EventPeriod.Type.WEEKLY;
 			
-			assertEquals(false, event.isOk());
+			assertEquals(true, event.isOk());
 			
 			event.period.setWeekOccurrences(0);
 			

@@ -1,10 +1,13 @@
-package com.timetable.app;
+package com.timetable.app.functional;
 
-import com.timetable.app.R;
 import java.util.Calendar;
 import java.util.Date;
 
+
 public class TimetableFunctional {
+	
+	private static TimeProvider timeProvider = new SimpleTimeProvider();
+	
 	
 	public static boolean areEqualOrNulls (Object obj1, Object obj2) {
 		return (obj1 == null && obj2 == null || obj1 != null && obj2 != null && obj1.equals(obj2));
@@ -28,5 +31,11 @@ public class TimetableFunctional {
 			   cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
 	}
 	
+	public static Date getCurrentTime() {
+		return timeProvider.getCurrentTime();
+	}
 	
+	public static void setTimeProvider(TimeProvider timeProvider) {
+		TimetableFunctional.timeProvider = timeProvider;
+	}
 }

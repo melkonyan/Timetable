@@ -13,6 +13,7 @@ public class EventPeriodTestCase extends TestCase {
 	
 	public void testPeriodWeekly() {
 		EventPeriod period = new EventPeriod();
+		period.type = EventPeriod.Type.WEEKLY;
 		
 		period.setWeekOccurrences(2);
 		
@@ -21,6 +22,16 @@ public class EventPeriodTestCase extends TestCase {
 		period.weekOccurrences[4] = true;
 		
 		assertEquals(6, period.getWeekOccurrences());
+		
+		period.addWeekOccurrence(EventPeriod.TUESDAY);
+		
+		assertEquals(true, period.weekOccurrences[2]);
+		
+		assertEquals(true, period.isWeekOccurrence(EventPeriod.TUESDAY));
+		
+		period.deleteWeekOccurrence(EventPeriod.TUESDAY);
+		
+		assertEquals(false, period.isWeekOccurrence(EventPeriod.TUESDAY));
 	}
 	
 	public void testEquals() {

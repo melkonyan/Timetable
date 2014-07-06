@@ -19,7 +19,7 @@ public class EventChecker {
 	
 	private Resources resources;
 	
-	EventChecker(Context context) {
+	public EventChecker(Context context) {
 		resources = context.getResources();
 	}
 	
@@ -102,7 +102,7 @@ public class EventChecker {
 	}
 	
 	
-	class IllegalEventNameException extends IllegalEventDataException {
+	public class IllegalEventNameException extends IllegalEventDataException {
 		
 		/**
 		 * 
@@ -114,7 +114,7 @@ public class EventChecker {
 		}
 	}
 	
-	class IllegalEventPlaceException extends IllegalEventDataException {
+	public class IllegalEventPlaceException extends IllegalEventDataException {
 		
 		/**
 		 * 
@@ -126,7 +126,7 @@ public class EventChecker {
 		}
 	}
 	
-	class IllegalEventDateException extends IllegalEventDataException {
+	public class IllegalEventDateException extends IllegalEventDataException {
 	
 		/**
 		 * 
@@ -150,7 +150,7 @@ public class EventChecker {
 		}
 	}
 	
-	class IllegalEventEndTimeException extends IllegalEventDataException {
+	public class IllegalEventEndTimeException extends IllegalEventDataException {
 		
 		/**
 		 * 
@@ -162,7 +162,7 @@ public class EventChecker {
 		}
 	}
 	
-	class IllegalEventAlarmTimeException extends IllegalEventDataException {
+	public class IllegalEventAlarmTimeException extends IllegalEventDataException {
 
 		/**
 		 * 
@@ -173,7 +173,7 @@ public class EventChecker {
 			super(message);
 		}
 	}
-	class IllegalEventPeriodIntervalException extends IllegalEventDataException {
+	public class IllegalEventPeriodIntervalException extends IllegalEventDataException {
 	
 		/**
 		 * 
@@ -186,7 +186,7 @@ public class EventChecker {
 	
 	}
 	
-	class IllegalEventPeriodEndDateException extends IllegalEventDataException {
+	public class IllegalEventPeriodEndDateException extends IllegalEventDataException {
 		
 		/**
 		 * 

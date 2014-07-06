@@ -16,28 +16,40 @@
         android:label="@string/app_name"
        	android:theme="@style/Holo.Theme.Light.DarkActionBar">
         <activity
-            android:name="com.timetable.app.EventDayViewActivity"
+            android:name="com.timetable.app.activities.EventDayViewActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
         <activity
-            android:name="com.timetable.app.EventAddActivity">
+            android:name="com.timetable.app.activities.EventAddActivity">
         </activity>
+        
         <activity
-            android:name="com.timetable.app.EventEditActivity">
+            android:name="com.timetable.app.activities.EventEditActivity">
         </activity>
+        
         <activity 
-            android:name="com.timetable.app.EventAlarmDialogActivity"
+            android:name="com.timetable.app.alarm.EventAlarmDialogActivity"
             android:theme="@android:style/Theme.Dialog">
             
         </activity>
-    	<!--  include tests -->
+    	
+    	<receiver android:name="com.timetable.app.alarm.AlarmBroadcastReceiver" android:enabled="true" android:exported="false">
+    		<intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+    	</receiver> 
+		
+    	<service android:name="com.timetable.app.alarm.AlarmService" android:exported="false">
+    	    
+    	</service>
+		<!--  include tests -->
     	<uses-library android:name="android.test.runner"/>
 		
-    	<receiver android:name=".EventAlarmManager"/> 
 	</application>
 	
      

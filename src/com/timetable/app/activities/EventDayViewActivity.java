@@ -1,11 +1,20 @@
-package com.timetable.app;
+package com.timetable.app.activities;
 
 
 import java.util.Calendar;
-import java.util.Date;
 
 import org.holoeverywhere.widget.LinearLayout;
 import org.holoeverywhere.widget.TextView;
+
+import com.timetable.app.EventPager;
+import com.timetable.app.R;
+import com.timetable.app.TimetableLogger;
+import com.timetable.app.R.id;
+import com.timetable.app.R.layout;
+import com.timetable.app.R.menu;
+import com.timetable.app.alarm.AlarmService;
+import com.timetable.app.alarm.AlarmServiceManager;
+import com.timetable.app.functional.TimetableFunctional;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -16,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 
 /*
@@ -38,13 +48,10 @@ public class EventDayViewActivity extends ActionBarActivity {
 		if (eventPager != null) {
 			eventLayout.removeView(eventPager);
 		}
+		
 		this.eventPager = eventPager;
 		eventLayout.addView(eventPager,0);
 		
-	}
-	
-	public Date getCurrentTime() {
-		return Calendar.getInstance().getTime();
 	}
 	
 	@Override
@@ -55,11 +62,12 @@ public class EventDayViewActivity extends ActionBarActivity {
 		
 		//enable debugging
 		TimetableLogger.debugging = true;
-		//update alarms
-		new EventAlarmManager(this).checkAlarms();
+		//start AlarmService
+		AlarmServiceManager.startService(this);
+		
 		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
-		setEventPager(new EventPager(this, getCurrentTime()));
+		setEventPager(new EventPager(this, TimetableFunctional.getCurrentTime()));
 		
 		DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
@@ -105,7 +113,7 @@ public class EventDayViewActivity extends ActionBarActivity {
 	            startActivity(eventAddIntent);
 	        	return true;
 	        case R.id.action_view_today:
-	        	setEventPager(new EventPager(this, getCurrentTime()));
+	        	setEventPager(new EventPager(this, TimetableFunctional.getCurrentTime()));
 	        	return true;
 	        case R.id.action_go_to_date:
 	        	datePickerDialog.show();

@@ -14,9 +14,9 @@ import android.test.RenamingDelegatingContext;
 import android.test.UiThreadTest;
 import android.view.View;
 
-import com.timetable.app.EventAddActivity;
 import com.timetable.app.R;
 import com.timetable.app.TimetableDatabase;
+import com.timetable.app.activities.EventAddActivity;
 
 public class EventAddActivityTestCase extends ActivityInstrumentationTestCase2<EventAddActivity> {
 	

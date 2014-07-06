@@ -12,6 +12,9 @@ import org.holoeverywhere.widget.ViewPager;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import com.timetable.app.R;
+import com.timetable.app.activities.EventDayViewActivity;
+import com.timetable.app.functional.TimetableFunctional;
+
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ScrollView;
@@ -89,7 +92,7 @@ public class EventPager extends ViewPager {
 			this.currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			this.pageNumber = pageNumber;
 			
-			TimetableDatabase db = new TimetableDatabase(EventPager.this.activity);
+			TimetableDatabase db = TimetableDatabase.getInstance(EventPager.this.activity);
 		
 			LinearLayout externalLayout = new LinearLayout(activity);
 			externalLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -152,7 +155,7 @@ public class EventPager extends ViewPager {
 			currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			//update action bar
 			String dateString = actionBarDateFormat.format(currentDate);
-			if (TimetableFunctional.areSameDates(currentDate, activity.getCurrentTime())) {
+			if (TimetableFunctional.areSameDates(currentDate, TimetableFunctional.getCurrentTime())) {
 				dateString = getResources().getString(R.string.actionbar_date_today);
 			}
 			activity.getSupportActionBar().setTitle(dateString);

@@ -10,11 +10,11 @@ import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
 
 import com.timetable.app.Event;
-import com.timetable.app.EventAlarm;
-import com.timetable.app.EventDayViewActivity;
 import com.timetable.app.EventPeriod;
 import com.timetable.app.TimetableDatabase;
 import com.timetable.app.TimetableLogger;
+import com.timetable.app.activities.EventDayViewActivity;
+import com.timetable.app.alarm.EventAlarm;
 
 public class TimetableDatabaseTestCase extends AndroidTestCase {
 
@@ -36,7 +36,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 	
 	public void setUp() {
 		mContext = new RenamingDelegatingContext(getContext(), "test_");
-		db = new TimetableDatabase(mContext);
+		db = TimetableDatabase.getInstance(mContext);
 		try {
 			searchDate = dateFormat.parse("27.12.2013");
 			
@@ -56,8 +56,12 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 			event2.startTime = timeFormat.parse("16:00:00");
 			event2.alarm = new EventAlarm();
 			event2.alarm.time = EventAlarm.timeFormat.parse("24.04.2014 19:22");
-			
+			event2.period = new EventPeriod();
+			event2.period.interval = 1;
+			event2.period.type = EventPeriod.Type.DAILY;
+			event2.alarm.period = event2.period;
 			foundEvents.add(event2);
+			
 			
 		} catch (Exception e) {
 			fail(e.getMessage());
@@ -77,7 +81,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 		assertEquals(alarmsNum, db.getEventAlarmCount());
 		
 		for (int i = 0; i < foundEvents.size(); i++) {
-			assertEquals(true, foundEvents.get(i).equals(events.get(events.size() - 1 - i)));
+			assertEquals(events.get(events.size() - 1 - i), foundEvents.get(i));
 		}
 		
 		for (Event event: events) {
@@ -178,7 +182,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 	}
 	
 	public void tearDown() {
-		//db.close();
+		db.close();
 	}
 }
 

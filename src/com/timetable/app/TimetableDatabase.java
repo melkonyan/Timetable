@@ -11,6 +11,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.timetable.app.R;
+import com.timetable.app.alarm.EventAlarm;
 /*
  * Class for working with database(inserting, updating and deleting events, etc.).
  */
@@ -28,7 +29,17 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 	
 	private SQLiteDatabase dbWrite;
 	
-	public TimetableDatabase(Context context) {
+	private static TimetableDatabase mInstance;
+	
+	public static TimetableDatabase getInstance(Context context) {
+		if (mInstance == null) {
+			mInstance = new TimetableDatabase(context);
+		}
+		
+		return mInstance;
+	}
+
+	private TimetableDatabase(Context context) {
 		super(context, DB_NAME, null, 1);
 		dbRead = this.getReadableDatabase();
 		dbWrite = this.getWritableDatabase();
@@ -79,7 +90,8 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 				"alm_id INTEGER PRIMARY KEY AUTOINCREMENT," +
 				"alm_time DATETIME," +
 				"alm_type INTEGER," +
-				"evt_id INTEGER)";
+				"evt_id INTEGER, " +
+				"per_id INTEGER)";
 		db.execSQL(query);
 	}
 
@@ -93,7 +105,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	values.put("alm_type", alarm.type.ordinal());
     	values.put("alm_time", dateTimeFormat.format(alarm.time));
     	values.put("evt_id", alarm.eventId);
-    	TimetableLogger.log(values.toString());
+    	values.put("per_id", alarm.period.id);
     	return values;
     }
     
@@ -102,7 +114,8 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	alarm.id = cursor.getInt(cursor.getColumnIndex("alm_id"));
     	alarm.type = EventAlarm.Type.values()[cursor.getInt(cursor.getColumnIndex("alm_type"))];
     	alarm.eventId = cursor.getInt(cursor.getColumnIndex("evt_id"));
-    	
+    	alarm.period = searchEventPeriodById(cursor.getInt(cursor.getColumnIndex("per_id")));
+		
     	try {
     		alarm.time = dateTimeFormat.parse(cursor.getString(cursor.getColumnIndex("alm_time")));
     	} catch (Exception e) {
@@ -325,7 +338,8 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	TimetableLogger.log("Inserted id: " + Integer.toString(event.id));
     	if (event.hasAlarm()) {
     		event.alarm.eventId = event.id;
-        	event.alarm.id = (int) insertEventAlarm(event.alarm);
+    		event.alarm.period.id = event.period.id;
+    		event.alarm.id = (int) insertEventAlarm(event.alarm);
     		if (event.alarm.id == -1) {
         		TimetableLogger.log("Error inserting event's alarm");
         		return null;
@@ -342,6 +356,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	if (event.hasAlarm()) {
     		if (event.alarm.id == EventAlarm.INITIAL_ALARM_ID) {
     			event.alarm.eventId = event.id;
+    			event.alarm.period.id = event.period.id;
     			event.alarm.id = (int) insertEventAlarm(event.alarm);
     			if (event.alarm.id == -1) {
     				//TimetableLogger.log("Error inserting alarm.");
@@ -402,6 +417,10 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 		event.period = searchEventPeriodById(cursor.getInt(cursor.getColumnIndex("per_id")));
 		//TimetableLogger.log("Event id: " + event.id);
 		event.alarm = searchEventAlarmByEventId(event.id);
+		if (event.hasAlarm()) {
+			event.alarm.event = event;
+			event.alarm.eventId = event.id;
+		}
     	return event;
     }
     
@@ -448,8 +467,6 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     
     @Override
     public void close() {
-    	super.close();
-    	dbRead.close();
-    	dbWrite.close();
+    	//super.close();
     }
 }

@@ -1,4 +1,4 @@
-package com.timetable.app;
+package com.timetable.app.activities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,7 +31,17 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
 
+import com.timetable.app.Event;
+import com.timetable.app.EventChecker;
 import com.timetable.app.EventChecker.IllegalEventDateException;
+import com.timetable.app.EventPeriod;
+import com.timetable.app.IllegalEventDataException;
+import com.timetable.app.R;
+import com.timetable.app.TimetableDatabase;
+import com.timetable.app.TimetableLogger;
+import com.timetable.app.alarm.AlarmService;
+import com.timetable.app.alarm.AlarmServiceManager;
+import com.timetable.app.alarm.EventAlarm;
 
 
 /*
@@ -90,8 +100,8 @@ public class EventAddActivity extends ActionBarActivity {
 	
 	private EventChecker checker;
 	
-	public EventAlarmManager eventAlarmManager;
-	
+	public AlarmService alarmService;
+	public AlarmServiceManager mManager;
 	public static final SimpleDateFormat dateFormat = EventChecker.dateFormat;
 	
 	public static final SimpleDateFormat timeFormat = EventChecker.timeFormat;	
@@ -104,8 +114,7 @@ public class EventAddActivity extends ActionBarActivity {
 		getSupportActionBar().setTitle(getResources().getString(R.string.actionbar_add_event));
 		
 		checker = new EventChecker(this);
-		eventAlarmManager = new EventAlarmManager(this);
-
+		
 		eventPeriodWeekDayNames = getResources().getStringArray(R.array.event_period_week_day_names_array);
 		
 		mContainer = (RelativeLayout) findViewById(R.id.event_add_container);
@@ -276,9 +285,16 @@ public class EventAddActivity extends ActionBarActivity {
 	@Override 
 	public void onResume() {
 		super.onResume();
+		mManager = new AlarmServiceManager(this);
+		mManager.bindService();
 		TimetableLogger.log("onResume()");
 	}
 	
+	@Override 
+	public void onPause() {
+		super.onPause();
+		mManager.unbindService();
+	}
 	/*
 	 * try to get event date from intent extras and fill appropriate fields
 	 */
@@ -609,7 +625,9 @@ public class EventAddActivity extends ActionBarActivity {
 			event.note = checker.getNoteFromString(eventNoteVal.getText().toString());
 			event.alarm = getEventAlarm();
 			event.period = getEventPeriod();
-			
+			if (event.hasAlarm()) {
+				event.alarm.period = event.period;
+			}
 			TimetableLogger.log(event.toString());
 			return event;
 		}  catch (IllegalEventDateException e) {
@@ -623,12 +641,12 @@ public class EventAddActivity extends ActionBarActivity {
 	  */
 	public void saveEvent() throws IllegalEventDataException {
 		Event event = getEvent();
-		TimetableDatabase db = new TimetableDatabase(this);
+		TimetableDatabase db = TimetableDatabase.getInstance(this);
 		if (db.insertEvent(event) == null) {
 			Toast.makeText(this, "Error occured while saving event.", Toast.LENGTH_SHORT).show();
 		}
 		if (event.hasAlarm()) {
-			eventAlarmManager.createAlarm(event.alarm);
+			mManager.getService().createAlarm(event.alarm);
 		}
 		db.close();
 	}
