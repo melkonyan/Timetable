@@ -3,11 +3,11 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@+id/event_pager" >
-<!-- 	<com.timetable.app.EventScrollView
+<!-- 	<com.timetable.android.EventScrollView
 	  android:layout_width="fill_parent"
 	  android:layout_height="fill_parent"
 	  android:id="@+id/event_scroll_view"
 	  android:fillViewport="true">
-	</com.timetable.app.EventScrollView>
+	</com.timetable.android.EventScrollView>
  -->
 </android.support.v4.view.ViewPager>
