@@ -1,10 +1,9 @@
 package com.timetable.android;
 
+import java.util.Date;
+
 import com.timetable.android.alarm.EventAlarm;
 import com.timetable.android.functional.TimetableFunctional;
-import com.timetable.app.R;
-
-import java.util.Date;
 
 public class Event {
 	

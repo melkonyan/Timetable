@@ -5,16 +5,16 @@ import java.text.SimpleDateFormat;
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.TextView;
 
-import com.timetable.app.R;
-
 import android.content.Context;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 public class EventView extends RelativeLayout {
 
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+	public static final SimpleDateFormat START_TIME_FORMAT = new SimpleDateFormat("HH:mm");
+	
 	
 	public Event event;
 	
@@ -36,9 +36,9 @@ public class EventView extends RelativeLayout {
 		textViewEventName.setText(event.name);
 		textViewEventPlace.setText(event.place);
 		textViewEventNote.setText(event.note);
-		textViewEventStartTime.setText(timeFormat.format(event.startTime));
+		textViewEventStartTime.setText(START_TIME_FORMAT.format(event.startTime));
 		if (event.endTime != null) {
-			textViewEventEndTime.setText("- " + timeFormat.format(event.endTime));
+			textViewEventEndTime.setText("- " + START_TIME_FORMAT.format(event.endTime));
 		}
 		else {
 			textViewEventEndTime.setText("");
@@ -48,6 +48,23 @@ public class EventView extends RelativeLayout {
 		imageAlarm.setVisibility(event.hasAlarm() ? View.VISIBLE : View.INVISIBLE);
 		
 		TimetableLogger.log("event " + event.id + " successfully drawed");
+		
+		this.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				TimetableLogger.log("EventView: click performed");
+			}
+		});
+		
 	}
 	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event) {
+	    if(event.getAction() == MotionEvent.ACTION_UP) {
+	    	TimetableLogger.log("EventView: click performed");
+	    }
+	    return super.dispatchTouchEvent(event);
+	}
+
 }

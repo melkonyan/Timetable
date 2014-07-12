@@ -6,8 +6,8 @@ import com.timetable.android.Event;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.functional.TimetableFunctional;
-import com.timetable.app.R;
-import com.timetable.app.R.raw;
+import com.timetable.android.R;
+import com.timetable.android.R.raw;
 
 import android.app.Activity;
 import android.app.AlertDialog;

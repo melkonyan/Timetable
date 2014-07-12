@@ -7,7 +7,7 @@ import java.util.Date;
 import android.content.Context;
 import android.content.res.Resources;
 
-import com.timetable.app.R;
+import com.timetable.android.R;
 
 public class EventChecker {
 	

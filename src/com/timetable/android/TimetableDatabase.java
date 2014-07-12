@@ -12,7 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.timetable.android.alarm.EventAlarm;
-import com.timetable.app.R;
+import com.timetable.android.R;
 /*
  * Class for working with database(inserting, updating and deleting events, etc.).
  */
@@ -447,7 +447,6 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     public Vector<Event> searchEventsByDate(Date date) {
     	String dateString = dateFormat.format(date);
     	String query = "SELECT * FROM Events order by evt_start_time ASC";
-    	TimetableLogger.log(dateString);
     	Cursor cursor = dbRead.rawQuery(query, new String [] {});
     	
     	Vector<Event> events = new Vector<Event>();
@@ -465,7 +464,16 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	cursor.close();
     	return events;
     }
-    
+    /*
+     * Delete all content from database.
+     * Used for testing.
+     */
+    public void clear() {
+    	dbWrite.delete("Events", null, null);
+    	dbWrite.delete("Exceptions", null, null);
+    	dbWrite.delete("Alarms", null, null);
+    	dbWrite.delete("Periods", null, null);
+    }
     @Override
     public void close() {
     	//super.close();

@@ -16,7 +16,7 @@ import android.view.View;
 
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.activities.EventAddActivity;
-import com.timetable.app.R;
+import com.timetable.android.R;
 
 public class EventAddActivityTestCase extends ActivityInstrumentationTestCase2<EventAddActivity> {
 	

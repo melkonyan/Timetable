@@ -2,10 +2,9 @@ package com.timetable.android.tests;
 
 import java.text.SimpleDateFormat;
 
-import com.timetable.android.EventPeriod;
-import com.timetable.app.R;
-
 import junit.framework.TestCase;
+
+import com.timetable.android.EventPeriod;
 
 public class EventPeriodTestCase extends TestCase {
 

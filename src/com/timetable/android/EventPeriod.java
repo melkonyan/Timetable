@@ -1,7 +1,7 @@
 package com.timetable.android;
 
 import com.timetable.android.functional.TimetableFunctional;
-import com.timetable.app.R;
+import com.timetable.android.R;
 
 import java.util.Calendar;
 import java.util.Date;

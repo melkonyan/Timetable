@@ -164,8 +164,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/event_add_period"
         android:layout_alignLeft="@+id/event_add_note_val"
-        android:layout_alignRight="@+id/event_add_end_time_picker"
-        android:layout_below="@+id/event_alarm_time_val" />
+        android:layout_alignRight="@+id/event_add_end_time_picker" />
 
     <org.holoeverywhere.widget.LinearLayout
         android:id="@+id/event_period_weekdays_table"
@@ -248,6 +247,7 @@
         android:layout_alignBottom="@+id/event_alarm_time_val"
         android:layout_alignLeft="@+id/event_add_period"
         android:layout_below="@+id/event_add_alarm"
+        android:layout_marginTop="10dp"
         android:layout_toLeftOf="@+id/event_alarm_time_val"
         android:gravity="bottom" />
 
@@ -260,15 +260,6 @@
         android:layout_marginTop="15dp"
         android:text="@string/event_add_interval"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <org.holoeverywhere.widget.EditText
-        android:id="@+id/event_period_end_date_val"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_period_interval_text_right"
-        android:layout_below="@+id/event_period_interval_val"
-        android:ems="10"
-        android:inputType="date" />
 
     <org.holoeverywhere.widget.TextView
         android:id="@+id/event_add_period"
@@ -289,6 +280,18 @@
         android:layout_marginLeft="11dp"
         android:background="@drawable/button_background"
         android:src="@drawable/ic_action_cancel" />
+
+    <org.holoeverywhere.widget.EditText
+        android:id="@+id/event_period_end_date_val"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_period_interval_text_right"
+        android:layout_alignBottom="@+id/event_period_end_date_spinner"
+        android:ems="10"
+        android:inputType="date" >
+
+        <requestFocus />
+    </org.holoeverywhere.widget.EditText>
 
 </RelativeLayout>
 

@@ -11,10 +11,10 @@ import com.timetable.android.TimetableLogger;
 import com.timetable.android.alarm.AlarmService;
 import com.timetable.android.alarm.AlarmServiceManager;
 import com.timetable.android.functional.TimetableFunctional;
-import com.timetable.app.R;
-import com.timetable.app.R.id;
-import com.timetable.app.R.layout;
-import com.timetable.app.R.menu;
+import com.timetable.android.R;
+import com.timetable.android.R.id;
+import com.timetable.android.R.layout;
+import com.timetable.android.R.menu;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -91,9 +91,9 @@ public class EventDayViewActivity extends ActionBarActivity {
 
 	@Override
 	public void onRestart() {
+		TimetableLogger.log("EventDayViewAcwativity was restarted.");
 		super.onRestart();
 		getEventPager().update();
-		TimetableLogger.log("EventDayViewActivity was restarted.");
 	}
 	
 	@Override

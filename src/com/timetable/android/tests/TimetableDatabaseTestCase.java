@@ -35,7 +35,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 	
 	
 	public void setUp() {
-		mContext = new RenamingDelegatingContext(getContext(), "test_");
+		mContext = new RenamingDelegatingContext(getContext(), "TimetableDatabaseTestCase_");
 		db = TimetableDatabase.getInstance(mContext);
 		try {
 			searchDate = dateFormat.parse("27.12.2013");
@@ -174,6 +174,10 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 					}
 				}
 				assertEquals(true, isFound);
+			}
+			
+			for (EventAlarm insertedAlarm: insertedAlarms) {
+				db.deleteEventAlarm(insertedAlarm);
 			}
 		} catch (ParseException e) {
 			fail(e.getMessage());

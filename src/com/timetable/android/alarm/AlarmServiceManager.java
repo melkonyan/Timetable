@@ -1,13 +1,13 @@
 package com.timetable.android.alarm;
 
 
-import com.timetable.android.TimetableLogger;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+
+import com.timetable.android.TimetableLogger;
 
 /*
  * Class for creating and binding AlarmService.
@@ -32,8 +32,8 @@ public class AlarmServiceManager {
 		this.mConnection = new AlarmServiceConnection();
 	}
 	
-	public void bindService() {
-		context.bindService(createServiceIntent(context), mConnection, Context.BIND_AUTO_CREATE); 
+	public boolean bindService() {
+		return context.bindService(createServiceIntent(context), mConnection, Context.BIND_AUTO_CREATE); 
 	}
 
 	public void unbindService() {
@@ -55,11 +55,12 @@ public class AlarmServiceManager {
 		
 	    public void onServiceConnected(ComponentName className, 
 	        IBinder binder) {
-    	
+	    	TimetableLogger.error("Service Connected");
     		mService =  ((AlarmService.AlarmServiceBinder) binder).getService();
 	    }
 
 	    public void onServiceDisconnected(ComponentName className) {
+	    	TimetableLogger.error("Service Deisconnected");
 	    	mService = null;
 	    }
 	    

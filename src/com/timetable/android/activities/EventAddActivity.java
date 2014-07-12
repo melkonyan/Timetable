@@ -33,15 +33,15 @@ import android.widget.TimePicker;
 
 import com.timetable.android.Event;
 import com.timetable.android.EventChecker;
+import com.timetable.android.EventChecker.IllegalEventDateException;
 import com.timetable.android.EventPeriod;
 import com.timetable.android.IllegalEventDataException;
+import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
-import com.timetable.android.EventChecker.IllegalEventDateException;
 import com.timetable.android.alarm.AlarmService;
 import com.timetable.android.alarm.AlarmServiceManager;
 import com.timetable.android.alarm.EventAlarm;
-import com.timetable.app.R;
 
 
 /*
@@ -106,6 +106,7 @@ public class EventAddActivity extends ActionBarActivity {
 	
 	public static final SimpleDateFormat timeFormat = EventChecker.timeFormat;	
 	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -133,7 +134,7 @@ public class EventAddActivity extends ActionBarActivity {
 				showEventAlarm();
 			}
 		});
-		
+	
 		eventAlarmDeleteButton = (ImageButton) findViewById(R.id.event_delete_alarm);
 		eventAlarmDeleteButton.setOnClickListener(new View.OnClickListener() {
 			
@@ -286,8 +287,10 @@ public class EventAddActivity extends ActionBarActivity {
 	public void onResume() {
 		super.onResume();
 		mManager = new AlarmServiceManager(this);
-		mManager.bindService();
-		TimetableLogger.log("onResume()");
+		if (!mManager.bindService()) {
+			TimetableLogger.error("Cannot bind to Service");
+		}
+		TimetableLogger.log("EventAddActivity: onResume()");
 	}
 	
 	@Override 

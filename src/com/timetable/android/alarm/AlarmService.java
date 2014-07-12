@@ -23,7 +23,7 @@ import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.functional.TimetableFunctional;
-import com.timetable.app.R;
+import com.timetable.android.R;
 
 public class AlarmService extends Service {
 

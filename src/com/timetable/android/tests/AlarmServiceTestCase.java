@@ -15,7 +15,7 @@ import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.alarm.AlarmService;
 import com.timetable.android.alarm.AlarmServiceManager;
 import com.timetable.android.alarm.EventAlarm;
-import com.timetable.android.functional.TimeProvider;
+import com.timetable.android.functional.FakeTimeProvider;
 import com.timetable.android.functional.TimetableFunctional;
 
 public class AlarmServiceTestCase extends AndroidTestCase {
@@ -24,17 +24,10 @@ public class AlarmServiceTestCase extends AndroidTestCase {
 	private Context context;
 	private Date currentDate;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+	
 	private boolean isSetNotification = false;
 	
-	public class FakeTimeProvider implements TimeProvider {
 
-		@Override
-		public Date getCurrentTime() {
-			return currentDate;
-		}
-		
-	}
-	
 	private boolean isSetNotification() {
 		return PendingIntent.getBroadcast(context, AlarmService.ALARM_NOTIFICATION_CODE, 
 										new Intent(context, EventDayViewActivity.class), PendingIntent.FLAG_NO_CREATE) != null;
@@ -46,24 +39,30 @@ public class AlarmServiceTestCase extends AndroidTestCase {
 		isSetNotification = isSetNotification();
 		mManager = new AlarmServiceManager(context);
 		mManager.bindService();
-		currentDate = EventAlarm.timeFormat.parse("05.07.2014 20:36");
+		currentDate = EventAlarm.timeFormat.parse("05.07.2044 20:36");
 	}
 
 	public void testAlarmService() throws ParseException, InterruptedException {
 		AlarmService service = null;
+		int waitTime = 0;
 		while (service == null) {
+			if (waitTime == 5) {
+				fail("Can not bind to service");
+			}
 			Thread.sleep(1000);
+			waitTime++;
 			service = mManager.getService();
 		}
+		
 		service.deleteNotification();
 		assertNotNull(service);
 		assertEquals(false, isSetNotification());
 		
-		TimetableFunctional.setTimeProvider(new FakeTimeProvider());
+		TimetableFunctional.setTimeProvider(new FakeTimeProvider(currentDate));
 		
 		EventAlarm alarm1 = new EventAlarm();
 		alarm1.id = -1;
-		alarm1.time = EventAlarm.timeFormat.parse("20.09.2014 20:42");
+		alarm1.time = EventAlarm.timeFormat.parse("20.09.2044 20:42");
 		
 		assertEquals(false, service.existAlarm(alarm1));
 		
@@ -84,7 +83,7 @@ public class AlarmServiceTestCase extends AndroidTestCase {
 		
 		EventAlarm alarm2 = new EventAlarm();
 		alarm2.id = -2;
-		alarm2.time = EventAlarm.timeFormat.parse("01.07.2014 13:34");
+		alarm2.time = EventAlarm.timeFormat.parse("01.07.2044 13:34");
 		alarm2.period.type = EventPeriod.Type.DAILY;
 		alarm2.period.interval = 1;
 		

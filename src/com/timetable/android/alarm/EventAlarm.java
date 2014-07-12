@@ -41,7 +41,7 @@ public class EventAlarm {
 		if (event == null) {
 			return null;
 		}
-		return new Date(alarmOccurrence.getTime() + (event.startTime.getTime() - time.getTime()));
+		return new Date(alarmOccurrence.getTime() + (event.date.getTime() - time.getTime()));
 	}
 	
 	public Date getNextOccurrence(Date today) {

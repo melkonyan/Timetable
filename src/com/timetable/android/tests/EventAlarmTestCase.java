@@ -181,7 +181,7 @@ public class EventAlarmTestCase extends TestCase {
 		
 	}
 	
-	/*public void testGetEventOccurrence() throws ParseException {
+	public void testGetEventOccurrence() throws ParseException {
 		EventAlarm alarm = new EventAlarm();
 		alarm.time = EventAlarm.timeFormat.parse("06.07.2014 15:47");
 		Event event = new Event();
@@ -189,7 +189,8 @@ public class EventAlarmTestCase extends TestCase {
 		alarm.event = event;
 		assertEquals(dateFormat.parse("10.07.2014"), alarm.getEventOccurrence(alarm.time));
 		
-	}*/
+	}
+	
 	public void testIsOk() {
 		EventAlarm alarm = new EventAlarm();
 		assertEquals(false, alarm.isOk());
@@ -215,4 +216,5 @@ public class EventAlarmTestCase extends TestCase {
 		alarm2.eventId = alarm1.eventId;
 		assertEquals(true, alarm1.equals(alarm2));
 	}
+	
 }

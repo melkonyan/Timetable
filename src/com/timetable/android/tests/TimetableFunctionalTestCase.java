@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.timetable.android.functional.TimetableFunctional;
-import com.timetable.app.R;
+import com.timetable.android.R;
 
 import junit.framework.TestCase;
 

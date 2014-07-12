@@ -15,7 +15,7 @@ import android.support.v4.view.PagerAdapter;
 
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.functional.TimetableFunctional;
-import com.timetable.app.R;
+import com.timetable.android.R;
 
 import android.view.Gravity;
 import android.view.View;
@@ -25,7 +25,7 @@ public class EventPager extends ViewPager {
 
 	private final EventDayViewActivity activity;
 	
-	private final SimpleDateFormat actionBarDateFormat = new SimpleDateFormat("EEE, dd.MM", Locale.US); 
+	public static final SimpleDateFormat ACTION_BAR_DATE_FORMAT = new SimpleDateFormat("EEE, dd.MM", Locale.US); 
 	
 	private Date initDate; 
 	
@@ -156,7 +156,7 @@ public class EventPager extends ViewPager {
 			TimetableLogger.log("EventPagerListener detected page # " + pageNumber + " selection.");
 			currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			//update action bar
-			String dateString = actionBarDateFormat.format(currentDate);
+			String dateString = ACTION_BAR_DATE_FORMAT.format(currentDate);
 			if (TimetableFunctional.areSameDates(currentDate, TimetableFunctional.getCurrentTime())) {
 				dateString = getResources().getString(R.string.actionbar_date_today);
 			}
