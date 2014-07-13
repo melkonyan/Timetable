@@ -9,7 +9,6 @@ import org.holoeverywhere.widget.Spinner;
 
 import android.content.res.Resources;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.UiThreadTest;
 import android.view.View;
 
 import com.robotium.solo.Solo;
@@ -44,6 +43,18 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		super(EventDayViewActivity.class);
 	}
 	
+	private void clickOnView(int id) {
+		final View view = solo.getView(id);
+		getActivity().runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				view.performClick();
+			}
+		});
+		
+	}
+	
 	private void setEditText(int id, String text) {
 		EditText editText = (EditText) solo.getView(id); 
 		solo.clearEditText(editText);
@@ -55,7 +66,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		View spinnerView = solo.getView(Spinner.class, spinnerIndex);
 		solo.clickOnView(spinnerView);
 		solo.scrollToTop(); // I put this in here so that it always keeps the list at start
-		solo.clickOnView(solo.getView(View.class, 2)); 
+		solo.clickOnView(solo.getView(View.class, itemIndex)); 
 	}
 	
 	public void setUp() throws ParseException {
@@ -93,18 +104,6 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 	*/
 	
 	public void testEventAdd() throws ParseException {
-		solo.assertCurrentActivity("Wrong Activity", EventDayViewActivity.class);
-		
-		View eventAddButton = solo.getView(R.id.action_add_event);
-		solo.clickOnView(eventAddButton);
-		solo.sleep(1000);
-		solo.assertCurrentActivity("EventAddActivity not started.", EventAddActivity.class);
-		
-		View eventSaveButton = solo.getView(R.id.action_save_event);
-		solo.clickOnView(eventSaveButton);
-	
-		assertEquals(true, solo.waitForText(mResources.getText(R.string.event_checker_empty_name).toString(), 0, DEFAULT_TIMEOUT));
-		
 		Event event = new Event();
 		
 		event.name = "event1";
@@ -115,40 +114,82 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		event.period.type = EventPeriod.Type.DAILY;
 		
 		event.alarm = new EventAlarm();
-		event.alarm.time = EventAlarm.timeFormat.parse("10.08.2014 14:00");
+		event.alarm.time = EventAlarm.timeFormat.parse("10.08.2044 14:00");
 		
+		View eventAddButton = solo.getView(R.id.action_add_event);
+		solo.assertCurrentActivity("Wrong Activity", EventDayViewActivity.class);
+		
+		solo.clickOnView(eventAddButton);
+		solo.sleep(1000);
+		
+		solo.assertCurrentActivity("EventAddActivity not started.", EventAddActivity.class);
+		
+		View eventSaveButton = solo.getView(R.id.action_save_event);
+		View alarmAddButton = solo.getView(R.id.event_add_alarm);
+		solo.clickOnView(eventSaveButton);
+	
+		assertEquals(true, solo.waitForText(mResources.getText(R.string.event_checker_empty_name).toString(), 0, DEFAULT_TIMEOUT));
+		
+		//Create event with alarm, daily period, no end time,  no period end time
 		solo.sleep(1000);//wait for toast to gone.
 		solo.enterText((EditText) solo.getView(R.id.event_add_name_val), event.name);
 		setEditText(R.id.event_add_date_val, DATE_FORMAT.format(event.date));
 		setEditText(R.id.event_add_start_time_val, TIME_FORMAT.format(event.startTime));
 		setEditText(R.id.event_add_end_time_val, "");
-		View addAlarmButton = solo.getView(R.id.event_add_alarm);
-		solo.clickOnView(addAlarmButton);
+		solo.clickOnView(alarmAddButton);
 		setEditText(R.id.event_alarm_time_val, EventAlarm.timeFormat.format(event.alarm.time));
-		
-		selectSpinnerItem(0, event.period.type.ordinal());
-		
-		
-		
+		selectSpinnerItem(0, event.period.type.ordinal() + 1);
 		solo.clickOnView(eventSaveButton);
 		
-		assertEquals(true, solo.waitForActivity(EventDayViewActivity.class, DEFAULT_TIMEOUT));
-		
+		assertTrue(solo.waitForActivity(EventDayViewActivity.class, DEFAULT_TIMEOUT));
 		assertTrue(solo.searchText(event.name));
 		assertTrue(solo.searchText(EventView.START_TIME_FORMAT.format(event.startTime)));
 		assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_repeat).getVisibility());
 		assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_alarm).getVisibility());
 		
-		solo.clickOnView(solo.getView(R.id.event_layout));
-		solo.clickOnScreen(50,50);
+		clickOnView(R.id.event_layout);
+		
 		assertEquals(true, solo.waitForActivity(EventEditActivity.class, DEFAULT_TIMEOUT));
 		
+		//update event: delete event period and alarm
+		View alarmDeleteButton = solo.getView(R.id.event_delete_alarm);
+		solo.clickOnView(alarmDeleteButton);
+		selectSpinnerItem(0, 1);
+		View eventUpdateButton = solo.getView(R.id.action_save_event);
+		solo.clickOnView(eventUpdateButton);
+		solo.clickOnView(solo.getView(View.class, 1));
+		solo.clickOnButton(mResources.getText(R.string.dialog_button_save).toString());
+		
+		assertTrue(solo.waitForActivity(EventDayViewActivity.class, DEFAULT_TIMEOUT));
+		assertEquals(View.INVISIBLE, getActivity().findViewById(R.id.layout_event_image_repeat).getVisibility());
+		assertEquals(View.INVISIBLE, getActivity().findViewById(R.id.layout_event_image_alarm).getVisibility());
+		
+		clickOnView(R.id.event_layout);
+		
+		assertTrue(solo.waitForActivity(EventEditActivity.class, DEFAULT_TIMEOUT));
+		
+		//update event: add alarm and period
+		solo.clickOnView(alarmAddButton);
+		setEditText(R.id.event_alarm_time_val, EventAlarm.timeFormat.format(event.alarm.time));
+		selectSpinnerItem(0, event.period.type.ordinal() + 1);
+		solo.clickOnView(eventUpdateButton);
+		
+		assertTrue(solo.waitForActivity(EventDayViewActivity.class, DEFAULT_TIMEOUT));
+		assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_repeat).getVisibility());
+		assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_alarm).getVisibility());
+		
+		clickOnView(R.id.event_layout);
+		
+		assertTrue(solo.waitForActivity(EventEditActivity.class, DEFAULT_TIMEOUT));
+		
+		//delete event
 		View eventDeleteButton = solo.getView(R.id.action_delete_event);
 		solo.clickOnView(eventDeleteButton);
 		solo.clickOnView(solo.getView(View.class, 1));
+		solo.clickOnButton(mResources.getText(R.string.dialog_button_delete).toString());
 		
 		assertTrue(solo.waitForActivity(EventDayViewActivity.class, DEFAULT_TIMEOUT));
-		assertNull(solo.searchText(event.name));
+		assertFalse(solo.searchText(event.name));
 		
 	}
 	
