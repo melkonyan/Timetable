@@ -147,7 +147,10 @@ public class EventPeriod {
 				"\nweek days: " + Integer.toString(getWeekOccurrences()) + "\nend date:" 
 				+ (endDate != null ? endDate.toString() : "null"); 
 	}
-
+	
+	/*
+	 * Return true, if period, that was started on given @startDate, has occurrence on given @date.
+	 */
 	public boolean hasOccurrenceOnDate(Date startDate, Date date) {
 		
 		Calendar thisDate = Calendar.getInstance();
@@ -181,4 +184,89 @@ public class EventPeriod {
 		}
 		return false;
 	}
+	
+	/*
+	 * Return the nearest occurrence of period in the future.
+	 * Return null of there is no occurrences in the future.
+	 */
+	public Date getNextOccurrence(Date startDate, Date today) {
+		if (startDate.after(today)) {
+			if (type != EventPeriod.Type.WEEKLY) {
+				return startDate;
+			}
+		}
+		
+		Calendar todayCal = Calendar.getInstance();
+		todayCal.setTime(today);
+		Calendar dateCal = Calendar.getInstance();
+		dateCal.setTime(startDate);
+		Calendar ansCal = Calendar.getInstance();
+		
+		if (todayCal.get(Calendar.HOUR_OF_DAY)*60 + todayCal.get(Calendar.MINUTE) >= dateCal.get(Calendar.HOUR_OF_DAY)*60 + dateCal.get(Calendar.MINUTE)) {
+			todayCal.add(Calendar.DATE, 1);
+		}
+		
+		long dateLong = startDate.getTime(), todayLong = todayCal.getTime().getTime(); 
+		long day = 1000*60*60*24, week = 1000*60*60*24*7;
+		
+		int diff;
+		switch(type) {
+			case NONE:
+				return null;
+			case DAILY:
+				diff = this.interval - (int) (todayLong / day - dateLong / day) % this.interval;
+				System.out.println(todayLong + " " + dateLong + " " + todayLong / day + " " + dateLong / day);
+				
+				if (diff == this.interval) diff = 0;
+				TimetableLogger.log(Integer.toString(diff));
+				ansCal.setTime(todayCal.getTime());
+				ansCal.add(Calendar.DATE, diff);
+				System.out.println(diff);
+				break;
+			case WEEKLY:
+				if (today.before(startDate)) {
+					todayCal.setTime(startDate);
+				}
+				
+				ansCal.setTime(todayCal.getTime());
+				ansCal.set(Calendar.HOUR_OF_DAY, dateCal.get(Calendar.HOUR_OF_DAY));
+				ansCal.set(Calendar.MINUTE,	dateCal.get(Calendar.MINUTE));
+				
+				while(!this.hasOccurrenceOnDate(startDate, ansCal.getTime())) {
+					ansCal.add(Calendar.DATE, 1);
+					if (this.endDate != null && ansCal.getTime().after(this.endDate)) {
+						return null;
+					}
+				}
+				break;
+			case MONTHLY:
+				diff = this.interval - ((todayCal.get(Calendar.YEAR)- dateCal.get(Calendar.YEAR))*12 
+										+ todayCal.get(Calendar.MONTH) - dateCal.get(Calendar.MONTH)) % this.interval;
+				if (diff == this.interval && todayCal.get(Calendar.DAY_OF_MONTH) < dateCal.get(Calendar.DAY_OF_MONTH)) diff = 0;
+				ansCal.setTime(todayCal.getTime());
+				ansCal.add(Calendar.MONTH, diff);
+				ansCal.set(Calendar.DAY_OF_MONTH, dateCal.get(Calendar.DAY_OF_MONTH));
+				break;
+				
+			case YEARLY:
+				diff = this.interval - (todayCal.get(Calendar.YEAR) - dateCal.get(Calendar.YEAR)) % this.interval;
+				if (diff == this.interval && todayCal.get(Calendar.DAY_OF_YEAR) >  dateCal.get(Calendar.DAY_OF_YEAR)) diff = 0;
+				ansCal.setTime(todayCal.getTime());
+				ansCal.add(Calendar.YEAR, diff);
+				ansCal.set(Calendar.MONTH, dateCal.get(Calendar.MONTH));
+				ansCal.set(Calendar.DAY_OF_MONTH, dateCal.get(Calendar.DAY_OF_MONTH));
+				break;
+			default:
+				return null;
+		}
+		ansCal.set(Calendar.HOUR_OF_DAY, dateCal.get(Calendar.HOUR_OF_DAY));
+		ansCal.set(Calendar.MINUTE,	dateCal.get(Calendar.MINUTE));
+		
+		if (this.endDate != null && ansCal.getTime().after(this.endDate)) {
+			return null;
+		}
+		
+		return ansCal.getTime();
+	}
+
 }
