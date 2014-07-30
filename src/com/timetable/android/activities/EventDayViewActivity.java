@@ -45,8 +45,8 @@ public class EventDayViewActivity extends ActionBarActivity {
 	}
 	
 	public void setEventPager(EventPager eventPager) {
-		if (eventPager != null) {
-			eventLayout.removeView(eventPager);
+		if (this.eventPager != null) {
+			eventLayout.removeView(this.eventPager);
 		}
 		
 		this.eventPager = eventPager;
@@ -77,7 +77,8 @@ public class EventDayViewActivity extends ActionBarActivity {
 				cal.set(Calendar.YEAR, year);
 				cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 				cal.set(Calendar.MONTH, monthOfYear);
-				setEventPager(new EventPager(EventDayViewActivity.this, cal.getTime()));
+				getEventPager().goToDate(cal.getTime());
+				//setEventPager(new EventPager(EventDayViewActivity.this, cal.getTime()));
 			}
 			
 		};
@@ -93,7 +94,8 @@ public class EventDayViewActivity extends ActionBarActivity {
 	public void onRestart() {
 		TimetableLogger.log("EventDayViewAcwativity was restarted.");
 		super.onRestart();
-		getEventPager().update();
+		TimetableLogger.error(getEventPager().getDate().toString());
+		//getEventPager().update();
 	}
 	
 	@Override

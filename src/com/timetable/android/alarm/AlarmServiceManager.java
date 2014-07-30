@@ -55,12 +55,10 @@ public class AlarmServiceManager {
 		
 	    public void onServiceConnected(ComponentName className, 
 	        IBinder binder) {
-	    	TimetableLogger.error("Service Connected");
     		mService =  ((AlarmService.AlarmServiceBinder) binder).getService();
 	    }
 
 	    public void onServiceDisconnected(ComponentName className) {
-	    	TimetableLogger.error("Service Deisconnected");
 	    	mService = null;
 	    }
 	    

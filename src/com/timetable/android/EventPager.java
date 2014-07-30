@@ -58,8 +58,17 @@ public class EventPager extends ViewPager {
 	
 	private Date getDateByPageNumber(int pageNumber) {
 		Date date = new Date();
-		date.setTime(EventPager.this.initDate.getTime() + (pageNumber-this.initPageNumber)*24*3600*1000);
+		date.setTime(EventPager.this.initDate.getTime() + (long) (pageNumber-this.initPageNumber)*24*3600*1000);
 		return date;
+	}
+	
+	private int getPageNumberByDate(Date date) {
+		long day = 24*3600*1000;
+		return  initPageNumber + (int) ((date.getTime() - initDate.getTime()) / day);
+	}
+	
+	public void goToDate(Date date) {
+		setCurrentItem(getPageNumberByDate(date));
 	}
 	
 	//updates pages when content has changed

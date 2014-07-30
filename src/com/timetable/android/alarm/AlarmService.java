@@ -67,7 +67,6 @@ public class AlarmService extends Service {
 	
 	@Override 
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		TimetableLogger.error("Service created.");
 		
 		loadAlarms();
 		
