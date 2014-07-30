@@ -121,7 +121,7 @@ public class EventEditActivity extends EventAddActivity {
 	
 	private void saveRepeatableEvent(boolean overrideFutureEvents) {
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
-		
+		AlarmService alarmService = mManager.getService(); 
 		if (overrideFutureEvents) {
 			//from today on this event ends
 			TimetableLogger.log("saving event:" + editedEvent.toString());
@@ -130,13 +130,20 @@ public class EventEditActivity extends EventAddActivity {
 			event.period.endDate.setTime(date.getTime() - day);
 			db.updateEvent(event);
 			editedEvent = db.insertEvent(editedEvent);
+			if (event.hasAlarm()) {
+				event.alarm.period = event.period;
+				alarmService.updateAlarm(event.alarm);
+			}
 		} else {
 			//today there is no session of this event
 			db.insertException(event, date);
 			editedEvent.period.type = EventPeriod.Type.NONE;
 			editedEvent = db.insertEvent(editedEvent);
 		}
-		updateEventAlarmManager();
+		if (editedEvent.hasAlarm()) {
+			editedEvent.alarm.period = editedEvent.period;
+			alarmService.createAlarm(editedEvent.alarm);
+		}
 		db.close();
 	}
 	
