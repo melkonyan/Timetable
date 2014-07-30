@@ -1,10 +1,9 @@
 package com.timetable.android;
 
-import com.timetable.android.functional.TimetableFunctional;
-import com.timetable.android.R;
-
 import java.util.Calendar;
 import java.util.Date;
+
+import com.timetable.android.functional.TimetableFunctional;
 
 public class EventPeriod {
 	
@@ -188,6 +187,8 @@ public class EventPeriod {
 	/*
 	 * Return the nearest occurrence of period in the future.
 	 * Return null of there is no occurrences in the future.
+	 * Only date is considered, time plays no role.
+	 * If startDate and today are the same, today will be returned. 
 	 */
 	public Date getNextOccurrence(Date startDate, Date today) {
 		if (startDate.after(today)) {
@@ -201,10 +202,6 @@ public class EventPeriod {
 		Calendar dateCal = Calendar.getInstance();
 		dateCal.setTime(startDate);
 		Calendar ansCal = Calendar.getInstance();
-		
-		if (todayCal.get(Calendar.HOUR_OF_DAY)*60 + todayCal.get(Calendar.MINUTE) >= dateCal.get(Calendar.HOUR_OF_DAY)*60 + dateCal.get(Calendar.MINUTE)) {
-			todayCal.add(Calendar.DATE, 1);
-		}
 		
 		long dateLong = startDate.getTime(), todayLong = todayCal.getTime().getTime(); 
 		long day = 1000*60*60*24, week = 1000*60*60*24*7;
@@ -262,7 +259,7 @@ public class EventPeriod {
 		ansCal.set(Calendar.HOUR_OF_DAY, dateCal.get(Calendar.HOUR_OF_DAY));
 		ansCal.set(Calendar.MINUTE,	dateCal.get(Calendar.MINUTE));
 		
-		if (this.endDate != null && ansCal.getTime().after(this.endDate)) {
+		if (this.endDate != null && !this.endDate.after(ansCal.getTime())) {
 			return null;
 		}
 		
