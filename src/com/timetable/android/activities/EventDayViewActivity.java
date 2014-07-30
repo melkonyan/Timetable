@@ -1,7 +1,10 @@
 package com.timetable.android.activities;
 
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import org.holoeverywhere.widget.LinearLayout;
 import org.holoeverywhere.widget.TextView;
@@ -9,6 +12,7 @@ import org.holoeverywhere.widget.TextView;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,11 +33,15 @@ import com.timetable.android.functional.TimetableFunctional;
  */
 public class EventDayViewActivity extends ActionBarActivity {
 	
+	public static final SimpleDateFormat ACTION_BAR_DATE_FORMAT = new SimpleDateFormat("EEE, dd.MM", Locale.US); 
+	
 	private LinearLayout eventLayout;
 	
 	private EventPager eventPager;
 	
 	private DatePickerDialog datePickerDialog;
+	
+	private EventPagerListener mListener = new EventPagerListener();
 	
 	public EventPager getEventPager() {
 		return eventPager;
@@ -47,6 +55,10 @@ public class EventDayViewActivity extends ActionBarActivity {
 		this.eventPager = eventPager;
 		eventLayout.addView(eventPager,0);
 		
+	}
+	
+	public EventPagerListener getEventPagerListener() {
+		return mListener;
 	}
 	
 	@Override
@@ -63,7 +75,7 @@ public class EventDayViewActivity extends ActionBarActivity {
 		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
 		setEventPager(new EventPager(this, TimetableFunctional.getCurrentTime()));
-		
+		eventPager.prepare();
 		DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
 			@Override
@@ -73,12 +85,11 @@ public class EventDayViewActivity extends ActionBarActivity {
 				cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 				cal.set(Calendar.MONTH, monthOfYear);
 				getEventPager().goToDate(cal.getTime());
-				//setEventPager(new EventPager(EventDayViewActivity.this, cal.getTime()));
 			}
 			
 		};
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(getEventPager().getDate());
+		cal.setTime(getEventPager().getDisplayedDate());
 		datePickerDialog = new DatePickerDialog(EventDayViewActivity.this, mOnDateSetListener, 
 				cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 
@@ -105,11 +116,11 @@ public class EventDayViewActivity extends ActionBarActivity {
 	    switch (item.getItemId()) {
 	        case R.id.action_add_event:
 	            Intent eventAddIntent = new Intent(this, EventAddActivity.class);
-	            eventAddIntent.putExtra(EventAddActivity.INTENT_EXTRA_DATE, EventAddActivity.INIT_DATE_FORMAT.format(getEventPager().getDate()));
+	            eventAddIntent.putExtra(EventAddActivity.INTENT_EXTRA_DATE, EventAddActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
 	            startActivity(eventAddIntent);
 	        	return true;
 	        case R.id.action_view_today:
-	        	setEventPager(new EventPager(this, TimetableFunctional.getCurrentTime()));
+	        	eventPager.goToDate(TimetableFunctional.getCurrentTime());
 	        	return true;
 	        case R.id.action_go_to_date:
 	        	datePickerDialog.show();
@@ -124,11 +135,34 @@ public class EventDayViewActivity extends ActionBarActivity {
 			String idString = ((TextView) (((RelativeLayout) v).getChildAt(0))).getText().toString();
 			Intent eventEditIntent = new Intent(this, EventEditActivity.class);
 			eventEditIntent.putExtra("event_id", Integer.parseInt(idString));
-			eventEditIntent.putExtra("date", EventEditActivity.INIT_DATE_FORMAT.format(getEventPager().getDate()));
+			eventEditIntent.putExtra("date", EventEditActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
 			startActivity(eventEditIntent);
 		} catch (Exception e) {
 			TimetableLogger.error(e.toString());
 			return;
+		}
+	}
+
+	
+	private class EventPagerListener extends SimpleOnPageChangeListener {
+		
+		
+		public EventPagerListener() {
+			super();
+			TimetableLogger.log("EventPagerListener successfully created.");
+		}
+		
+		@Override
+		public void  onPageSelected(int pageNumber) {
+			TimetableLogger.log("EventPagerListener detected page # " + pageNumber + " selection.");
+			Date currentDate = getEventPager().getDateByPageNumber(pageNumber);
+			
+			//update action bar
+			String dateString = ACTION_BAR_DATE_FORMAT.format(currentDate);
+			if (TimetableFunctional.areSameDates(currentDate, TimetableFunctional.getCurrentTime())) {
+				dateString = getResources().getString(R.string.actionbar_date_today);
+			}
+			getSupportActionBar().setTitle(dateString);
 		}
 	}
 }

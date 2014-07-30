@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-import com.timetable.android.TimetableLogger;
-
 /*
  * Class for creating and binding AlarmService.
  */

@@ -3,88 +3,86 @@ package com.timetable.android;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.LinearLayout;
 import org.holoeverywhere.widget.TextView;
 import org.holoeverywhere.widget.ViewPager;
 
-import android.content.Context;
 import android.support.v4.view.PagerAdapter;
-
-import com.timetable.android.activities.EventDayViewActivity;
-import com.timetable.android.functional.TimetableFunctional;
-import com.timetable.android.R;
-
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ScrollView;
 
+import com.timetable.android.activities.EventDayViewActivity;
+
 public class EventPager extends ViewPager {
 
 	private final EventDayViewActivity activity;
-	
-	public static final SimpleDateFormat ACTION_BAR_DATE_FORMAT = new SimpleDateFormat("EEE, dd.MM", Locale.US); 
-	
+
 	private Date initDate; 
 	
-	private final int initPageNumber = 1000;
+	private final static int INIT_PAGE_NUMBER = 1000;
 	
 	EventPagerAdapter eventPagerAdapter;
 	
-	EventPagerListener eventPagerListener;
 	
-	public EventPager(Context context, Date initDate) {
-		super(context);
-		this.setId(1000);
-		this.activity = (EventDayViewActivity) context;
+	public EventPager(EventDayViewActivity activity, Date initDate) {
+		super(activity);
+		setId(1000);
+		this.activity = activity;
 		this.initDate = initDate;
 	
 		LayoutInflater layoutInflater = LayoutInflater.from(activity);	
 		layoutInflater.inflate(R.layout.event_pager, this, true);
-		this.eventPagerAdapter = new EventPagerAdapter(initDate);
-		this.eventPagerListener = new EventPagerListener();
-		this.setAdapter(eventPagerAdapter);
-		this.setOnPageChangeListener(eventPagerListener);
-		this.setCurrentItem(this.initPageNumber, false);
-		
+		eventPagerAdapter = new EventPagerAdapter(initDate);
+		setAdapter(eventPagerAdapter);
+		setOnPageChangeListener(activity.getEventPagerListener());
 	}
 	
-	//return current displaying date
-	public Date getDate() {
-		return eventPagerListener.currentDate;
+	/*
+	 * Should be could after EventPager is created to display default date. 
+	 */
+	public void prepare() {
+		setCurrentItem(INIT_PAGE_NUMBER);
 	}
 	
-	private Date getDateByPageNumber(int pageNumber) {
+	/*
+	 * Return currently displayed date.
+	 */
+	public Date getDisplayedDate() {
+		return getDateByPageNumber(getCurrentItem());
+	}
+	
+	public Date getDateByPageNumber(int pageNumber) {
 		Date date = new Date();
-		date.setTime(EventPager.this.initDate.getTime() + (long) (pageNumber-this.initPageNumber)*24*3600*1000);
+		date.setTime(initDate.getTime() + (long) (pageNumber-INIT_PAGE_NUMBER)*24*3600*1000);
 		return date;
 	}
 	
 	private int getPageNumberByDate(Date date) {
 		long day = 24*3600*1000;
-		return  initPageNumber + (int) ((date.getTime() - initDate.getTime()) / day);
+		return  INIT_PAGE_NUMBER + (int) ((date.getTime() - initDate.getTime()) / day);
 	}
 	
+	/*
+	 * Display specified date.
+	 */
 	public void goToDate(Date date) {
 		setCurrentItem(getPageNumberByDate(date));
 	}
 	
-	//updates pages when content has changed
+	/*
+	 * Update pages when content has changed.
+	 */
 	public void update() {
 		eventPagerAdapter.notifyDataSetChanged();
 	}
 	
 	private class EventPagerAdapter extends PagerAdapter{
 	
-		private Date currentDate;
-		
-		private int pageNumber = EventPager.this.initPageNumber;
-		
 		public EventPagerAdapter(Date currentDate) {
 			TimetableLogger.log("EventPagerAdapter created");
-			this.currentDate = currentDate;
 		}
 		
 		@Override
@@ -100,8 +98,7 @@ public class EventPager extends ViewPager {
 		@Override
 		public Object instantiateItem(View viewPager, int pageNumber) {
 			
-			this.currentDate = EventPager.this.getDateByPageNumber(pageNumber);
-			this.pageNumber = pageNumber;
+			Date currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			
 			TimetableDatabase db = TimetableDatabase.getInstance(EventPager.this.activity);
 		
@@ -133,9 +130,8 @@ public class EventPager extends ViewPager {
 			
 			((ViewPager) viewPager).addView(externalLayout,0);
 			
-			TimetableLogger.log("EventPagerAdapter displays page # "+ this.pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
+			TimetableLogger.log("EventPagerAdapter displays page # "+ pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
 			//logger.log("Events added to layout: " + internalLayout.getChildCount());
-			db.close();
 			return externalLayout;
 		}
 		
@@ -149,28 +145,6 @@ public class EventPager extends ViewPager {
 	            TimetableLogger.log("EventPagerAdapter destroys page number " + pageNumber);
 	            ((ViewPager) viewPager).removeView((View) view);
 	    }
-	}
-	
-	public class EventPagerListener extends SimpleOnPageChangeListener {
-		
-		private Date currentDate;
-		
-		public EventPagerListener() {
-			super();
-			TimetableLogger.log("EventPagerListener successfully created.");
-		}
-		
-		@Override
-		public void  onPageSelected(int pageNumber) {
-			TimetableLogger.log("EventPagerListener detected page # " + pageNumber + " selection.");
-			currentDate = EventPager.this.getDateByPageNumber(pageNumber);
-			//update action bar
-			String dateString = ACTION_BAR_DATE_FORMAT.format(currentDate);
-			if (TimetableFunctional.areSameDates(currentDate, TimetableFunctional.getCurrentTime())) {
-				dateString = getResources().getString(R.string.actionbar_date_today);
-			}
-			activity.getSupportActionBar().setTitle(dateString);
-		}
 	}
 
 }
