@@ -6,16 +6,6 @@ import java.util.Calendar;
 import org.holoeverywhere.widget.LinearLayout;
 import org.holoeverywhere.widget.TextView;
 
-import com.timetable.android.EventPager;
-import com.timetable.android.TimetableLogger;
-import com.timetable.android.alarm.AlarmService;
-import com.timetable.android.alarm.AlarmServiceManager;
-import com.timetable.android.functional.TimetableFunctional;
-import com.timetable.android.R;
-import com.timetable.android.R.id;
-import com.timetable.android.R.layout;
-import com.timetable.android.R.menu;
-
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +15,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
+
+import com.timetable.android.EventPager;
+import com.timetable.android.R;
+import com.timetable.android.TimetableLogger;
+import com.timetable.android.alarm.AlarmServiceManager;
+import com.timetable.android.functional.TimetableFunctional;
 
 
 /*
@@ -94,8 +89,7 @@ public class EventDayViewActivity extends ActionBarActivity {
 	public void onRestart() {
 		TimetableLogger.log("EventDayViewAcwativity was restarted.");
 		super.onRestart();
-		TimetableLogger.error(getEventPager().getDate().toString());
-		//getEventPager().update();
+		getEventPager().update();
 	}
 	
 	@Override
