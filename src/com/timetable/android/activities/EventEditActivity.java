@@ -1,11 +1,15 @@
 package com.timetable.android.activities;
 
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -53,7 +57,41 @@ public class EventEditActivity extends EventAddActivity {
 			setEvent(event);
 			showEventPeriod();
 			showEventAlarm();
+			eventDateVal.removeTextChangedListener(eventAddTextWatcher);
+			eventDateVal.addTextChangedListener(new TextWatcher() {
+				
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+				}
+				
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count,
+						int after) {
+				}
+				
+				@Override
+				public void afterTextChanged(Editable s) {
+					try {
+						String dateString = s.toString();
+						Calendar date = Calendar.getInstance();
+						date.setTime(dateFormat.parse(dateString));
+						int weekDay = date.get(Calendar.DAY_OF_WEEK) - 1;
+						for (int i = EventPeriod.SUNDAY; i <= EventPeriod.SATURDAY; i++) {
+							if (!eventPeriodWeekDayCheckBoxes[i].isEnabled()) {
+								eventPeriodWeekDayCheckBoxes[i].setEnabled(true);
+								eventPeriodWeekDayCheckBoxes[i].setChecked(event.period.isWeekOccurrence(i));
+							}
+						eventPeriodWeekDayCheckBoxes[weekDay].setEnabled(false);
+						eventPeriodWeekDayCheckBoxes[weekDay].setChecked(true);
+						}
+					} catch (ParseException e) {
+						return;
+					}
+				}
+			});
+			
 			eventDateVal.setText(dateFormat.format(date));
+			
 		} catch(Exception e) {
 			TimetableLogger.error("EventEditActivity received illegal data.");
 			finish();

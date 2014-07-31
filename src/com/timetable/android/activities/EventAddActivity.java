@@ -89,6 +89,8 @@ public class EventAddActivity extends ActionBarActivity {
 	public EditText eventAlarmTime;
 	public Spinner eventAlarmTypeSpinner;
 	
+	public TextWatcher eventAddTextWatcher;
+	
 	//table containing checkboxes of weekdays
 	public LinearLayout eventPeriodWeekDaysTable;
 	
@@ -124,7 +126,7 @@ public class EventAddActivity extends ActionBarActivity {
 		eventNameVal = (EditText) findViewById(R.id.event_add_name_val);
 		eventPlaceVal = (EditText) findViewById(R.id.event_add_place_val);
 		eventDateVal = (EditText) findViewById(R.id.event_add_date_val);
-		eventDateVal.addTextChangedListener(new TextWatcher() {
+		eventAddTextWatcher = new TextWatcher() {
 			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -154,7 +156,8 @@ public class EventAddActivity extends ActionBarActivity {
 					return;
 				}
 			}
-		});
+		};
+		eventDateVal.addTextChangedListener(eventAddTextWatcher);
 		
 		eventStartTimeVal = (EditText) findViewById(R.id.event_add_start_time_val);
 		eventEndTimeVal = (EditText) findViewById(R.id.event_add_end_time_val);
