@@ -88,7 +88,7 @@ public class EventPeriod {
 	}
 	
 	/*
-	 * return true, if weekly event has occurrence on the given day of week.  
+	 * Return true, if weekly event has occurrence on the given day of week.  
 	 */
 	public boolean isWeekOccurrence(int day) {
 		if (day > 6 || type != Type.WEEKLY) {
@@ -97,6 +97,7 @@ public class EventPeriod {
 		
 		return weekOccurrences[day];
 	}
+	
 	/*
 	 * returns true if period is valid
 	 */
@@ -221,7 +222,7 @@ public class EventPeriod {
 				System.out.println(diff);
 				break;
 			case WEEKLY:
-				if (today.before(startDate)) {
+				/*if (today.before(startDate)) {
 					todayCal.setTime(startDate);
 				}
 				
@@ -234,7 +235,7 @@ public class EventPeriod {
 					if (this.endDate != null && ansCal.getTime().after(this.endDate)) {
 						return null;
 					}
-				}
+				}*/
 				break;
 			case MONTHLY:
 				diff = this.interval - ((todayCal.get(Calendar.YEAR)- dateCal.get(Calendar.YEAR))*12 
@@ -256,8 +257,6 @@ public class EventPeriod {
 			default:
 				return null;
 		}
-		ansCal.set(Calendar.HOUR_OF_DAY, dateCal.get(Calendar.HOUR_OF_DAY));
-		ansCal.set(Calendar.MINUTE,	dateCal.get(Calendar.MINUTE));
 		
 		if (this.endDate != null && !this.endDate.after(ansCal.getTime())) {
 			return null;

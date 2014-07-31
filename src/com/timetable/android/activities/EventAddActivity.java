@@ -21,7 +21,9 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -122,6 +124,38 @@ public class EventAddActivity extends ActionBarActivity {
 		eventNameVal = (EditText) findViewById(R.id.event_add_name_val);
 		eventPlaceVal = (EditText) findViewById(R.id.event_add_place_val);
 		eventDateVal = (EditText) findViewById(R.id.event_add_date_val);
+		eventDateVal.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				try {
+					String dateString = s.toString();
+					Calendar date = Calendar.getInstance();
+					date.setTime(dateFormat.parse(dateString));
+					int weekDay = date.get(Calendar.DAY_OF_WEEK) - 1;
+					for (int i = 0; i < 7; i++) {
+						if (!eventPeriodWeekDayCheckBoxes[i].isEnabled()) {
+							eventPeriodWeekDayCheckBoxes[i].setEnabled(true);
+							eventPeriodWeekDayCheckBoxes[i].setChecked(false);
+						}
+					eventPeriodWeekDayCheckBoxes[weekDay].setEnabled(false);
+					eventPeriodWeekDayCheckBoxes[weekDay].setChecked(true);
+					}
+				} catch (ParseException e) {
+					return;
+				}
+			}
+		});
+		
 		eventStartTimeVal = (EditText) findViewById(R.id.event_add_start_time_val);
 		eventEndTimeVal = (EditText) findViewById(R.id.event_add_end_time_val);
 		eventNoteVal = (EditText) findViewById(R.id.event_add_note_val);
