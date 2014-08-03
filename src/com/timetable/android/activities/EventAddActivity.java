@@ -686,6 +686,9 @@ public class EventAddActivity extends ActionBarActivity {
 			Toast.makeText(this, "Error occured while saving event.", Toast.LENGTH_SHORT).show();
 		}
 		if (event.hasAlarm()) {
+			//TODO: create event properly
+			event.alarm.event = event;
+			
 			mManager.getService().createAlarm(event.alarm);
 		}
 		db.close();

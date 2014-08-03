@@ -1,14 +1,13 @@
 package com.timetable.android.alarm;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import com.timetable.android.Event;
 import com.timetable.android.EventChecker;
 import com.timetable.android.EventPeriod;
-import com.timetable.android.TimetableLogger;
-import com.timetable.android.functional.TimetableFunctional;
+import com.timetable.android.utils.DateUtils;
+import com.timetable.android.utils.TimetableUtils;
 
 public class EventAlarm {
 	
@@ -33,6 +32,14 @@ public class EventAlarm {
 	
 	public static final SimpleDateFormat timeFormat = EventChecker.alarmTimeFormat;
 	
+	public EventAlarm(Event event) {
+		this();
+		this.event = event;
+		this.eventId = event.id;
+		this.period = event.period;
+	}
+	
+	@Deprecated
 	public EventAlarm() {
 		period = new EventPeriod();
 	}
@@ -44,8 +51,33 @@ public class EventAlarm {
 		return new Date(alarmOccurrence.getTime() + (event.date.getTime() - time.getTime()));
 	}
 	
+	public Date getAlarmOccurrence(Date eventOccurrence) {
+		if (event == null) {
+			return null;
+		}
+		return new Date(eventOccurrence.getTime() + (time.getTime() - event.date.getTime()));
+	}
+	
+	public Date getNextEventOccurrence(Date today) {
+		return getEventOccurrence(getNextOccurrence(today));
+	}
+	
 	public Date getNextOccurrence(Date today) {
-		if (time.after(today)) {
+		if (event == null) {
+			return null;
+		}
+		//Date todayDate = DateUtils.extractDate(today);
+		Date todayDate = today;
+		if (DateUtils.compareTimes(time, today) != DateUtils.AFTER) {
+			todayDate = DateUtils.addDay(todayDate, 1);
+		}
+		
+		Date nextEventOccurrence = event.getNextOccurrence(getEventOccurrence(todayDate));
+		if (nextEventOccurrence == null) {
+			return null;
+		}
+		return getAlarmOccurrence(nextEventOccurrence);
+	/*	if (time.after(today)) {
 			if (period.type != EventPeriod.Type.WEEKLY) {
 				return time;
 			}
@@ -122,6 +154,7 @@ public class EventAlarm {
 		}
 		
 		return ansCal.getTime();
+	*/
 	}
 	
 
@@ -146,7 +179,7 @@ public class EventAlarm {
 	        return false;
 	    }
 	    EventAlarm that = (EventAlarm) other;
-	    return TimetableFunctional.areEqualOrNulls(this.time, that.time) && this.type == that.type
+	    return TimetableUtils.areEqualOrNulls(this.time, that.time) && this.type == that.type
 	    		&& this.eventId == that.eventId && this.id == that.id;
 	}
 }

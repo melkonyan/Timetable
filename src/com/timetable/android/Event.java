@@ -1,9 +1,13 @@
 package com.timetable.android;
 
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.timetable.android.alarm.EventAlarm;
-import com.timetable.android.functional.TimetableFunctional;
+import com.timetable.android.utils.DateUtils;
+import com.timetable.android.utils.TimetableUtils;
 
 public class Event {
 	
@@ -36,6 +40,16 @@ public class Event {
 	
 	public String note = "";
 	
+	//Dates, on which repeated event has no occurrence, even though it should
+	public Set<Date> exceptions = new TreeSet<Date>(new Comparator<Date>() {
+
+		@Override
+		public int compare(Date first, Date second) {
+			return DateUtils.compareDates(first, second); 
+		}
+	});
+	
+	
 	public Event(int id) {
 		this.id = id;
 		this.period = new EventPeriod();
@@ -57,9 +71,39 @@ public class Event {
 		return period.isEveryWeek();
 	}
 	
-	public boolean isToday(Date today) {
-		return period.hasOccurrenceOnDate(date, today);
+	public void addException(Date exception) {
+		exceptions.add(exception);
 	}
+	
+	public void deleteException(Date exception) {
+		exceptions.remove(exception);
+	}
+	
+	public boolean isException(Date today) {
+		return exceptions != null && exceptions.contains(today);
+	}
+	
+	public boolean isToday(Date today) {
+		return period.hasOccurrenceOnDate(date, today)  && !isException(today);
+	}
+	
+	public Date getNextOccurrence(Date today) {
+		Date nextEventDate = today;
+		while (true) {
+			nextEventDate = period.getNextOccurrence(date, nextEventDate);
+
+			if (nextEventDate == null  || period.isFinished(nextEventDate)) {
+				return null;
+			}
+			if (!isException(nextEventDate)) {
+				break;
+			}
+			nextEventDate = DateUtils.addDay(nextEventDate, 1);
+		}
+		return nextEventDate;
+	}
+	
+	
 	/*
 	 * return true if event is valid
 	 */
@@ -82,14 +126,15 @@ public class Event {
 	    }
 	    Event that = (Event) other;
 	    return this.id == that.id
-	    	&& TimetableFunctional.areEqualOrNulls(this.name, that.name)
-	        && TimetableFunctional.areEqualOrNulls(this.place, that.place)
-	        && TimetableFunctional.areEqualOrNulls(this.date, that.date)
-	        && TimetableFunctional.areEqualOrNulls(this.startTime, that.startTime)
-	        && TimetableFunctional.areEqualOrNulls(this.endTime, that.endTime)
-	        && TimetableFunctional.areEqualOrNulls(this.note, that.note)
-	        && TimetableFunctional.areEqualOrNulls(this.period, that.period)
-	        && TimetableFunctional.areEqualOrNulls(this.alarm, that.alarm);
+	    	&& TimetableUtils.areEqualOrNulls(this.name, that.name)
+	        && TimetableUtils.areEqualOrNulls(this.place, that.place)
+	        && TimetableUtils.areEqualOrNulls(this.date, that.date)
+	        && TimetableUtils.areEqualOrNulls(this.startTime, that.startTime)
+	        && TimetableUtils.areEqualOrNulls(this.endTime, that.endTime)
+	        && TimetableUtils.areEqualOrNulls(this.note, that.note)
+	        && TimetableUtils.areEqualOrNulls(this.period, that.period)
+	        && TimetableUtils.areEqualOrNulls(this.alarm, that.alarm)
+	    	&& TimetableUtils.areEqualOrNulls(this.exceptions, that.exceptions);
 	}
 	
 	@Override 
@@ -97,5 +142,66 @@ public class Event {
 		return "---------------\nName: " + name + "\nPlace: " + place + 
 				"\nDate: " + date.toString() + "\nNote: " + note + "\n" + period.toString()+ 
 				(hasAlarm() ? "\n" + alarm.toString() : "No alarm") + "\n---------------\n";
+	}
+	
+	public static class Builder {
+		
+		private Event event =  new Event();
+		
+		public Builder() {
+			
+		}
+		
+		public Builder setName(String name) {
+			event.name = name;
+			return this;
+		}
+		
+		public Builder setDate(Date date) {
+			event.date = date;
+			return this;
+		}
+		
+		public Builder setStartTime(Date startTime) {
+			event.startTime = startTime;
+			return this;
+		}
+		
+		public Builder setEndTime(Date endTime) {
+			event.endTime = endTime;
+			return this;
+		}
+		
+		public Builder setNote(String note) {
+			event.note = note;
+			return this;
+		}
+		
+		public Builder setPeriodType(EventPeriod.Type type) {
+			event.period.type = type;
+			return this;
+		}
+		
+		public Builder setPeriodInterval(int interval) {
+			event.period.interval = interval;
+			return this;
+		}
+		
+		public Builder setPeriodEndDate(Date endDate) {
+			event.period.endDate = endDate;
+			return this;
+		}
+		
+		public Builder setAlarmTime(Date alarmTime) {
+			if (!event.hasAlarm()) {
+				event.alarm = new EventAlarm(event);
+			}
+			event.alarm.time = alarmTime;
+			return this;
+		}
+		
+		public Event build() {
+			return event;
+		}
 	}
 }

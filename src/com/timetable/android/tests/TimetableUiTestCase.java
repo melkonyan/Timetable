@@ -21,8 +21,8 @@ import com.timetable.android.activities.EventAddActivity;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.activities.EventEditActivity;
 import com.timetable.android.alarm.EventAlarm;
-import com.timetable.android.functional.FakeTimeProvider;
-import com.timetable.android.functional.TimetableFunctional;
+import com.timetable.android.utils.FakeTimeProvider;
+import com.timetable.android.utils.TimetableUtils;
 
 public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventDayViewActivity> {
 
@@ -71,7 +71,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 	
 	public void setUp() throws ParseException {
 		currentDate = DATE_FORMAT.parse("7.07.2014");
-		TimetableFunctional.setTimeProvider(new FakeTimeProvider(currentDate));
+		TimetableUtils.setTimeProvider(new FakeTimeProvider(currentDate));
 		
 		solo = new Solo(getInstrumentation(), getActivity());
 		mResources = getActivity().getResources();

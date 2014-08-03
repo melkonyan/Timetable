@@ -3,7 +3,8 @@ package com.timetable.android;
 import java.util.Calendar;
 import java.util.Date;
 
-import com.timetable.android.functional.TimetableFunctional;
+import com.timetable.android.utils.DateUtils;
+import com.timetable.android.utils.TimetableUtils;
 
 public class EventPeriod {
 	
@@ -98,6 +99,10 @@ public class EventPeriod {
 		return weekOccurrences[day];
 	}
 	
+	public boolean isFinished(Date today) {
+		return endDate != null && DateUtils.compareDates(today, endDate) != DateUtils.BEFORE;
+	}
+	
 	/*
 	 * returns true if period is valid
 	 */
@@ -132,14 +137,14 @@ public class EventPeriod {
 	    if (this.type != that.type || this.id != that.id ||
 	    	this.type != Type.NONE && 
 	    	(this.interval != that.interval || 
-	    		!TimetableFunctional.areEqualOrNulls(this.endDate, that.endDate) || 
+	    		!TimetableUtils.areEqualOrNulls(this.endDate, that.endDate) || 
 	    		this.numberOfRepeats != that.numberOfRepeats) ||
 	    	this.type == Type.WEEKLY && this.getWeekOccurrences() != that.getWeekOccurrences()) {
 	    	
 	    	return false; 
 	    }
 	    return true;
-	   }
+	}
 	
 	@Override 
 	public String toString() {
@@ -152,37 +157,7 @@ public class EventPeriod {
 	 * Return true, if period, that was started on given @startDate, has occurrence on given @date.
 	 */
 	public boolean hasOccurrenceOnDate(Date startDate, Date date) {
-		
-		Calendar thisDate = Calendar.getInstance();
-		thisDate.setTime(startDate);
-		Calendar thatDate = Calendar.getInstance();
-		thatDate.setTime(date);
-		long thisDateInt = startDate.getTime(), thatDateInt = date.getTime(); 
-		
-		if (endDate != null &&  (thatDateInt - endDate.getTime()) / (1000*60*60*24) > 0 || date.compareTo(startDate) < 0) {
-			return false;
-		}
-				
-		switch (type) {
-			case NONE:
-				return (thatDateInt - thisDateInt) / (1000*60*60*24) == 0;
-			case DAILY: 
-				return (thatDateInt - thisDateInt) / (1000*60*60*24) % interval == 0;
-			case WEEKLY:
-				if (weekOccurrences == null) {
-					return false;
-				}
-				return weekOccurrences[thatDate.get(Calendar.DAY_OF_WEEK) - 1] 
-						&& (thatDateInt - thisDateInt) / (1000*60*60*24*7) % interval == 0;
-			case MONTHLY:
-				return thatDate.get(Calendar.DAY_OF_MONTH) == thisDate.get(Calendar.DAY_OF_MONTH)
-						&& ((thatDate.get(Calendar.YEAR) - thisDate.get(Calendar.YEAR))*12 
-						+ thatDate.get(Calendar.MONTH) - thisDate.get(Calendar.MONTH)) % interval == 0; 
-			case YEARLY:
-				return  thatDate.get(Calendar.DAY_OF_YEAR) == thisDate.get(Calendar.DAY_OF_YEAR)
-						&& (thatDate.get(Calendar.YEAR) - thisDate.get(Calendar.YEAR)) % interval == 0;
-		}
-		return false;
+		return DateUtils.areSameDates(date, getNextOccurrence(startDate, date));
 	}
 	
 	/*
@@ -190,12 +165,13 @@ public class EventPeriod {
 	 * Return null of there is no occurrences in the future.
 	 * Only date is considered, time plays no role.
 	 * If startDate and today are the same, today will be returned. 
+	 * Assume, that if period is weekly, it has occurrence on it's startDate
 	 */
 	public Date getNextOccurrence(Date startDate, Date today) {
-		if (startDate.after(today)) {
-			if (type != EventPeriod.Type.WEEKLY) {
-				return startDate;
-			}
+		if (DateUtils.compareDates(startDate, today) != DateUtils.BEFORE && 
+			//TODO: move comparison with endDate to new method
+			(endDate == null || endDate != null && DateUtils.compareDates(today, endDate) == DateUtils.BEFORE)){
+			return startDate;
 		}
 		
 		Calendar todayCal = Calendar.getInstance();
@@ -216,31 +192,39 @@ public class EventPeriod {
 				System.out.println(todayLong + " " + dateLong + " " + todayLong / day + " " + dateLong / day);
 				
 				if (diff == this.interval) diff = 0;
-				TimetableLogger.log(Integer.toString(diff));
 				ansCal.setTime(todayCal.getTime());
 				ansCal.add(Calendar.DATE, diff);
 				System.out.println(diff);
 				break;
 			case WEEKLY:
-				/*if (today.before(startDate)) {
-					todayCal.setTime(startDate);
-				}
+				diff = interval - (int) ((todayLong - dateLong) / week) % interval;
+				if (diff == interval) diff = 0;
 				
 				ansCal.setTime(todayCal.getTime());
-				ansCal.set(Calendar.HOUR_OF_DAY, dateCal.get(Calendar.HOUR_OF_DAY));
-				ansCal.set(Calendar.MINUTE,	dateCal.get(Calendar.MINUTE));
+				ansCal.add(Calendar.WEEK_OF_YEAR, diff);
 				
-				while(!this.hasOccurrenceOnDate(startDate, ansCal.getTime())) {
-					ansCal.add(Calendar.DATE, 1);
-					if (this.endDate != null && ansCal.getTime().after(this.endDate)) {
-						return null;
+				boolean isFound = false;
+				int count = 0;
+				for (int i = todayCal.get(Calendar.DAY_OF_WEEK); i <= Calendar.SATURDAY; i++) {
+					if (isWeekOccurrence(i - 1)) {
+						ansCal.add(Calendar.DATE, count);	
+						isFound = true;
+						break;
+					} else {
+						count ++;
 					}
-				}*/
+				}
+				if (isFound) {
+					break;
+				}
+					
+				ansCal.add(Calendar.WEEK_OF_YEAR, interval);
+				ansCal.add(Calendar.DATE, dateCal.get(Calendar.DAY_OF_WEEK) - todayCal.get(Calendar.DAY_OF_WEEK));
 				break;
 			case MONTHLY:
 				diff = this.interval - ((todayCal.get(Calendar.YEAR)- dateCal.get(Calendar.YEAR))*12 
 										+ todayCal.get(Calendar.MONTH) - dateCal.get(Calendar.MONTH)) % this.interval;
-				if (diff == this.interval && todayCal.get(Calendar.DAY_OF_MONTH) < dateCal.get(Calendar.DAY_OF_MONTH)) diff = 0;
+				if (diff == this.interval && todayCal.get(Calendar.DAY_OF_MONTH) <= dateCal.get(Calendar.DAY_OF_MONTH)) diff = 0;
 				ansCal.setTime(todayCal.getTime());
 				ansCal.add(Calendar.MONTH, diff);
 				ansCal.set(Calendar.DAY_OF_MONTH, dateCal.get(Calendar.DAY_OF_MONTH));
@@ -248,7 +232,7 @@ public class EventPeriod {
 				
 			case YEARLY:
 				diff = this.interval - (todayCal.get(Calendar.YEAR) - dateCal.get(Calendar.YEAR)) % this.interval;
-				if (diff == this.interval && todayCal.get(Calendar.DAY_OF_YEAR) >  dateCal.get(Calendar.DAY_OF_YEAR)) diff = 0;
+				if (diff == this.interval && todayCal.get(Calendar.DAY_OF_YEAR) <=  dateCal.get(Calendar.DAY_OF_YEAR)) diff = 0;
 				ansCal.setTime(todayCal.getTime());
 				ansCal.add(Calendar.YEAR, diff);
 				ansCal.set(Calendar.MONTH, dateCal.get(Calendar.MONTH));
@@ -258,10 +242,9 @@ public class EventPeriod {
 				return null;
 		}
 		
-		if (this.endDate != null && !this.endDate.after(ansCal.getTime())) {
+		if (endDate != null && DateUtils.compareDates(ansCal.getTime(), endDate) != DateUtils.BEFORE) {
 			return null;
 		}
-		
 		return ansCal.getTime();
 	}
 

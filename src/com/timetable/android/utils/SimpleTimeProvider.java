@@ -1,4 +1,4 @@
-package com.timetable.android.functional;
+package com.timetable.android.utils;
 
 import java.util.Calendar;
 import java.util.Date;

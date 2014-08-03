@@ -7,10 +7,31 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import com.timetable.android.EventPeriod;
+import com.timetable.android.utils.DateFormatFactory;
 
 public class EventPeriodTestCase extends TestCase {
 
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+	private SimpleDateFormat dateFormat = DateFormatFactory.getDateFormat();
+	
+	private SimpleDateFormat dateTimeFormat = DateFormatFactory.getDateTimeFormat();
+	
+	public void testIsFinished() throws ParseException {
+		EventPeriod period = new EventPeriod(); 
+		period.type = EventPeriod.Type.DAILY;
+		period.interval = 1;
+		
+		Date today = dateTimeFormat.parse("01.08.2014 18:47");
+		
+		assertFalse(period.isFinished(today));
+		
+		period.endDate = dateFormat.parse("01.08.2014");
+		
+		assertTrue(period.isFinished(today));
+		
+		period.endDate = dateFormat.parse("02.08.2014");
+		
+		assertFalse(period.isFinished(today));
+	}
 	
 	public void testPeriodWeekly() {
 		EventPeriod period = new EventPeriod();;
@@ -39,12 +60,15 @@ public class EventPeriodTestCase extends TestCase {
 	 * Test that function hasOccurrenceOnDate works normally for period, that does not repeat.
 	 */
 	public void testHasOccurrenceOnDateTypeNone() throws ParseException {
-		EventPeriod period = new EventPeriod();;
+		EventPeriod period = new EventPeriod();
 		Date searchDate = dateFormat.parse("27.12.2013");
 		Date startDate = dateFormat.parse("27.12.2013");
+		assertTrue(period.hasOccurrenceOnDate(startDate,searchDate));
+		
+		searchDate = dateTimeFormat.parse("27.12.2013 23:59");
 		
 		assertTrue(period.hasOccurrenceOnDate(startDate,searchDate));
-	
+		
 		startDate = dateFormat.parse("24.12.2013");
 		
 		assertFalse(period.hasOccurrenceOnDate(startDate, searchDate));
@@ -77,7 +101,11 @@ public class EventPeriodTestCase extends TestCase {
 		
 		period.endDate = dateFormat.parse("27.12.2013");
 		
-		assertTrue(period.hasOccurrenceOnDate(startDate, searchDate));
+		assertFalse(period.hasOccurrenceOnDate(startDate, searchDate));
+		
+		//searchDate = dateTimeFormat.parse("27.12.2013 17:00");
+		
+		assertFalse(period.hasOccurrenceOnDate(startDate, searchDate));
 		
 		period.endDate = dateFormat.parse("28.12.2013");
 		
@@ -145,7 +173,7 @@ public class EventPeriodTestCase extends TestCase {
 	/*
 	 * Test that function hasOccurrenceOnDate works normally for monthly period.
 	 */
-	public void testIsTodayPeriodMonthly() throws ParseException {
+	public void testhasOccurrenceOnDateTypeMonthly() throws ParseException {
 		Date searchDate = dateFormat.parse("29.01.2014");
 		EventPeriod period = new EventPeriod();;
 		Date startDate = dateFormat.parse("29.12.2013");
@@ -220,7 +248,7 @@ public class EventPeriodTestCase extends TestCase {
 			assertEquals(startDate, period.getNextOccurrence(startDate, today));
 			
 			today = dateFormat.parse("12.05.2014");
-			assertNull(period.getNextOccurrence(startDate, today));
+			assertEquals(today, period.getNextOccurrence(startDate, today));
 			
 			today = dateFormat.parse("09.03.20147");
 			assertNull(period.getNextOccurrence(startDate, today));
@@ -261,52 +289,31 @@ public class EventPeriodTestCase extends TestCase {
 		EventPeriod period = new EventPeriod();
 		period.interval = 1;
 		period.type = EventPeriod.Type.WEEKLY;
-		period.addWeekOccurrence(EventPeriod.SUNDAY);
-		Date startDate = dateFormat.parse("9.06.2014");//Monday
+		period.addWeekOccurrence(EventPeriod.TUESDAY);
 		
-		Date today = dateFormat.parse("6.06.2014");//Friday
+		Date startDate = dateFormat.parse("22.07.2014");
+		Date today = dateFormat.parse("31.07.2014");
 		
-		//assertTrue(period.hasOccurrenceOnDate(startDate, period.getNextOccurrence(startDate, today)));
-		assertEquals(dateFormat.parse("15.06.2014"), period.getNextOccurrence(startDate, today));
-		
-		period.addWeekOccurrence(EventPeriod.MONDAY);
-		
-		assertEquals(dateFormat.parse("09.06.2014"), period.getNextOccurrence(startDate, today));
-		
-		period.deleteWeekOccurrence(EventPeriod.MONDAY);
-		period.addWeekOccurrence(EventPeriod.WEDNESDAY);
-		period.interval = 3;
-		
-		assertEquals(dateFormat.parse("11.06.2014"), period.getNextOccurrence(startDate, today));
-		
-		period.addWeekOccurrence(EventPeriod.MONDAY);
-		period.deleteWeekOccurrence(EventPeriod.WEDNESDAY);
-		period.interval = 3;
-		
-		today = dateFormat.parse("10.06.2014");//Tuesday
-		
-		assertEquals(dateFormat.parse("15.06.2014"), period.getNextOccurrence(startDate, today));
-		
-		period.addWeekOccurrence(EventPeriod.WEDNESDAY);
-		
-		assertEquals(dateFormat.parse("11.06.2014"), period.getNextOccurrence(startDate, today));
-		
-		today = dateFormat.parse("03.07.2014");//Thursday
-		startDate = dateFormat.parse("30.06.2014");//Monday
-		period.interval = 2;
-		period.deleteWeekOccurrence(EventPeriod.WEDNESDAY);
-		period.deleteWeekOccurrence(EventPeriod.SUNDAY);
 		period.getNextOccurrence(startDate, today);
-		assertEquals(dateFormat.parse("14.07.2014"), period.getNextOccurrence(startDate, today));
+		assertEquals(dateFormat.parse("05.08.2014"), period.getNextOccurrence(startDate, today));
 		
-		period.addWeekOccurrence(EventPeriod.WEDNESDAY);
+		period.addWeekOccurrence(EventPeriod.FRIDAY);
 		
-		assertEquals(dateFormat.parse("14.07.2014"), period.getNextOccurrence(startDate, today));
+		assertEquals(dateFormat.parse("01.08.2014"), period.getNextOccurrence(startDate, today));
 		
-		period.addWeekOccurrence(EventPeriod.SATURDAY);
+		startDate = dateFormat.parse("29.07.2014");
+		period.interval = 2;
 		
-		assertEquals(dateFormat.parse("05.07.2014"), period.getNextOccurrence(startDate, today));
-			
+		assertEquals(dateFormat.parse("01.08.2014"), period.getNextOccurrence(startDate, today));
+		
+		period.deleteWeekOccurrence(EventPeriod.FRIDAY);
+		
+		assertEquals(dateFormat.parse("12.08.2014"), period.getNextOccurrence(startDate, today));
+		
+		period.endDate = dateFormat.parse("12.08.2014");
+		
+		assertNull(period.getNextOccurrence(startDate, today));
+		
 	}
 	
 	public void testGetNextOccurrenceTypeMonthly() throws ParseException {
@@ -316,7 +323,7 @@ public class EventPeriodTestCase extends TestCase {
 		period.type = EventPeriod.Type.MONTHLY;
 		Date startDate = dateFormat.parse("2.07.2014");
 		
-		Date today = dateFormat.parse("2.07.2014");
+		Date today = dateFormat.parse("3.07.2014");
 		
 		assertEquals(dateFormat.parse("2.03.2015"), period.getNextOccurrence(startDate, today));
 	

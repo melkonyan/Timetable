@@ -2,17 +2,16 @@ package com.timetable.android;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 import java.util.Vector;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.timetable.android.alarm.EventAlarm;
-import com.timetable.android.R;
 /*
  * Class for working with database(inserting, updating and deleting events, etc.).
  */
@@ -204,7 +203,10 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	}
     	cursor.moveToFirst();
     	do {
-    		alarms.add(getEventAlarmFromCursor(cursor));
+    		EventAlarm alarm = getEventAlarmFromCursor(cursor);
+    		//TODO: alarm is search recursively second time.
+    		alarm.event = searchEventById(alarm.eventId);
+    		alarms.add(alarm);
     	} while (cursor.moveToNext());
     	cursor.close();
     	return alarms;
@@ -293,6 +295,27 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	values.put("ex_date", dateFormat.format(date));
     	return dbWrite.insert("Exceptions", null, values);
     	}
+    
+    public Set<Date> getEventExceptions(Event event) {
+    	String query = "SELECT * FROM Exceptions where evt_id = ?";
+    	Cursor cursor = dbRead.rawQuery(query,  new String [] {Integer.toString(event.id)});
+    	Set<Date> exceptions = event.exceptions; 
+    	if (cursor.getCount() == 0) {
+    		cursor.close();
+    		return exceptions;
+    	}
+    	cursor.moveToFirst();
+    	do {
+    		try {
+    			Date exception = dateFormat.parse(cursor.getString(cursor.getColumnIndex("ex_date")));
+    			exceptions.add(exception);
+    		} catch (Exception e) {	
+    			TimetableLogger.log("TimetableDatabase.getEventException: Ivalid exception found.");
+    		}
+    	} while(cursor.moveToNext());
+    	cursor.close();
+    	return exceptions;
+    }
     
     /*
      * Delete all exceptions of given event.
@@ -422,6 +445,8 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 			event.alarm.event = event;
 			event.alarm.eventId = event.id;
 		}
+    	event.exceptions = getEventExceptions(event);
+		//TimetableLogger.error(event.name + " " + dateFormat.format(event.date) + " - exceptions: " + Integer.toString(event.exceptions.size()));
     	return event;
     }
     
@@ -445,7 +470,6 @@ public class TimetableDatabase extends SQLiteOpenHelper {
      * Return all events, that have occurrence on given date.
      */
     public Vector<Event> searchEventsByDate(Date date) {
-    	String dateString = dateFormat.format(date);
     	String query = "SELECT * FROM Events order by evt_start_time ASC";
     	Cursor cursor = dbRead.rawQuery(query, new String [] {});
     	
@@ -457,13 +481,14 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	cursor.moveToFirst();
     	do {
     		Event event = getEventFromCursor(cursor);
-    		if (event != null && event.isToday(date) && !isException(event, date)) {
+    		if (event != null && event.isToday(date)) {
     			events.add(event);
     		}
     	} while(cursor.moveToNext());
     	cursor.close();
     	return events;
     }
+    
     /*
      * Delete all content from database.
      * Used for testing.
@@ -474,6 +499,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	dbWrite.delete("Alarms", null, null);
     	dbWrite.delete("Periods", null, null);
     }
+    
     @Override
     public void close() {
     	//super.close();

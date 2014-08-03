@@ -22,7 +22,7 @@ import android.support.v4.app.NotificationCompat;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
-import com.timetable.android.functional.TimetableFunctional;
+import com.timetable.android.utils.TimetableUtils;
 import com.timetable.android.R;
 
 public class AlarmService extends Service {
@@ -32,6 +32,8 @@ public class AlarmService extends Service {
 	public static final String EXTRA_ALARM_ID_STRING = "alarm_id"; 
 
 	public static final int MAX_QUEUE_SIZE = 10000;
+	
+	private static final String NEXT_ALARM_NOTIFICATION_PREFIX = "Next alarm is on: ";
 	
 	public static final SimpleDateFormat alarmTimeFormat = new SimpleDateFormat("EEE, d. MMM yyyy 'at' HH:mm", Locale.US);
 	
@@ -48,7 +50,7 @@ public class AlarmService extends Service {
 
 		@Override
 		public int compare(EventAlarm alarm1, EventAlarm alarm2) {
-			Date today = TimetableFunctional.getCurrentTime();
+			Date today = TimetableUtils.getCurrentTime();
 			return alarm1.getNextOccurrence(today).compareTo(alarm2.getNextOccurrence(today));
 		}
 	}
@@ -94,8 +96,11 @@ public class AlarmService extends Service {
 	 * Create alarm with pending intent, that will be broadcasted to this class, when alarm should run.
 	 */
 	public void createAlarm(EventAlarm alarm) {
-		Date nextOccurrence = alarm.getNextOccurrence(TimetableFunctional.getCurrentTime());
+		TimetableLogger.log("AlarmService.createAlarm: creating alarm");
+		
+		Date nextOccurrence = alarm.getNextOccurrence(TimetableUtils.getCurrentTime());
 		if (nextOccurrence == null) {
+			TimetableLogger.log("AlarmService.creeateAlarm: has no next occurrence");
 			return;
 		}
 		alarmManager.set(AlarmManager.RTC_WAKEUP, nextOccurrence.getTime(), getPendingIntentFromAlarm(alarm));
@@ -117,6 +122,10 @@ public class AlarmService extends Service {
 	 * Delete notification, if needed.
 	 */
 	public void deleteAlarm(EventAlarm alarm) {
+		TimetableLogger.log("AlarmService.updateAlarm: deleting alarm");
+		if (!alarmQueue.contains(alarm)) {
+			return;
+		}
 		PendingIntent mIntent = getPendingIntentFromAlarm(alarm);
 		alarmManager.cancel(mIntent);
 		mIntent.cancel();
@@ -125,12 +134,13 @@ public class AlarmService extends Service {
 	}
 	
 	public void updateAlarm(EventAlarm alarm) {
-		if (alarm.getNextOccurrence(TimetableFunctional.getCurrentTime()) != null) {
+		if (alarm.getNextOccurrence(TimetableUtils.getCurrentTime()) != null) {
+			
 			createAlarm(alarm);
+		
 		} else {
 			deleteAlarm(alarm);
-		}
-		
+		}	
 	}
 	
 	public boolean existAlarm(EventAlarm alarm) {
@@ -145,7 +155,7 @@ public class AlarmService extends Service {
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
 		
 		Vector<EventAlarm> alarms = db.getAllAlarms();
-		Date today = TimetableFunctional.getCurrentTime();
+		Date today = TimetableUtils.getCurrentTime();
 		for (EventAlarm alarm : alarms) {
 			if (alarm.getNextOccurrence(today) != null) {
 				TimetableLogger.error("Creating alarm.");
@@ -157,19 +167,36 @@ public class AlarmService extends Service {
 	
 	
 	private PendingIntent getNotificationIntent() {
-		return PendingIntent.getBroadcast(this, ALARM_NOTIFICATION_CODE, 
-				new Intent(this, EventDayViewActivity.class), Intent.FLAG_ACTIVITY_NEW_TASK);
+		Intent notificationIntent = new Intent(this, EventDayViewActivity.class);
+		if (getNextAlarm() != null) {
+			Date nextAlarmEventDate = getNextAlarm().getNextEventOccurrence(TimetableUtils.getCurrentTime());
+			TimetableLogger.error("AlarmService: next alarm " + nextAlarmEventDate.toString());
+			notificationIntent.putExtra(EventDayViewActivity.EXTRAS_DATE, EventDayViewActivity.EXTRAS_DATE_FORMAT.format(nextAlarmEventDate));
+		}
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent intent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		return intent;
+        //return PendingIntent.getBroadcast(this, ALARM_NOTIFICATION_CODE, 
+		//		new Intent(this, EventDayViewActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 	}
+	
 	/*
 	 * Create notification informing user, that there are some alarms set.
 	 */
 	public void createNotification() {
 		PendingIntent mIntent = getNotificationIntent(); 
+		String nextAlarmString = "No alarms are set.";
+		if (getNextAlarm() != null ) {
+			Date nextAlarm = getNextAlarm().getNextOccurrence(TimetableUtils.getCurrentTime());
+			if (nextAlarm != null) {
+				nextAlarmString = NEXT_ALARM_NOTIFICATION_PREFIX + alarmTimeFormat.format(nextAlarm); 
+			}
+		}
 		NotificationCompat.Builder mBuilder = new NotificationCompat
 			.Builder(this)
 			.setSmallIcon(R.drawable.ic_action_alarms_light)
 			.setContentTitle("Timetable")
-			.setContentText("Next alarm is on: " + alarmTimeFormat.format(getNextAlarm().getNextOccurrence(TimetableFunctional.getCurrentTime())))
+			.setContentText(nextAlarmString)
 			.setLargeIcon(((BitmapDrawable)this.getResources().getDrawable(R.drawable.ic_action_alarms)).getBitmap())
 			.setContentIntent(mIntent);
 		notificationManager.notify(ALARM_NOTIFICATION_CODE, mBuilder.build());

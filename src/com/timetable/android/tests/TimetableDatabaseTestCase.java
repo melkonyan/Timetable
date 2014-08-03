@@ -5,15 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
 
-import android.test.ActivityInstrumentationTestCase2;
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
 
 import com.timetable.android.Event;
 import com.timetable.android.EventPeriod;
 import com.timetable.android.TimetableDatabase;
-import com.timetable.android.TimetableLogger;
-import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.alarm.EventAlarm;
 
 public class TimetableDatabaseTestCase extends AndroidTestCase {
@@ -93,6 +90,26 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 		assertEquals(0, events.size());
 		
 		
+	}
+	
+	public void testSearchEventById() throws ParseException {
+		Event event = new Event();
+		event.name = "event1";
+		event.date = dateFormat.parse("31.07.2014");
+		event.startTime = timeFormat.parse("11:24:00");
+		
+		assertTrue(event.isOk());
+		
+		event = db.insertEvent(event);
+		
+		assertEquals(event, db.searchEventById(event.id));
+		Date exception =  dateFormat.parse("02.08.2014");
+		
+		db.insertException(event, exception);
+		event.exceptions.add(exception);
+			
+		assertEquals(event, db.searchEventById(event.id));
+		assertTrue(event.isException(exception));
 	}
 	
 	public void testUpdateEvent() {

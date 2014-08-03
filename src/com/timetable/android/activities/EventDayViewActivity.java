@@ -1,6 +1,7 @@
 package com.timetable.android.activities;
 
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,7 +25,9 @@ import com.timetable.android.EventPager;
 import com.timetable.android.R;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.alarm.AlarmServiceManager;
-import com.timetable.android.functional.TimetableFunctional;
+import com.timetable.android.utils.DateFormatFactory;
+import com.timetable.android.utils.DateUtils;
+import com.timetable.android.utils.TimetableUtils;
 
 
 /*
@@ -34,6 +37,10 @@ import com.timetable.android.functional.TimetableFunctional;
 public class EventDayViewActivity extends ActionBarActivity {
 	
 	public static final SimpleDateFormat ACTION_BAR_DATE_FORMAT = new SimpleDateFormat("EEE, dd.MM", Locale.US); 
+	
+	public static final String EXTRAS_DATE = "date";
+	
+	public static final SimpleDateFormat EXTRAS_DATE_FORMAT = DateFormatFactory.getDateFormat();
 	
 	private LinearLayout eventLayout;
 	
@@ -56,9 +63,26 @@ public class EventDayViewActivity extends ActionBarActivity {
 		eventLayout.addView(eventPager,0);
 		
 	}
-	
+
 	public EventPagerListener getEventPagerListener() {
 		return mListener;
+	}
+	
+	private Date getExtraDate() {
+		Bundle extras = getIntent().getExtras();
+		if (extras == null) {
+			return null;
+		}
+		String dateString = extras.getString(EXTRAS_DATE);
+		if (dateString == null) {
+			return null;
+		}
+		try {
+			return EXTRAS_DATE_FORMAT.parse(dateString);
+		} catch (ParseException e) {
+			TimetableLogger.error("EventDayViewActivity.getExtraDate: could not parse date");
+			return null;
+		}
 	}
 	
 	@Override
@@ -74,7 +98,7 @@ public class EventDayViewActivity extends ActionBarActivity {
 		
 		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
-		setEventPager(new EventPager(this, TimetableFunctional.getCurrentTime()));
+		setEventPager(new EventPager(this, TimetableUtils.getCurrentTime()));
 		eventPager.prepare();
 		DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
@@ -88,6 +112,12 @@ public class EventDayViewActivity extends ActionBarActivity {
 			}
 			
 		};
+		
+		Date startDate = getExtraDate();
+		if (startDate != null) {
+			TimetableLogger.error("Start EventDayViewActivity with extra date: " + startDate.toString());
+			eventPager.goToDate(startDate);
+		}
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getEventPager().getDisplayedDate());
 		datePickerDialog = new DatePickerDialog(EventDayViewActivity.this, mOnDateSetListener, 
@@ -120,7 +150,7 @@ public class EventDayViewActivity extends ActionBarActivity {
 	            startActivity(eventAddIntent);
 	        	return true;
 	        case R.id.action_view_today:
-	        	eventPager.goToDate(TimetableFunctional.getCurrentTime());
+	        	eventPager.goToDate(TimetableUtils.getCurrentTime());
 	        	return true;
 	        case R.id.action_go_to_date:
 	        	datePickerDialog.show();
@@ -159,7 +189,7 @@ public class EventDayViewActivity extends ActionBarActivity {
 			
 			//update action bar
 			String dateString = ACTION_BAR_DATE_FORMAT.format(currentDate);
-			if (TimetableFunctional.areSameDates(currentDate, TimetableFunctional.getCurrentTime())) {
+			if (DateUtils.areSameDates(currentDate, TimetableUtils.getCurrentTime())) {
 				dateString = getResources().getString(R.string.actionbar_date_today);
 			}
 			getSupportActionBar().setTitle(dateString);

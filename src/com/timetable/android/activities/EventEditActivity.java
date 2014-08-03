@@ -168,6 +168,9 @@ public class EventEditActivity extends EventAddActivity {
 			event.period.endDate.setTime(date.getTime() - day);
 			db.updateEvent(event);
 			editedEvent = db.insertEvent(editedEvent);
+			for (Date exception: event.exceptions) {
+				db.insertException(editedEvent, exception);
+			}
 			if (event.hasAlarm()) {
 				event.alarm.period = event.period;
 				alarmService.updateAlarm(event.alarm);
@@ -175,6 +178,12 @@ public class EventEditActivity extends EventAddActivity {
 		} else {
 			//today there is no session of this event
 			db.insertException(event, date);
+			//TODO: eliminate code duplication(same code as in deleteRepeatableEvent
+			if (event.hasAlarm()) {
+				event.addException(date);
+				event.alarm.event = event;
+				alarmService.updateAlarm(event.alarm);
+			}
 			editedEvent.period.type = EventPeriod.Type.NONE;
 			editedEvent = db.insertEvent(editedEvent);
 		}
@@ -202,6 +211,7 @@ public class EventEditActivity extends EventAddActivity {
 	
 	private void deleteRepeatableEvent(boolean deleteFutureEvents) {
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
+		AlarmService alarmService = mManager.getService();
 		
 		if (deleteFutureEvents) {
 			//from today on this event ends
@@ -209,7 +219,6 @@ public class EventEditActivity extends EventAddActivity {
 			event.period.endDate = new Date();
 			event.period.endDate.setTime(date.getTime() - day);
 			event = db.updateEvent(event);
-			AlarmService alarmService = mManager.getService();
 			if (event.hasAlarm()) {
 				event.alarm.period = event.period;
 				alarmService.updateAlarm(event.alarm);
@@ -217,6 +226,11 @@ public class EventEditActivity extends EventAddActivity {
 		} else {
 			//today there is no session of this event
 			db.insertException(event, date);
+			if (event.hasAlarm()) {
+				event.addException(date);
+				event.alarm.event = event;
+				alarmService.updateAlarm(event.alarm);
+			}
 		}
 		db.close();
 	}

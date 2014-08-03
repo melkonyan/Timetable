@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.timetable.android.Event;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
-import com.timetable.android.functional.TimetableFunctional;
+import com.timetable.android.utils.TimetableUtils;
 import com.timetable.android.R;
 import com.timetable.android.R.raw;
 
@@ -42,7 +42,7 @@ public class EventAlarmDialogActivity extends Activity {
 	    db = TimetableDatabase.getInstance(this);
 		alarm = getEventAlarmFromIntent();
 		alarm.event = db.searchEventById(alarm.eventId);
-		if (db.isException(alarm.event, alarm.getEventOccurrence(TimetableFunctional.getCurrentTime()))) {
+		if (db.isException(alarm.event, alarm.getEventOccurrence(TimetableUtils.getCurrentTime()))) {
 			finish();
 		}
 		mManager = new AlarmServiceManager(this);
