@@ -8,7 +8,6 @@ import junit.framework.TestCase;
 
 import com.timetable.android.Event;
 import com.timetable.android.EventPeriod;
-import com.timetable.android.TimetableLogger;
 import com.timetable.android.alarm.EventAlarm;
 
 public class EventAlarmTestCase extends TestCase {

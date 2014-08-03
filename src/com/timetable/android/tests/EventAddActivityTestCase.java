@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import org.holoeverywhere.widget.EditText;
-import org.holoeverywhere.widget.Spinner;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,15 +13,10 @@ import android.test.RenamingDelegatingContext;
 import android.test.UiThreadTest;
 import android.view.View;
 
-import com.timetable.android.TimetableDatabase;
-import com.timetable.android.activities.EventAddActivity;
 import com.timetable.android.R;
+import com.timetable.android.activities.EventAddActivity;
 
 public class EventAddActivityTestCase extends ActivityInstrumentationTestCase2<EventAddActivity> {
-	
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-	
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 	
 	private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 	
@@ -32,7 +26,6 @@ public class EventAddActivityTestCase extends ActivityInstrumentationTestCase2<E
 	
 	private EventAddActivity mActivity;
 	
-	private TimetableDatabase db;
 	
 	
 	public EventAddActivityTestCase() {

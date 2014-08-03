@@ -165,16 +165,18 @@ public class AlarmService extends Service {
 		db.close();
 	}
 	
-	
-	private PendingIntent getNotificationIntent() {
+	public Intent getNotificationIntent() {
 		Intent notificationIntent = new Intent(this, EventDayViewActivity.class);
 		if (getNextAlarm() != null) {
 			Date nextAlarmEventDate = getNextAlarm().getNextEventOccurrence(TimetableUtils.getCurrentTime());
-			TimetableLogger.error("AlarmService: next alarm " + nextAlarmEventDate.toString());
 			notificationIntent.putExtra(EventDayViewActivity.EXTRAS_DATE, EventDayViewActivity.EXTRAS_DATE_FORMAT.format(nextAlarmEventDate));
 		}
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent intent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        return notificationIntent;
+	}
+	
+	public PendingIntent getNotificationPendingIntent() {
+		PendingIntent intent = PendingIntent.getActivity(this, 0, getNotificationIntent(), 0);
 		return intent;
         //return PendingIntent.getBroadcast(this, ALARM_NOTIFICATION_CODE, 
 		//		new Intent(this, EventDayViewActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
@@ -184,7 +186,7 @@ public class AlarmService extends Service {
 	 * Create notification informing user, that there are some alarms set.
 	 */
 	public void createNotification() {
-		PendingIntent mIntent = getNotificationIntent(); 
+		PendingIntent mIntent = getNotificationPendingIntent(); 
 		String nextAlarmString = "No alarms are set.";
 		if (getNextAlarm() != null ) {
 			Date nextAlarm = getNextAlarm().getNextOccurrence(TimetableUtils.getCurrentTime());
@@ -208,7 +210,7 @@ public class AlarmService extends Service {
 	 */
 	public void deleteNotification() {
 		notificationManager.cancel(ALARM_NOTIFICATION_CODE);
-		getNotificationIntent().cancel();
+		getNotificationPendingIntent().cancel();
 	}
 	
 	public void updateNotification() {

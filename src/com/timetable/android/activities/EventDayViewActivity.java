@@ -60,6 +60,7 @@ public class EventDayViewActivity extends ActionBarActivity {
 		}
 		
 		this.eventPager = eventPager;
+		this.eventPager.prepare();
 		eventLayout.addView(eventPager,0);
 		
 	}
@@ -99,7 +100,6 @@ public class EventDayViewActivity extends ActionBarActivity {
 		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
 		setEventPager(new EventPager(this, TimetableUtils.getCurrentTime()));
-		eventPager.prepare();
 		DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
 			@Override
@@ -108,7 +108,8 @@ public class EventDayViewActivity extends ActionBarActivity {
 				cal.set(Calendar.YEAR, year);
 				cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 				cal.set(Calendar.MONTH, monthOfYear);
-				getEventPager().goToDate(cal.getTime());
+				//getEventPager().goToDate(cal.getTime());
+				setEventPager(new EventPager(EventDayViewActivity.this, cal.getTime()));
 			}
 			
 		};
@@ -116,7 +117,8 @@ public class EventDayViewActivity extends ActionBarActivity {
 		Date startDate = getExtraDate();
 		if (startDate != null) {
 			TimetableLogger.error("Start EventDayViewActivity with extra date: " + startDate.toString());
-			eventPager.goToDate(startDate);
+			setEventPager(new EventPager(this,startDate));
+			//eventPager.goToDate(startDate);
 		}
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getEventPager().getDisplayedDate());
@@ -150,7 +152,8 @@ public class EventDayViewActivity extends ActionBarActivity {
 	            startActivity(eventAddIntent);
 	        	return true;
 	        case R.id.action_view_today:
-	        	eventPager.goToDate(TimetableUtils.getCurrentTime());
+	        	setEventPager(new EventPager(this, TimetableUtils.getCurrentTime()));
+	        	//eventPager.goToDate(TimetableUtils.getCurrentTime());
 	        	return true;
 	        case R.id.action_go_to_date:
 	        	datePickerDialog.show();

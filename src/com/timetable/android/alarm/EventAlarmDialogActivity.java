@@ -1,22 +1,16 @@
 package com.timetable.android.alarm;
 
-import java.io.IOException;
-
-import com.timetable.android.Event;
-import com.timetable.android.TimetableDatabase;
-import com.timetable.android.TimetableLogger;
-import com.timetable.android.utils.TimetableUtils;
-import com.timetable.android.R;
-import com.timetable.android.R.raw;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
 import android.os.Bundle;
+
+import com.timetable.android.R;
+import com.timetable.android.TimetableDatabase;
+import com.timetable.android.TimetableLogger;
+import com.timetable.android.utils.TimetableUtils;
 
 /*
  * Activity, that is created when event alarm is fired. Contains the single button, that allows user to disable alarm.

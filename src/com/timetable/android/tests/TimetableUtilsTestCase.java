@@ -3,11 +3,10 @@ package com.timetable.android.tests;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import junit.framework.TestCase;
+
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.TimetableUtils;
-import com.timetable.android.R;
-
-import junit.framework.TestCase;
 
 public class TimetableUtilsTestCase extends TestCase {
 	

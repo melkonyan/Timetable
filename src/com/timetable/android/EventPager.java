@@ -7,9 +7,9 @@ import java.util.List;
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.LinearLayout;
 import org.holoeverywhere.widget.TextView;
-import org.holoeverywhere.widget.ViewPager;
 
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ScrollView;
@@ -69,7 +69,8 @@ public class EventPager extends ViewPager {
 	 * Display specified date.
 	 */
 	public void goToDate(Date date) {
-		setCurrentItem(getPageNumberByDate(date));
+		TimetableLogger.error("EventPager.goToDate: go to page: " + getPageNumberByDate(date));
+		setCurrentItem(getPageNumberByDate(date), false);
 	}
 	
 	/*
@@ -97,7 +98,7 @@ public class EventPager extends ViewPager {
 		
 		@Override
 		public Object instantiateItem(View viewPager, int pageNumber) {
-			
+			TimetableLogger.log("EventPager: try instantiate page " + Integer.toString(pageNumber));
 			Date currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			
 			TimetableDatabase db = TimetableDatabase.getInstance(EventPager.this.activity);
@@ -105,12 +106,12 @@ public class EventPager extends ViewPager {
 			LinearLayout externalLayout = new LinearLayout(activity);
 			externalLayout.setOrientation(LinearLayout.HORIZONTAL);
 			ScrollView scrollView = new ScrollView(activity);
-			scrollView.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+			scrollView.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.MATCH_PARENT));
 			scrollView.setFillViewport(true);
 			
 			LinearLayout internalLayout = new LinearLayout(activity); 
 			internalLayout.setOrientation(LinearLayout.VERTICAL);
-			internalLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+			internalLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 			
 			List<Event> events = db.searchEventsByDate(currentDate);
 			for (Event event: events) {
@@ -130,7 +131,7 @@ public class EventPager extends ViewPager {
 			
 			((ViewPager) viewPager).addView(externalLayout,0);
 			
-			TimetableLogger.log("EventPagerAdapter displays page # "+ pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
+			TimetableLogger.log("EventPagerAdapter created page # "+ pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
 			//logger.log("Events added to layout: " + internalLayout.getChildCount());
 			return externalLayout;
 		}
