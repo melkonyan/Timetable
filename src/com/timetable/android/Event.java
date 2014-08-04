@@ -157,6 +157,11 @@ public class Event {
 			return this;
 		}
 		
+		public Builder setPlace(String place) {
+			event.place = place;
+			return this;
+		}
+		
 		public Builder setDate(Date date) {
 			event.date = date;
 			return this;
@@ -174,6 +179,11 @@ public class Event {
 		
 		public Builder setNote(String note) {
 			event.note = note;
+			return this;
+		}
+		
+		public Builder setPeriod(EventPeriod period) {
+			event.period = period;
 			return this;
 		}
 		

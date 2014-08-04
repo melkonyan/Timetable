@@ -31,7 +31,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
-import android.widget.TimePicker;
 
 import com.timetable.android.Event;
 import com.timetable.android.EventChecker;
@@ -484,13 +483,11 @@ public class EventAddActivity extends Activity {
 		return isSetEventAlarm;
 	}
 	
-	public EventAlarm getEventAlarm() throws IllegalEventDataException {
+	public Date getEventAlarmTime() throws IllegalEventDataException {
 		if (!isSetEventAlarm()) {
 			return null;
 		}
-		EventAlarm eventAlarm = new EventAlarm();
-		eventAlarm.time = checker.getAlarmTimeFromString(eventAlarmTime.getText().toString());
-		return eventAlarm;
+		return checker.getAlarmTimeFromString(eventAlarmTime.getText().toString());
 	}
 	
 	public void setEventAlarm(EventAlarm alarm) {
@@ -668,21 +665,19 @@ public class EventAddActivity extends Activity {
 	}
 	
 	public Event getEvent() throws IllegalEventDataException {
-		Event event = new Event();
+		Event.Builder builder = new Event.Builder();
 		//TODO: set focus on invalid text fields
 		try {
-			event.name = checker.getNameFromString(eventNameVal.getText().toString());
-			event.place = checker.getPlaceFromString(eventPlaceVal.getText().toString());
-			event.date = checker.getDateFromString(eventDateVal.getText().toString());
-			event.startTime = checker.getStartTimeFromString(eventStartTimeVal.getText().toString());
-			event.endTime = checker.getEndTimeFromString(eventEndTimeVal.getText().toString());
-			event.note = checker.getNoteFromString(eventNoteVal.getText().toString());
-			event.alarm = getEventAlarm();
-			event.period = getEventPeriod();
-			if (event.hasAlarm()) {
-				event.alarm.period = event.period;
-			}
-			TimetableLogger.log(event.toString());
+			builder.setName(checker.getNameFromString(eventNameVal.getText().toString()))
+					.setPlace(checker.getPlaceFromString(eventPlaceVal.getText().toString()))
+					.setDate(checker.getDateFromString(eventDateVal.getText().toString()))
+					.setStartTime(checker.getStartTimeFromString(eventStartTimeVal.getText().toString()))
+					.setEndTime(checker.getEndTimeFromString(eventEndTimeVal.getText().toString()))
+					.setNote(checker.getNoteFromString(eventNoteVal.getText().toString()))
+					.setAlarmTime(getEventAlarmTime())
+					.setPeriod(getEventPeriod());
+			Event event = builder.build();
+			TimetableLogger.log("EventAddActivity.getEvent:\n" +  event.toString());
 			return event;
 		}  catch (IllegalEventDateException e) {
 			throw e;

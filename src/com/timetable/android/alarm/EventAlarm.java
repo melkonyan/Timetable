@@ -23,11 +23,14 @@ public class EventAlarm {
 	
 	public Date time;
 
+	
 	//Id if event which has this alarm
+	@Deprecated
 	public int eventId = 0;
 	
 	public Event event;
 	
+	@Deprecated
 	public EventPeriod period;
 	
 	public static final SimpleDateFormat timeFormat = EventChecker.alarmTimeFormat;

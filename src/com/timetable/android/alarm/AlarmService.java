@@ -103,6 +103,7 @@ public class AlarmService extends Service {
 			TimetableLogger.log("AlarmService.creeateAlarm: has no next occurrence");
 			return;
 		}
+		
 		alarmManager.set(AlarmManager.RTC_WAKEUP, nextOccurrence.getTime(), getPendingIntentFromAlarm(alarm));
 		Iterator<EventAlarm> iterator = alarmQueue.iterator();
 		while(iterator.hasNext()) {

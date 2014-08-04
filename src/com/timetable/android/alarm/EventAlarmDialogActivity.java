@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
+import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.utils.TimetableUtils;
 
 /*
@@ -58,6 +60,10 @@ public class EventAlarmDialogActivity extends Activity {
 				alarmService.updateAlarm(alarm);
 				mediaPlayer.stop();
 				mediaPlayer.release();
+				Intent intent = new Intent(EventAlarmDialogActivity.this, EventDayViewActivity.class);
+				intent.putExtra(EventDayViewActivity.EXTRAS_DATE, 
+								EventDayViewActivity.EXTRAS_DATE_FORMAT.format(alarm.getEventOccurrence(TimetableUtils.getCurrentTime())));
+				EventAlarmDialogActivity.this.startActivity(intent);
 				EventAlarmDialogActivity.this.finish();
 				
 			}
