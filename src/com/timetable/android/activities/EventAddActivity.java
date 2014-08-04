@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.widget.AdapterView;
 import org.holoeverywhere.widget.AdapterView.OnItemSelectedListener;
 import org.holoeverywhere.widget.ArrayAdapter;
@@ -16,11 +17,11 @@ import org.holoeverywhere.widget.LinearLayout;
 import org.holoeverywhere.widget.Spinner;
 import org.holoeverywhere.widget.TextView;
 import org.holoeverywhere.widget.Toast;
+import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
+import org.holoeverywhere.widget.datetimepicker.time.RadialPickerLayout;
+import org.holoeverywhere.widget.datetimepicker.time.TimePickerDialog;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -28,7 +29,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
@@ -51,7 +51,7 @@ import com.timetable.android.alarm.EventAlarm;
  * If Intent has extra field 'date' contains date in format 'dd.MM.yyyy HH:mm',
  * this values will be set to appropriate fields
  */
-public class EventAddActivity extends ActionBarActivity {
+public class EventAddActivity extends Activity {
 	
 	public static final SimpleDateFormat INIT_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 	
@@ -226,17 +226,24 @@ public class EventAddActivity extends ActionBarActivity {
 				DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
 					@Override
-					public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+					public void onDateSet(DatePickerDialog dialog, int year,
+							int monthOfYear, int dayOfMonth) {
 						Calendar cal = Calendar.getInstance();
 						cal.set(Calendar.YEAR, year);
 						cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 						cal.set(Calendar.MONTH, monthOfYear);
 						setEventDate(cal);
+						
 					}
 					
 				};
-				new DatePickerDialog(EventAddActivity.this, mOnDateSetListener, 
-						getEventDate().get(Calendar.YEAR), getEventDate().get(Calendar.MONTH), getEventDate().get(Calendar.DAY_OF_MONTH)).show();
+				DatePickerDialog mDialog = DatePickerDialog.newInstance(mOnDateSetListener, 
+						getEventDate().get(Calendar.YEAR), getEventDate().get(Calendar.MONTH), getEventDate().get(Calendar.DAY_OF_MONTH));
+				if (getSupportFragmentManager() == null) {
+					TimetableLogger.error("EventAddActivity: fragmentmanager is null");
+				}
+				mDialog.show(getSupportFragmentManager());
+				
 				
 			}
 		});
@@ -250,16 +257,20 @@ public class EventAddActivity extends ActionBarActivity {
 				TimePickerDialog.OnTimeSetListener mOnTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
 					
 					@Override
-					public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+					public void onTimeSet(RadialPickerLayout view,
+							int hourOfDay, int minute) {
+						
 						Calendar cal = Calendar.getInstance();
 						cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
 						cal.set(Calendar.MINUTE, minute);
 						eventStartTimeVal.setText(timeFormat.format(cal.getTime()));
-						}
+
+					}
 				};
 				
-				new TimePickerDialog(EventAddActivity.this, mOnTimeSetListener, 
-										getEventStartTime().get(Calendar.HOUR_OF_DAY), getEventStartTime().get(Calendar.MINUTE), true).show();
+				TimePickerDialog.newInstance(mOnTimeSetListener, 
+										getEventStartTime().get(Calendar.HOUR_OF_DAY), getEventStartTime().get(Calendar.MINUTE), true)
+										.show(getSupportFragmentManager());
 			}
 		});
 		
@@ -272,16 +283,19 @@ public class EventAddActivity extends ActionBarActivity {
 				TimePickerDialog.OnTimeSetListener mOnTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
 					
 					@Override
-					public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+					public void onTimeSet(RadialPickerLayout view,
+							int hourOfDay, int minute) {
 						Calendar cal = Calendar.getInstance();
 						cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
 						cal.set(Calendar.MINUTE, minute);
 						eventEndTimeVal.setText(timeFormat.format(cal.getTime()));
-						}
+						
+					}
 				};
 				
-				new TimePickerDialog(EventAddActivity.this, mOnTimeSetListener, 
-										getEventEndTime().get(Calendar.HOUR_OF_DAY), getEventEndTime().get(Calendar.MINUTE), true).show();
+				TimePickerDialog.newInstance(mOnTimeSetListener, 
+										getEventEndTime().get(Calendar.HOUR_OF_DAY), getEventEndTime().get(Calendar.MINUTE), true)
+										.show(getSupportFragmentManager());
 			}
 		});
 		

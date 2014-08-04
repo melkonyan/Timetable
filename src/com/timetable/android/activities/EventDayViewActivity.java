@@ -7,18 +7,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.widget.LinearLayout;
 import org.holoeverywhere.widget.TextView;
+import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 
-import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.RelativeLayout;
 
 import com.timetable.android.EventPager;
@@ -34,7 +33,7 @@ import com.timetable.android.utils.TimetableUtils;
  * Activity that displays all events of certain day
  * User can view events of next or previous day by shifting page right or left
  */
-public class EventDayViewActivity extends ActionBarActivity {
+public class EventDayViewActivity extends Activity {
 	
 	public static final SimpleDateFormat ACTION_BAR_DATE_FORMAT = new SimpleDateFormat("EEE, dd.MM", Locale.US); 
 	
@@ -103,13 +102,15 @@ public class EventDayViewActivity extends ActionBarActivity {
 		DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
 			@Override
-			public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+			public void onDateSet(DatePickerDialog dialog, int year,
+					int monthOfYear, int dayOfMonth) {
 				Calendar cal = Calendar.getInstance();
 				cal.set(Calendar.YEAR, year);
 				cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 				cal.set(Calendar.MONTH, monthOfYear);
 				//getEventPager().goToDate(cal.getTime());
 				setEventPager(new EventPager(EventDayViewActivity.this, cal.getTime()));
+				
 			}
 			
 		};
@@ -122,7 +123,7 @@ public class EventDayViewActivity extends ActionBarActivity {
 		}
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getEventPager().getDisplayedDate());
-		datePickerDialog = new DatePickerDialog(EventDayViewActivity.this, mOnDateSetListener, 
+		datePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 
 				cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 
 	}
@@ -156,7 +157,7 @@ public class EventDayViewActivity extends ActionBarActivity {
 	        	//eventPager.goToDate(TimetableUtils.getCurrentTime());
 	        	return true;
 	        case R.id.action_go_to_date:
-	        	datePickerDialog.show();
+	        	datePickerDialog.show(getSupportFragmentManager());
 	        	return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
