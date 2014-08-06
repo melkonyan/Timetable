@@ -51,6 +51,7 @@ public class EventAlarmDialogActivity extends Activity {
 		} catch (Exception e) {
 			TimetableLogger.log("EventAlarmDialogActivity: Could not play alarm sound");
 		}
+		
 	    mediaPlayer.setLooping(true);
 		mediaPlayer.start();
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);

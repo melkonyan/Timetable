@@ -34,6 +34,9 @@ public class Event {
 	
 	public Date date;
 	
+	//indicates, whether a device should be muted during the event
+	public boolean muteDevice = false; 
+	
 	public EventAlarm alarm;
 	
 	public EventPeriod period;
@@ -58,6 +61,14 @@ public class Event {
 	@Deprecated
 	public Event() {
 		this(-1);
+	}
+	
+	public boolean hasStartTime() {
+		return startTime != null;
+	}
+	
+	public boolean hasEndTime() {
+		return endTime != null;
 	}
 	
 	public boolean hasAlarm() {
