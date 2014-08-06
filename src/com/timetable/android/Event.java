@@ -99,6 +99,11 @@ public class Event {
 		return period.hasOccurrenceOnDate(date, today)  && !isException(today);
 	}
 	
+	public boolean isCurrent(Date currentTime) {
+		//TODO: add stuff here.
+		return false;
+	}
+	
 	public Date getNextOccurrence(Date today) {
 		Date nextEventDate = today;
 		while (true) {
@@ -115,7 +120,10 @@ public class Event {
 		return nextEventDate;
 	}
 	
-	
+	public Date getNextOccurrenceTime(Date currentTime) {
+		//TODO: fill in
+		return null;
+	}
 	/*
 	 * return true if event is valid
 	 */
@@ -164,6 +172,11 @@ public class Event {
 			
 		}
 		
+		public Builder setId(int id) {
+			event.id = id;
+			return this;
+		}
+		
 		public Builder setName(String name) {
 			event.name = name;
 			return this;
@@ -186,6 +199,11 @@ public class Event {
 		
 		public Builder setEndTime(Date endTime) {
 			event.endTime = endTime;
+			return this;
+		}
+		
+		public Builder setMuteDevice(boolean muteDevice) {
+			event.muteDevice = muteDevice;
 			return this;
 		}
 		
@@ -214,11 +232,21 @@ public class Event {
 			return this;
 		}
 		
+		public Builder setAlarm(EventAlarm alarm) {
+			event.alarm = alarm;
+			return this;
+		}
+		
 		public Builder setAlarmTime(Date alarmTime) {
 			if (!event.hasAlarm()) {
 				event.alarm = new EventAlarm(event);
 			}
 			event.alarm.time = alarmTime;
+			return this;
+		}
+		
+		public Builder setExceptions(Set<Date> exceptions) {
+			event.exceptions = exceptions;
 			return this;
 		}
 		

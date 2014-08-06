@@ -30,7 +30,6 @@ public class EventAlarmDialogActivity extends Activity {
 	
 	private MediaPlayer mediaPlayer;
 	
-	
 	@Override 
 	protected void onCreate(Bundle savedInstanceState) 
 	{

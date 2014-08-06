@@ -141,19 +141,6 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     }
     
     /*
-     * Insert alarm into Alarms table. 
-     * Return id of inserted alarm, -1 if an error occurred while inserting.
-     */
-    @Deprecated
-    public long insertEventAlarm(EventAlarm alarm) {
-    	if (!alarm.isOk()) {
-    		TimetableLogger.log("alarm is not Ok");
-        	return -1;
-    	}
-    	return dbWrite.insert("Alarms", null, createContentValuesFromEventAlarm(alarm));
-    }
-    
-    /*
      * Insert alarm of given event into database.
      * Return id of inserted alarm or -1, if an error has occurred during insertion.
      */
@@ -164,15 +151,6 @@ public class TimetableDatabase extends SQLiteOpenHelper {
         	return -1;
     	}
     	return dbWrite.insert("Alarms", null, createContentValuesFromEventAlarm(alarm));
-    }
-    
-    /*
-     * Update alarm.
-     * Return number of updated rows.
-     */
-    @Deprecated
-    public int updateEventAlarm(EventAlarm alarm) {
-    	return dbWrite.update("Alarms", createContentValuesFromEventAlarm(alarm), "alm_id = ?", new String [] {Integer.toString(alarm.id)});
     }
     
     /*
@@ -187,29 +165,11 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     }
     
     /*
-     * Delete alarm.
-     * Return number of deleted rows.
-     */
-    @Deprecated
-    public int deleteEventAlarm(EventAlarm alarm) {
-    	return dbWrite.delete("Alarms","alm_id = ?", new String [] { Integer.toString(alarm.id)});
-    }
-    
-    /*
      * Delete event's alarm.
      * Return number of deleted rows.
      */
     public int deleteEventAlarm(Event event) {
-    	return dbWrite.delete("Alarms","evt_id = ?", new String [] { Integer.toString(event.id)});
-    }
-    
-    /*
-     * Delete event's alarm given event id.
-     * Return number of deleted rows
-     */
-    @Deprecated
-    public int deleteEventAlarmByEventId(Integer eventId) {
-     	return dbWrite.delete("Alarms","evt_id = ?", new String [] { Integer.toString(eventId)});
+    	return dbWrite.delete("Alarms","alm_id = ?", new String [] { Integer.toString(event.alarm.id)});
     }
     
     /*
@@ -228,25 +188,11 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	return getEventAlarmFromCursor(cursor, event);
     
     }
-    /*
-     * Search alarm given alarm id.
-     */
-    @Deprecated
-    public EventAlarm searchEventAlarmById(int id) {
-    	String query = "SELECT * FROM Alarms WHERE alm_id = ?";
-    	Cursor cursor = dbRead.rawQuery(query, new String [] { Integer.toString(id) });
-    	if (cursor.getCount() != 1) {
-    		cursor.close();
-    		return null;
-    	}
-    	cursor.moveToFirst();
-    	
-    	return getEventAlarmFromCursor(cursor);
-    }
     
     /*
      * Search alarm given event id, to which alarm is attached.
      */
+    @Deprecated
     public EventAlarm searchEventAlarmByEventId(int id) {
     	//TimetableLogger.log("search alarm by event's id: " + Integer.toString(id));
     	String query = "SELECT * FROM Alarms WHERE evt_id = ?";
@@ -260,27 +206,6 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	return getEventAlarmFromCursor(cursor);
     }
     
-    
-    /*
-     * Return all alarms in the database. 
-     */
-    @Deprecated
-    public Vector<EventAlarm> getAllAlarms() {
-    	Cursor cursor = dbRead.rawQuery("SELECT * FROM Alarms", new String [] {});
-    	Vector<EventAlarm> alarms = new Vector<EventAlarm>(); 
-    	if (cursor.getCount() == 0) {
-    		cursor.close();
-    		return alarms;
-    	}
-    	cursor.moveToFirst();
-    	do {
-    		EventAlarm alarm = getEventAlarmFromCursor(cursor);
-    		alarm.event = searchEventById(alarm.eventId);
-    		alarms.add(alarm);
-    	} while (cursor.moveToNext());
-    	cursor.close();
-    	return alarms;
-    }
     
     /* 
      * Return number of alarms in the database
@@ -366,7 +291,9 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	values.put("ex_date", dateFormat.format(date));
     	return dbWrite.insert("Exceptions", null, values);
     	}
-    
+    /*
+     * Get all event exceptions.
+     */
     public Set<Date> getEventExceptions(Event event) {
     	String query = "SELECT * FROM Exceptions where evt_id = ?";
     	Cursor cursor = dbRead.rawQuery(query,  new String [] {Integer.toString(event.id)});
@@ -414,6 +341,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	values.put("evt_end_time", (event.endTime != null ? timeFormat.format(event.endTime) : ""));
     	values.put("evt_date", dateFormat.format(event.date));
     	values.put("per_id", event.period.id);
+    	values.put("evt_mute_device", event.muteDevice);
     	values.put("evt_note", event.note);
     	
     	return values;
@@ -482,31 +410,33 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     public int deleteEvent(Event event) {
     	deleteEventPeriod(event.period);
     	if (event.hasAlarm()) {
-    		deleteEventAlarm(event.alarm);
+    		deleteEventAlarm(event);
     	}
     	return dbWrite.delete("Events", "evt_id = ?", new String [] {Integer.toString(event.id)});
     }
     
     private Event getEventFromCursor(Cursor cursor) {
-    	Event event = new Event(cursor.getInt(cursor.getColumnIndex("Events.evt_id")));
-    	event.name = cursor.getString(cursor.getColumnIndex("Events.evt_name"));
-		event.place = cursor.getString(cursor.getColumnIndex("Events.evt_place"));
-		
+    	Event.Builder builder = new Event.Builder();
+    	builder.setId(cursor.getInt(cursor.getColumnIndex("evt_id")))
+    			.setName(cursor.getString(cursor.getColumnIndex("evt_name")))
+    			.setPlace(cursor.getString(cursor.getColumnIndex("evt_place")))
+    			.setNote(cursor.getString(cursor.getColumnIndex("evt_note")))
+    			.setPeriod(searchEventPeriodById(cursor.getInt(cursor.getColumnIndex("per_id"))))
+    			.setMuteDevice(cursor.getInt(cursor.getColumnIndex("evt_mute_device")) != 0);
+    		
 		try {
-			event.startTime = timeFormat.parse(cursor.getString(cursor.getColumnIndex("Events.evt_start_time")));
-			event.date = dateFormat.parse(cursor.getString(cursor.getColumnIndex("Events.evt_date")));
-    	} catch(Exception e) {
+			builder.setStartTime(timeFormat.parse(cursor.getString(cursor.getColumnIndex("evt_start_time"))))
+					.setDate(dateFormat.parse(cursor.getString(cursor.getColumnIndex("evt_date"))));
+		} catch(Exception e) {
     		return null;
     	}
 		
 		try {
-			event.endTime = timeFormat.parse(cursor.getString(cursor.getColumnIndex("Events.evt_end_time")));
+			builder.setEndTime(timeFormat.parse(cursor.getString(cursor.getColumnIndex("evt_end_time"))));
 		} catch(Exception e) {
 			//this fields can be null
 		}
-		
-		event.note = cursor.getString(cursor.getColumnIndex("Events.evt_note"));
-		event.period = searchEventPeriodById(cursor.getInt(cursor.getColumnIndex("Events.per_id")));
+		Event event = builder.build();
 		event.alarm = getEventAlarm(event);
 		event.exceptions = getEventExceptions(event);
 		//TimetableLogger.error(event.name + " " + dateFormat.format(event.date) + " - exceptions: " + Integer.toString(event.exceptions.size()));

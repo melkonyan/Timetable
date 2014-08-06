@@ -137,9 +137,7 @@ public class AlarmService extends Service {
 	
 	public void updateAlarm(EventAlarm alarm) {
 		if (alarm.getNextOccurrence(TimetableUtils.getCurrentTime()) != null) {
-			
 			createAlarm(alarm);
-		
 		} else {
 			deleteAlarm(alarm);
 		}	
