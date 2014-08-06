@@ -88,9 +88,10 @@ public class EventDayViewActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+				
 		setContentView(R.layout.activity_event_day_view);
 		
+		//TimetableDatabase.getInstance(this).clear();
 		//enable debugging
 		TimetableLogger.debugging = true;
 		//start AlarmService

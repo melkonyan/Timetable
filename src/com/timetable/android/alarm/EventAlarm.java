@@ -6,6 +6,7 @@ import java.util.Date;
 import com.timetable.android.Event;
 import com.timetable.android.EventChecker;
 import com.timetable.android.EventPeriod;
+import com.timetable.android.TimetableLogger;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.TimetableUtils;
 
@@ -47,6 +48,13 @@ public class EventAlarm {
 		period = new EventPeriod();
 	}
 	
+	/*
+	 * Return true if this alarm has not been insrted into the database yet.
+	 */
+	public boolean isNew() {
+		return id == INITIAL_ALARM_ID;
+	}
+	
 	public Date getEventOccurrence(Date alarmOccurrence) {
 		if (event == null) {
 			return null;
@@ -67,6 +75,7 @@ public class EventAlarm {
 	
 	public Date getNextOccurrence(Date today) {
 		if (event == null) {
+			TimetableLogger.error("EventAlarm.getNextOccurrence: Alarm has no reference to event;");
 			return null;
 		}
 		//Date todayDate = DateUtils.extractDate(today);
@@ -170,7 +179,7 @@ public class EventAlarm {
 	
 	@Override 
 	public String toString() { 
-		return "Alarm:\nType: " + type.toString() + "\nTime: " + time.toString() + "\nPeriod: " + period.toString();  
+		return "Alarm. Type: " + type.toString() + "; Time: " + time.toString() + "\n";  
 	}
 	
 	/*
@@ -182,7 +191,6 @@ public class EventAlarm {
 	        return false;
 	    }
 	    EventAlarm that = (EventAlarm) other;
-	    return TimetableUtils.areEqualOrNulls(this.time, that.time) && this.type == that.type
-	    		&& this.eventId == that.eventId && this.id == that.id;
+	    return TimetableUtils.areEqualOrNulls(this.time, that.time) && this.type == that.type && this.id == that.id;
 	}
 }

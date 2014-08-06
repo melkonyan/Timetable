@@ -148,8 +148,8 @@ public class EventPeriod {
 	
 	@Override 
 	public String toString() {
-		return "Period: \nType: " + this.type.toString() + "\ninterval: " + Integer.toString(interval) + 
-				"\nweek days: " + Integer.toString(getWeekOccurrences()) + "\nend date:" 
+		return "Period. Type: " + this.type.toString() + "; Interval: " + Integer.toString(interval) + 
+				"; Week days: " + Integer.toString(getWeekOccurrences()) + "; End date: " 
 				+ (endDate != null ? endDate.toString() : "null"); 
 	}
 	

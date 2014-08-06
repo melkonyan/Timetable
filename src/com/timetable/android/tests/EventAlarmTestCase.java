@@ -73,39 +73,38 @@ public class EventAlarmTestCase extends TestCase {
 	}	
 	
 	public void testGetEventOccurrence() throws ParseException {
-		EventAlarm alarm = new EventAlarm();
-		alarm.time = EventAlarm.timeFormat.parse("06.07.2014 15:47");
-		Event event = new Event();
-		event.date = dateFormat.parse("10.07.2014");
-		alarm.event = event;
+		Event event = new Event.Builder()
+					.setDate(dateFormat.parse("10.07.2014"))
+					.setAlarmTime(EventAlarm.timeFormat.parse("06.07.2014 15:47"))
+					.build();
+		EventAlarm alarm = event.alarm;
 		assertEquals(dateFormat.parse("10.07.2014"), alarm.getEventOccurrence(alarm.time));
 		
 	}
 	
 	public void testIsOk() {
-		EventAlarm alarm = new EventAlarm();
-		assertEquals(false, alarm.isOk());
+		Event event = new Event.Builder().build();
+		EventAlarm alarm = new EventAlarm(event);
+		assertFalse( alarm.isOk());
 		alarm.time = alarmTime;
-		assertEquals(true, alarm.isOk());
+		assertTrue( alarm.isOk());
 		alarm.type = null;
-		assertEquals(false, alarm.isOk());
+		assertFalse( alarm.isOk());
 	}
 	
 	public void testEquals() {
-		EventAlarm alarm1 = new EventAlarm(), alarm2 = new EventAlarm();
-		assertEquals(true, alarm1.equals(alarm2));
+		Event event = new Event.Builder().build();
+		EventAlarm alarm1 = new EventAlarm(event), alarm2 = new EventAlarm(event);
+		
+		assertTrue( alarm1.equals(alarm2));
 		alarm1.time = alarmTime;
-		assertEquals(false, alarm1.equals(alarm2));
+		assertFalse( alarm1.equals(alarm2));
 		alarm2.time = alarm1.time;
-		assertEquals(true, alarm1.equals(alarm2));
+		assertTrue( alarm1.equals(alarm2));
 		alarm1.id = 10;
-		assertEquals(false, alarm1.equals(alarm2));
+		assertFalse( alarm1.equals(alarm2));
 		alarm2.id = alarm1.id;
-		assertEquals(true, alarm1.equals(alarm2));
-		alarm1.eventId = 20;
-		assertEquals(false, alarm1.equals(alarm2));
-		alarm2.eventId = alarm1.eventId;
-		assertEquals(true, alarm1.equals(alarm2));
+		assertTrue( alarm1.equals(alarm2));
 	}
 	
 }

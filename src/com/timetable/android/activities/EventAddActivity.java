@@ -674,8 +674,11 @@ public class EventAddActivity extends Activity {
 					.setStartTime(checker.getStartTimeFromString(eventStartTimeVal.getText().toString()))
 					.setEndTime(checker.getEndTimeFromString(eventEndTimeVal.getText().toString()))
 					.setNote(checker.getNoteFromString(eventNoteVal.getText().toString()))
-					.setAlarmTime(getEventAlarmTime())
 					.setPeriod(getEventPeriod());
+			Date alarmTime = getEventAlarmTime();
+			if (alarmTime != null) {
+				builder.setAlarmTime(alarmTime);
+			}
 			Event event = builder.build();
 			TimetableLogger.log("EventAddActivity.getEvent:\n" +  event.toString());
 			return event;
@@ -695,9 +698,6 @@ public class EventAddActivity extends Activity {
 			Toast.makeText(this, "Error occured while saving event.", Toast.LENGTH_SHORT).show();
 		}
 		if (event.hasAlarm()) {
-			//TODO: create event properly
-			event.alarm.event = event;
-			
 			mManager.getService().createAlarm(event.alarm);
 		}
 		db.close();

@@ -1,7 +1,6 @@
 package com.timetable.android;
 
 import android.util.Log;
-import com.timetable.android.R;
 
 public class TimetableLogger {
 	public static final String logTag = "Timetable";

@@ -133,13 +133,10 @@ public class EventEditActivity extends EventAddActivity {
 		editedEvent = getEvent();
 		editedEvent.id = event.id;
 		editedEvent.period.id = event.period.id;
-		if (editedEvent.hasAlarm()) {
-			if (event.hasAlarm()) {
-				editedEvent.alarm.id = event.hasAlarm() ? event.alarm.id: -1;	
-			}
-			editedEvent.alarm.eventId = editedEvent.id;
+		if (editedEvent.hasAlarm() && event.hasAlarm()) {
+			editedEvent.alarm.id = 	event.alarm.id;	
 		}
-		// event event hasn't changed we do not to save it
+		// If event hasn't changed, we do not to save it
 		if (event.equals(editedEvent)) {
 			finish();
 			return;
@@ -162,33 +159,34 @@ public class EventEditActivity extends EventAddActivity {
 		AlarmService alarmService = mManager.getService(); 
 		if (overrideFutureEvents) {
 			//from today on this event ends
-			TimetableLogger.log("saving event:" + editedEvent.toString());
+			TimetableLogger.log("EventEditActivity.saveRepetableEvent: saving event" + editedEvent.toString());
 			long day = 1000*60*60*24;
 			event.period.endDate = new Date();
 			event.period.endDate.setTime(date.getTime() - day);
 			db.updateEvent(event);
 			editedEvent = db.insertEvent(editedEvent);
+			//copy exception to new event
 			for (Date exception: event.exceptions) {
 				db.insertException(editedEvent, exception);
 			}
 			if (event.hasAlarm()) {
-				event.alarm.period = event.period;
 				alarmService.updateAlarm(event.alarm);
 			}
 		} else {
 			//today there is no session of this event
+			event.addException(date);
 			db.insertException(event, date);
-			//TODO: eliminate code duplication(same code as in deleteRepeatableEvent
+			
+			//TODO: eliminate code duplication(same code as in deleteRepeatableEvent)
 			if (event.hasAlarm()) {
-				event.addException(date);
-				event.alarm.event = event;
 				alarmService.updateAlarm(event.alarm);
 			}
+			
 			editedEvent.period.type = EventPeriod.Type.NONE;
 			editedEvent = db.insertEvent(editedEvent);
 		}
+		
 		if (editedEvent.hasAlarm()) {
-			editedEvent.alarm.period = editedEvent.period;
 			alarmService.createAlarm(editedEvent.alarm);
 		}
 		db.close();
@@ -220,15 +218,13 @@ public class EventEditActivity extends EventAddActivity {
 			event.period.endDate.setTime(date.getTime() - day);
 			event = db.updateEvent(event);
 			if (event.hasAlarm()) {
-				event.alarm.period = event.period;
 				alarmService.updateAlarm(event.alarm);
 			}
 		} else {
 			//today there is no session of this event
+			event.addException(date);
 			db.insertException(event, date);
 			if (event.hasAlarm()) {
-				event.addException(date);
-				event.alarm.event = event;
 				alarmService.updateAlarm(event.alarm);
 			}
 		}

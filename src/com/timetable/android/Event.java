@@ -49,12 +49,13 @@ public class Event {
 		}
 	});
 	
-	
+	@Deprecated
 	public Event(int id) {
 		this.id = id;
 		this.period = new EventPeriod();
 	}
 	
+	@Deprecated
 	public Event() {
 		this(-1);
 	}

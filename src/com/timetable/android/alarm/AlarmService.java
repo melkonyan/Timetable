@@ -19,6 +19,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
+import com.timetable.android.Event;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
@@ -29,7 +30,7 @@ public class AlarmService extends Service {
 
 	public  static final int ALARM_NOTIFICATION_CODE = 123;
 
-	public static final String EXTRA_ALARM_ID_STRING = "alarm_id"; 
+	public static final String EXTRA_EVENT_ID_STRING = "event_id"; 
 
 	public static final int MAX_QUEUE_SIZE = 10000;
 	
@@ -83,12 +84,12 @@ public class AlarmService extends Service {
 	
 	private Intent getIntentFromAlarm(EventAlarm alarm) {
 		Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
-		intent.putExtra(EXTRA_ALARM_ID_STRING, alarm.id);
+		intent.putExtra(EXTRA_EVENT_ID_STRING, alarm.id);
 		return intent;
 	}
 	
 	private PendingIntent getPendingIntentFromAlarm(EventAlarm alarm) {
-		return PendingIntent.getBroadcast(this, alarm.id, getIntentFromAlarm(alarm), PendingIntent.FLAG_UPDATE_CURRENT);
+		return PendingIntent.getBroadcast(this, alarm.event.id, getIntentFromAlarm(alarm), PendingIntent.FLAG_UPDATE_CURRENT);
 	}
 	
 	
@@ -145,7 +146,7 @@ public class AlarmService extends Service {
 	}
 	
 	public boolean existAlarm(EventAlarm alarm) {
-		return PendingIntent.getBroadcast(this, alarm.id, getIntentFromAlarm(alarm), PendingIntent.FLAG_NO_CREATE) != null;
+		return PendingIntent.getBroadcast(this, alarm.event.id, getIntentFromAlarm(alarm), PendingIntent.FLAG_NO_CREATE) != null;
 	}
 	
 	public EventAlarm getNextAlarm() {
@@ -155,9 +156,10 @@ public class AlarmService extends Service {
 	public void loadAlarms() {
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
 		
-		Vector<EventAlarm> alarms = db.getAllAlarms();
+		Vector<Event> events = db.searchEventsWithAlarm();
 		Date today = TimetableUtils.getCurrentTime();
-		for (EventAlarm alarm : alarms) {
+		for (Event event : events) {
+			EventAlarm alarm = event.alarm;
 			if (alarm.getNextOccurrence(today) != null) {
 				TimetableLogger.error("Creating alarm.");
 				createAlarm(alarm);
@@ -200,7 +202,7 @@ public class AlarmService extends Service {
 			.setSmallIcon(R.drawable.ic_action_alarms_light)
 			.setContentTitle("Timetable")
 			.setContentText(nextAlarmString)
-			.setLargeIcon(((BitmapDrawable)this.getResources().getDrawable(R.drawable.ic_action_alarms)).getBitmap())
+			.setLargeIcon(((BitmapDrawable)this.getResources().getDrawable(R.drawable.ic_action_alarms_light)).getBitmap())
 			.setContentIntent(mIntent);
 		notificationManager.notify(ALARM_NOTIFICATION_CODE, mBuilder.build());
 		TimetableLogger.log("Creating notification");

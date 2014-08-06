@@ -58,7 +58,8 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 				+ "evt_end_time TIME,"
 				+ "evt_start_date DATE,"
 				+ "evt_date DATE,"
-				+ "per_id INT,"
+				+ "per_id INT," 
+				+ "evt_mute_device INT,"   
 				+ "evt_note TEXT)", Event.MAX_NAME_LENGTH, Event.MAX_PLACE_LENGTH);
 		db.execSQL(query);
 		
@@ -90,8 +91,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 				"alm_id INTEGER PRIMARY KEY AUTOINCREMENT," +
 				"alm_time DATETIME," +
 				"alm_type INTEGER," +
-				"evt_id INTEGER, " +
-				"per_id INTEGER)";
+				"evt_id INTEGER)";
 		db.execSQL(query);
 	}
 
@@ -99,16 +99,16 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
     
-    
+
     private ContentValues createContentValuesFromEventAlarm(EventAlarm alarm) {
     	ContentValues values = new ContentValues();
     	values.put("alm_type", alarm.type.ordinal());
     	values.put("alm_time", dateTimeFormat.format(alarm.time));
-    	values.put("evt_id", alarm.eventId);
-    	values.put("per_id", alarm.period.id);
+    	values.put("evt_id", alarm.event.id);
     	return values;
     }
     
+    @Deprecated
     private EventAlarm getEventAlarmFromCursor(Cursor cursor) {
     	EventAlarm alarm = new EventAlarm();
     	alarm.id = cursor.getInt(cursor.getColumnIndex("alm_id"));
@@ -125,11 +125,40 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	return alarm;
     }
     
+    private EventAlarm getEventAlarmFromCursor(Cursor cursor, Event event) {
+    	EventAlarm alarm = new EventAlarm(event);
+    	alarm.id = cursor.getInt(cursor.getColumnIndex("alm_id"));
+    	alarm.type = EventAlarm.Type.values()[cursor.getInt(cursor.getColumnIndex("alm_type"))];
+    	
+    	try {
+    		alarm.time = dateTimeFormat.parse(cursor.getString(cursor.getColumnIndex("alm_time")));
+    	} catch (Exception e) {
+    		TimetableLogger.error("TimetableDatabase.getEventAlarmFromCursor: could not parse alarm time.");
+    		return null;
+    	}
+    	alarm.event = event;
+    	return alarm;
+    }
+    
     /*
      * Insert alarm into Alarms table. 
      * Return id of inserted alarm, -1 if an error occurred while inserting.
      */
+    @Deprecated
     public long insertEventAlarm(EventAlarm alarm) {
+    	if (!alarm.isOk()) {
+    		TimetableLogger.log("alarm is not Ok");
+        	return -1;
+    	}
+    	return dbWrite.insert("Alarms", null, createContentValuesFromEventAlarm(alarm));
+    }
+    
+    /*
+     * Insert alarm of given event into database.
+     * Return id of inserted alarm or -1, if an error has occurred during insertion.
+     */
+    public long insertEventAlarm(Event event) {
+    	EventAlarm alarm = event.alarm;
     	if (!alarm.isOk()) {
     		TimetableLogger.log("alarm is not Ok");
         	return -1;
@@ -141,28 +170,68 @@ public class TimetableDatabase extends SQLiteOpenHelper {
      * Update alarm.
      * Return number of updated rows.
      */
+    @Deprecated
     public int updateEventAlarm(EventAlarm alarm) {
     	return dbWrite.update("Alarms", createContentValuesFromEventAlarm(alarm), "alm_id = ?", new String [] {Integer.toString(alarm.id)});
     }
+    
+    /*
+     * Update event's alarm.
+     * Return number of updated rows.
+     */
+    public int updateEventAlarm(Event event) {
+    	if (!event.hasAlarm()) {
+    		return 0;
+    	}
+    	return dbWrite.update("Alarms", createContentValuesFromEventAlarm(event.alarm), "alm_id = ?", new String [] {Integer.toString(event.alarm.id)});
+    }
+    
     /*
      * Delete alarm.
      * Return number of deleted rows.
      */
+    @Deprecated
     public int deleteEventAlarm(EventAlarm alarm) {
     	return dbWrite.delete("Alarms","alm_id = ?", new String [] { Integer.toString(alarm.id)});
+    }
+    
+    /*
+     * Delete event's alarm.
+     * Return number of deleted rows.
+     */
+    public int deleteEventAlarm(Event event) {
+    	return dbWrite.delete("Alarms","evt_id = ?", new String [] { Integer.toString(event.id)});
     }
     
     /*
      * Delete event's alarm given event id.
      * Return number of deleted rows
      */
+    @Deprecated
     public int deleteEventAlarmByEventId(Integer eventId) {
      	return dbWrite.delete("Alarms","evt_id = ?", new String [] { Integer.toString(eventId)});
     }
     
     /*
+     * Search alarm of given event.
+     * Return null if alarm is not found.
+     */
+    public EventAlarm getEventAlarm(Event event) {
+    	String query = "SELECT * FROM Alarms WHERE evt_id = ?";
+    	Cursor cursor = dbRead.rawQuery(query, new String [] { Integer.toString(event.id) });
+    	if (cursor.getCount() != 1) {
+    		cursor.close();
+    		return null;
+    	}
+    	cursor.moveToFirst();
+    	
+    	return getEventAlarmFromCursor(cursor, event);
+    
+    }
+    /*
      * Search alarm given alarm id.
      */
+    @Deprecated
     public EventAlarm searchEventAlarmById(int id) {
     	String query = "SELECT * FROM Alarms WHERE alm_id = ?";
     	Cursor cursor = dbRead.rawQuery(query, new String [] { Integer.toString(id) });
@@ -191,9 +260,11 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	return getEventAlarmFromCursor(cursor);
     }
     
+    
     /*
      * Return all alarms in the database. 
      */
+    @Deprecated
     public Vector<EventAlarm> getAllAlarms() {
     	Cursor cursor = dbRead.rawQuery("SELECT * FROM Alarms", new String [] {});
     	Vector<EventAlarm> alarms = new Vector<EventAlarm>(); 
@@ -204,7 +275,6 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	cursor.moveToFirst();
     	do {
     		EventAlarm alarm = getEventAlarmFromCursor(cursor);
-    		//TODO: alarm is search recursively second time.
     		alarm.event = searchEventById(alarm.eventId);
     		alarms.add(alarm);
     	} while (cursor.moveToNext());
@@ -215,7 +285,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     /* 
      * Return number of alarms in the database
      */
-    public int getEventAlarmCount() {
+    public int getAlarmsCount() {
     	Cursor cursor = dbRead.rawQuery("SELECT COUNT(*) FROM Alarms", new String [] {});
     	if (cursor != null && cursor.getCount() > 0) {
     		cursor.moveToFirst();
@@ -269,6 +339,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	String query = "SELECT * FROM Periods WHERE per_id = ?";
     	Cursor cursor = dbRead.rawQuery(query, new String [] { Integer.toString(id) });
     	if (cursor.getCount() == 0) {
+    		TimetableLogger.error("TimetableDatabase.serachEventPeriodById: Error. Period with id " + Integer.toString(id) + " is not found.");
     		cursor.close();
     		return null;
     	}
@@ -355,17 +426,15 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     public Event insertEvent(Event event) {
     	event.period.id = (int) insertEventPeriod(event.period);
     	if (event.period.id == -1) {
-    		TimetableLogger.log("Error inserting event's period.");
+    		TimetableLogger.log("TimetableDatabase.insertEvent: Error inserting event's period.");
     		return null;
     	}
     	event.id = (int) dbWrite.insert("Events", null, createContentValuesFromEvent(event));
-    	TimetableLogger.log("Inserted id: " + Integer.toString(event.id));
+    	TimetableLogger.log("TimetablaDatabase.insertEvent: inserted id: " + Integer.toString(event.id));
     	if (event.hasAlarm()) {
-    		event.alarm.eventId = event.id;
-    		event.alarm.period.id = event.period.id;
-    		event.alarm.id = (int) insertEventAlarm(event.alarm);
+    		event.alarm.id = (int) insertEventAlarm(event);
     		if (event.alarm.id == -1) {
-        		TimetableLogger.log("Error inserting event's alarm");
+        		TimetableLogger.log("TimetablseDatabase.insertEvent: Error inserting event's alarm");
         		return null;
         	}
     	}
@@ -378,30 +447,29 @@ public class TimetableDatabase extends SQLiteOpenHelper {
      */
     public Event updateEvent(Event event) {
     	if (event.hasAlarm()) {
-    		if (event.alarm.id == EventAlarm.INITIAL_ALARM_ID) {
-    			event.alarm.eventId = event.id;
-    			event.alarm.period.id = event.period.id;
-    			event.alarm.id = (int) insertEventAlarm(event.alarm);
+    		if (event.alarm.isNew()) {
+    			event.alarm.id = (int) insertEventAlarm(event);
     			if (event.alarm.id == -1) {
-    				//TimetableLogger.log("Error inserting alarm.");
+    				TimetableLogger.log("TimetableDatabase.updateEvent: Error inserting alarm.");
     				return null;
     			}
     			
     		}
-    		else if (updateEventAlarm(event.alarm) != 1) {
-    			TimetableLogger.log("Error updating alarm.");
+    		else if (updateEventAlarm(event) != 1) {
+    			TimetableLogger.log("TimetableDatabase.updateEvent: Error updating alarm.");
     			return null;
     		}
     	}
     	else {
-    		deleteEventAlarmByEventId(event.id);
+    		deleteEventAlarm(event);
     	}
+    	
     	if (updateEventPeriod(event.period) != 1) {
-    		//TimetableLogger.log("Error updating period.");
+    		TimetableLogger.log("TimetableDatabase.updateEvent: Error updating period.");
     		return null;
     	}
     	if (dbWrite.update("Events", createContentValuesFromEvent(event), "evt_id = ?", new String [] {Integer.toString(event.id)}) != 1) {
-    		//TimetableLogger.log("Error updating event.");
+    		TimetableLogger.log("TimetableDatabase.updateEvent: Error updating event.");
         	return null;
     	}
     	return event;
@@ -420,32 +488,27 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     }
     
     private Event getEventFromCursor(Cursor cursor) {
-    	Event event = new Event(cursor.getInt(cursor.getColumnIndex("evt_id")));
-    	event.name = cursor.getString(cursor.getColumnIndex("evt_name"));
-		event.place = cursor.getString(cursor.getColumnIndex("evt_place"));
+    	Event event = new Event(cursor.getInt(cursor.getColumnIndex("Events.evt_id")));
+    	event.name = cursor.getString(cursor.getColumnIndex("Events.evt_name"));
+		event.place = cursor.getString(cursor.getColumnIndex("Events.evt_place"));
 		
 		try {
-			event.startTime = timeFormat.parse(cursor.getString(cursor.getColumnIndex("evt_start_time")));
-			event.date = dateFormat.parse(cursor.getString(cursor.getColumnIndex("evt_date")));
+			event.startTime = timeFormat.parse(cursor.getString(cursor.getColumnIndex("Events.evt_start_time")));
+			event.date = dateFormat.parse(cursor.getString(cursor.getColumnIndex("Events.evt_date")));
     	} catch(Exception e) {
     		return null;
     	}
 		
 		try {
-			event.endTime = timeFormat.parse(cursor.getString(cursor.getColumnIndex("evt_end_time")));
+			event.endTime = timeFormat.parse(cursor.getString(cursor.getColumnIndex("Events.evt_end_time")));
 		} catch(Exception e) {
-			//this fields are null by default
+			//this fields can be null
 		}
 		
-		event.note = cursor.getString(cursor.getColumnIndex("evt_note"));
-		event.period = searchEventPeriodById(cursor.getInt(cursor.getColumnIndex("per_id")));
-		//TimetableLogger.log("Event id: " + event.id);
-		event.alarm = searchEventAlarmByEventId(event.id);
-		if (event.hasAlarm()) {
-			event.alarm.event = event;
-			event.alarm.eventId = event.id;
-		}
-    	event.exceptions = getEventExceptions(event);
+		event.note = cursor.getString(cursor.getColumnIndex("Events.evt_note"));
+		event.period = searchEventPeriodById(cursor.getInt(cursor.getColumnIndex("Events.per_id")));
+		event.alarm = getEventAlarm(event);
+		event.exceptions = getEventExceptions(event);
 		//TimetableLogger.error(event.name + " " + dateFormat.format(event.date) + " - exceptions: " + Integer.toString(event.exceptions.size()));
     	return event;
     }
@@ -464,6 +527,26 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	cursor.close();
     	return event;
     	
+    }
+    
+    /*
+     * Return events, that have alarm.
+     */
+    public Vector<Event> searchEventsWithAlarm() {
+    	Cursor cursor = dbRead.rawQuery("SELECT * FROM Events INNER JOIN Alarms ON Events.evt_id = Alarms.evt_id", new String [] {});
+    	Vector<Event> events = new Vector<Event>(); 
+    	if (cursor.getCount() == 0) {
+    		cursor.close();
+    		return events;
+    	}
+    	cursor.moveToFirst();
+    	do {
+    		Event event = getEventFromCursor(cursor);
+    		events.add(event);
+    	} while (cursor.moveToNext());
+    	cursor.close();
+    	TimetableLogger.error(Integer.toString(events.size()));
+    	return events;
     }
     
     /*

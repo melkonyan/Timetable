@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.timetable.android"
-    android:versionCode="4"
-    android:versionName="1.2" >
+    android:versionCode="6"
+    android:versionName="1.4" >
+	<supports-screens
+	    android:largeScreens="true"
+	    android:xlargeScreens="false"/>
+	
 	<uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
    	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-sdk

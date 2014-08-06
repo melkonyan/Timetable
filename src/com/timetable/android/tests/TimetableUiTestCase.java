@@ -104,7 +104,9 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 	*/
 	
 	public void testEventAdd() throws ParseException {
+		
 		Event event = new Event();
+		
 		
 		event.name = "event1";
 		event.date = DATE_FORMAT.parse("07.07.2014");

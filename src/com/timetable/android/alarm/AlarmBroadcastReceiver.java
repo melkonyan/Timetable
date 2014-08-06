@@ -19,7 +19,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 			return;
 		}
 		Intent alarmDialogIntent = new Intent(context, EventAlarmDialogActivity.class);
-		alarmDialogIntent.putExtra(AlarmService.EXTRA_ALARM_ID_STRING, intent.getExtras().getInt(AlarmService.EXTRA_ALARM_ID_STRING));
+		alarmDialogIntent.putExtra(AlarmService.EXTRA_EVENT_ID_STRING, intent.getExtras().getInt(AlarmService.EXTRA_EVENT_ID_STRING));
 		alarmDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
 		context.startActivity(alarmDialogIntent);
 		TimetableLogger.log("Alarm received.");

@@ -36,27 +36,26 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 		db = TimetableDatabase.getInstance(mContext);
 		try {
 			searchDate = dateFormat.parse("27.12.2013");
+			Event event1 = new Event.Builder()
+							.setName("event1")
+							.setDate(searchDate)
+							.setStartTime(timeFormat.parse("17:00:00"))
+							.setPeriodType(EventPeriod.Type.DAILY)
+							.setPeriodInterval(2)
+							.setPeriodEndDate(dateFormat.parse("25.04.2014"))
+							.build();
 			
-			Event event1 = new Event();
-			event1.name = "event1";
-			event1.date = searchDate;
-			event1.startTime = timeFormat.parse("17:00:00");
-			event1.period = new EventPeriod();
-			event1.period.type = EventPeriod.Type.DAILY;
-			event1.period.interval = 2;
-			event1.period.endDate = dateFormat.parse("25.04.2014");
 			foundEvents.add(event1);
 			
-			Event event2 = new Event();
-			event2.name = "event2";
-			event2.date = searchDate;
-			event2.startTime = timeFormat.parse("16:00:00");
-			event2.alarm = new EventAlarm();
-			event2.alarm.time = EventAlarm.timeFormat.parse("24.04.2014 19:22");
-			event2.period = new EventPeriod();
-			event2.period.interval = 1;
-			event2.period.type = EventPeriod.Type.DAILY;
-			event2.alarm.period = event2.period;
+			Event event2 = new Event.Builder()
+							.setName("event2")
+							.setDate(searchDate)
+							.setStartTime(timeFormat.parse("16:00:00"))
+							.setAlarmTime(EventAlarm.timeFormat.parse("24.04.2014 19:22"))
+							.setPeriodType(EventPeriod.Type.DAILY)
+							.setPeriodInterval(1)
+							.build();
+			
 			foundEvents.add(event2);
 			
 			
@@ -75,12 +74,16 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 		assertEquals(foundEvents.size(), events.size());
 		
 		int alarmsNum = 1;
-		assertEquals(alarmsNum, db.getEventAlarmCount());
+		assertEquals(alarmsNum, db.getAlarmsCount());
 		
 		for (int i = 0; i < foundEvents.size(); i++) {
 			assertEquals(events.get(events.size() - 1 - i), foundEvents.get(i));
 		}
 		
+		Vector<Event> eventsWithAlarm = db.searchEventsWithAlarm();
+		assertEquals(alarmsNum, eventsWithAlarm.size());
+		
+		assertEquals(foundEvents.get(1), eventsWithAlarm.get(0));
 		for (Event event: events) {
 			db.deleteEvent(event);
 		}
@@ -126,7 +129,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 		Event newEvent = db.insertEvent(oldEvent);
 		newEvent.name = "new name";
 		newEvent.period.interval = 3;
-		newEvent.alarm = new EventAlarm();
+		newEvent.alarm = new EventAlarm(newEvent);
 		newEvent.alarm.time = EventAlarm.timeFormat.parse("25.04.2014 21:46");
 		newEvent = db.updateEvent(newEvent);
 		
@@ -152,7 +155,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 	}
 	
 	
-	public void testAlarm() {
+	/*public void testAlarm() {
 		try {
 			int eventId = 10;
 			EventAlarm alarm = new EventAlarm();
@@ -201,6 +204,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 		}
 		
 	}
+	*/
 	
 	public void tearDown() {
 		db.close();

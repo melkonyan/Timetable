@@ -23,7 +23,7 @@ public class EventTestCase extends TestCase {
 	}
 	
 	public void testIsException() throws ParseException {
-		Event event = new Event();
+		Event event = new Event.Builder().build();
 		Date exception = dateFormat.parse("31.07.2014");
 		event.exceptions.add(exception);
 		
@@ -31,10 +31,9 @@ public class EventTestCase extends TestCase {
 		
 	}
 	public void testIsTodayPeriodNone() throws ParseException {
-		Event event = new Event();
+		Event event = new Event.Builder().setDate(dateFormat.parse("27.12.2013")).build();
 		event.period = new EventPeriod();
 		Date searchDate = dateFormat.parse("27.12.2013");
-		event.date = dateFormat.parse("27.12.2013");
 		
 		assertTrue(event.isToday(searchDate));
 	
@@ -44,11 +43,12 @@ public class EventTestCase extends TestCase {
 	}
 	
 	public void testIsTodayPeriodDaily() throws ParseException {
-		Event event = new Event();
+		Event event = new Event.Builder()
+						.setDate(dateFormat.parse("24.12.2013"))
+						.setPeriodType(EventPeriod.Type.DAILY)
+						.setPeriodInterval(1)
+						.build();
 		Date searchDate = dateFormat.parse("27.12.2013");
-		event.date = dateFormat.parse("24.12.2013");
-		event.period.type = EventPeriod.Type.DAILY;
-		event.period.interval = 1;
 		
 		assertTrue(event.isToday(searchDate));
 		
@@ -94,10 +94,12 @@ public class EventTestCase extends TestCase {
 	
 	public void testIsTodayPeriodWeekly() throws ParseException {
 		Date searchDate = dateFormat.parse("04.01.2014"); //Saturday
-		Event event = new Event();
-		event.period.type = EventPeriod.Type.WEEKLY;
-		event.period.interval = 1;
-		event.date = dateFormat.parse("29.11.2013"); //Saturday
+		Event event = new Event.Builder()
+						.setPeriodType(EventPeriod.Type.WEEKLY)
+						.setPeriodInterval(1)
+						.setDate(dateFormat.parse("29.11.2013")) //Saturday
+						.build();
+		
 		
 		assertFalse(event.isToday(searchDate));
 		

@@ -172,8 +172,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/event_add_period"
         android:layout_below="@+id/event_add_period"
-        android:layout_marginTop="21dp"
-        android:layout_marginLeft="30dp"
+		android:layout_centerInParent="true"       
         android:orientation="horizontal"/>
  
 
