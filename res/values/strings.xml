@@ -10,6 +10,7 @@
 	<string name="event_add_start_time">From:</string>
 	<string name="event_add_end_time">To:</string>
 	<string name="event_add_note">Note:</string>
+	<string name="event_add_mute_device">Mute device during event:</string>
 	<string name="event_add_period">Repeat:</string>
 	<string name="event_add_interval">Every</string>
 	<string name="event_add_interval_text_daily">day(s).</string>

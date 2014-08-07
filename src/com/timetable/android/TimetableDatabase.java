@@ -169,7 +169,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
      * Return number of deleted rows.
      */
     public int deleteEventAlarm(Event event) {
-    	return dbWrite.delete("Alarms","alm_id = ?", new String [] { Integer.toString(event.alarm.id)});
+    	return dbWrite.delete("Alarms","evt_id = ?", new String [] { Integer.toString(event.id)});
     }
     
     /*
@@ -475,7 +475,25 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     		events.add(event);
     	} while (cursor.moveToNext());
     	cursor.close();
-    	TimetableLogger.error(Integer.toString(events.size()));
+    	return events;
+    }
+    
+    /*
+     * Return events, that mute device.
+     */
+    public Vector<Event> searchEventsThatMuteDevice() {
+    	Cursor cursor = dbRead.rawQuery("SELECT * FROM Events where evt_mute_device = 1", new String [] {});
+    	Vector<Event> events = new Vector<Event>(); 
+    	if (cursor.getCount() == 0) {
+    		cursor.close();
+    		return events;
+    	}
+    	cursor.moveToFirst();
+    	do {
+    		Event event = getEventFromCursor(cursor);
+    		events.add(event);
+    	} while (cursor.moveToNext());
+    	cursor.close();
     	return events;
     }
     

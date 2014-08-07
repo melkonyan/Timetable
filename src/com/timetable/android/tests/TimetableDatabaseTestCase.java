@@ -51,6 +51,8 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 							.setName("event2")
 							.setDate(searchDate)
 							.setStartTime(timeFormat.parse("16:00:00"))
+							.setEndTime(timeFormat.parse("18:00:00"))
+							.setMuteDevice(true)
 							.setAlarmTime(EventAlarm.timeFormat.parse("24.04.2014 19:22"))
 							.setPeriodType(EventPeriod.Type.DAILY)
 							.setPeriodInterval(1)
@@ -84,6 +86,12 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 		assertEquals(alarmsNum, eventsWithAlarm.size());
 		
 		assertEquals(foundEvents.get(1), eventsWithAlarm.get(0));
+		
+		Vector<Event> eventsThatMuteDevice = db.searchEventsThatMuteDevice();
+		
+		assertEquals(1, eventsThatMuteDevice.size());
+		assertEquals(foundEvents.get(1), eventsThatMuteDevice.get(0));
+		
 		for (Event event: events) {
 			db.deleteEvent(event);
 		}

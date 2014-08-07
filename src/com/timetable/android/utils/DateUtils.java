@@ -39,6 +39,18 @@ public class DateUtils {
 		return cal.getTime();
 	}
 	
+	public static Date setTime(Date date, Date time) {
+		Calendar ans1 = Calendar.getInstance();
+		Calendar ans2 = Calendar.getInstance();
+		ans1.setTime(date);
+		ans2.setTime(time);
+		ans1.set(Calendar.HOUR_OF_DAY, ans2.get(Calendar.HOUR_OF_DAY));
+		ans1.set(Calendar.MINUTE, ans2.get(Calendar.MINUTE));
+		ans1.set(Calendar.SECOND, ans2.get(Calendar.SECOND));
+	
+		return ans1.getTime();
+	}
+	
 	public static Date addDay(Date date, int days) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);

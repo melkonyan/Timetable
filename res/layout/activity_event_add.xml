@@ -73,16 +73,6 @@
         android:text="@string/event_add_end_time"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <org.holoeverywhere.widget.TextView
-        android:id="@+id/event_add_note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_add_end_time"
-        android:layout_below="@+id/event_add_end_time_val"
-        android:layout_marginTop="20dp"
-        android:text="@string/event_add_note"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
     <org.holoeverywhere.widget.EditText
         android:id="@+id/event_add_start_time_val"
         android:layout_width="wrap_content"
@@ -291,6 +281,33 @@
 
         <requestFocus />
     </org.holoeverywhere.widget.EditText>
+
+    <org.holoeverywhere.widget.TextView
+        android:id="@+id/event_add_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_period_interval_text_left"
+        android:layout_below="@+id/event_add_mute_device"
+        android:layout_marginTop="20dp"
+        android:text="@string/event_add_note"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <org.holoeverywhere.widget.TextView
+        android:id="@+id/event_add_mute_device"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/event_add_end_time"
+        android:layout_below="@+id/event_add_end_time"
+        android:layout_marginTop="14dp"
+        android:text="@string/event_add_mute_device"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <CheckBox
+        android:id="@+id/event_add_mute_device_val"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignBottom="@+id/event_add_mute_device"
+        android:layout_alignLeft="@+id/event_add_end_time_picker" />
 
 </RelativeLayout>
 

@@ -99,9 +99,13 @@ public class Event {
 		return period.hasOccurrenceOnDate(date, today)  && !isException(today);
 	}
 	
+	/* 
+	 * Return true, if event has occurrence at specified time.
+	 */
 	public boolean isCurrent(Date currentTime) {
-		//TODO: add stuff here.
-		return false;
+		return hasStartTime() && hasEndTime() && isToday(currentTime) 
+					&& DateUtils.compareTimes(startTime, currentTime) != DateUtils.AFTER 
+					&& DateUtils.compareTimes(endTime, currentTime) == DateUtils.AFTER;
 	}
 	
 	public Date getNextOccurrence(Date today) {
@@ -120,10 +124,47 @@ public class Event {
 		return nextEventDate;
 	}
 	
-	public Date getNextOccurrenceTime(Date currentTime) {
-		//TODO: fill in
-		return null;
+	/*
+	 * Return start time of next occurrence
+	 */
+	public Date getNextStartTime(Date currentTime) {
+		if (!hasStartTime()) {
+			return null;
+		}
+		Date nextStartTime = new Date();
+		nextStartTime.setTime(currentTime.getTime());
+		if (DateUtils.compareTimes(startTime, currentTime) != DateUtils.AFTER) {
+			nextStartTime = DateUtils.addDay(nextStartTime, 1);
+		}
+		nextStartTime = getNextOccurrence(nextStartTime);
+		if (nextStartTime == null) {
+			return null;
+		}
+		return DateUtils.setTime(nextStartTime, startTime);
 	}
+	
+	/*
+	 * Return end time of next occurrence
+	 */
+	public Date getNextEndTime(Date currentTime) {
+		if (!hasEndTime()) {
+			return null;
+		}
+		 
+		Date nextEndTime = new Date();
+		nextEndTime.setTime(currentTime.getTime());
+		
+		if (DateUtils.compareTimes(endTime, currentTime) != DateUtils.AFTER) {
+			nextEndTime = DateUtils.addDay(nextEndTime, 1);
+		}
+		
+		nextEndTime = getNextOccurrence(nextEndTime);
+		if (nextEndTime == null) {
+			return null;
+		}
+		return DateUtils.setTime(nextEndTime, endTime);
+	}
+	
 	/*
 	 * return true if event is valid
 	 */
@@ -146,6 +187,7 @@ public class Event {
 	    }
 	    Event that = (Event) other;
 	    return this.id == that.id
+	    	&& this.muteDevice == that.muteDevice
 	    	&& TimetableUtils.areEqualOrNulls(this.name, that.name)
 	        && TimetableUtils.areEqualOrNulls(this.place, that.place)
 	        && TimetableUtils.areEqualOrNulls(this.date, that.date)
@@ -155,13 +197,17 @@ public class Event {
 	        && TimetableUtils.areEqualOrNulls(this.period, that.period)
 	        && TimetableUtils.areEqualOrNulls(this.alarm, that.alarm)
 	    	&& TimetableUtils.areEqualOrNulls(this.exceptions, that.exceptions);
+	    	
 	}
 	
 	@Override 
 	public String toString() {
 		return "---------------\nName: " + name + "\nPlace: " + place + 
-				"\nDate: " + date.toString() + "\nNote: " + note + "\n" + period.toString()+ 
-				(hasAlarm() ? "\n" + alarm.toString() : "No alarm") + "\n---------------\n";
+				"\nDate: " + date.toString() + 
+				"\nStart time: " + (hasStartTime() ? startTime.toString() : "none") + 
+				"\nEnd time: " + (hasEndTime() ? endTime.toString(): "none") + 
+				"\nMute device: " + Boolean.toString(muteDevice) + "\nNote: " + note + "\n" + period.toString()
+				+ (hasAlarm() ? "\n" + alarm.toString() : "No alarm") + "\n---------------\n";
 	}
 	
 	public static class Builder {

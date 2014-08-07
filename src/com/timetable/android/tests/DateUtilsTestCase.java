@@ -35,4 +35,16 @@ public class DateUtilsTestCase extends TestCase{
 		
 		
 	}
+	
+	public void testSetTime() throws ParseException {
+		
+		Date date = dateFormat.parse("06.08.2014");
+		Date time = timeFormat.parse("23:40");
+		
+		assertEquals(dateTimeFormat.parse("06.08.2014 23:40"), DateUtils.setTime(date, time));
+		
+		Date dateTime = dateTimeFormat.parse("06.08.2014 11:07");
+		
+		assertEquals(dateTimeFormat.parse("06.08.2014 23:40"), DateUtils.setTime(dateTime, time));
+	}
 }

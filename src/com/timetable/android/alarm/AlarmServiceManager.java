@@ -14,6 +14,7 @@ public class AlarmServiceManager {
 
 	
 	final Object lock = new Object();
+	
 	private static Intent createServiceIntent(Context context) {
 		return new Intent(context, AlarmService.class);
 	}
@@ -23,6 +24,7 @@ public class AlarmServiceManager {
 	}
 	
 	private Context context;
+	
 	private AlarmServiceConnection mConnection;
 	 	
 	public AlarmServiceManager(Context context) {

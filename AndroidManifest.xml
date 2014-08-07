@@ -49,8 +49,12 @@
     	</receiver> 
 		
     	<service android:name="com.timetable.android.alarm.AlarmService" android:exported="false" android:enabled="true">
-    	    
     	</service>
+		
+		<service android:name="com.timetable.android.EventService" android:exported="false" android:enabled="true">
+    	</service>
+		
+		
 		<!--  include tests -->
     	<uses-library android:name="android.test.runner"/>
 		

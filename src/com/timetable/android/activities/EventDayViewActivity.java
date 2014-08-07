@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.timetable.android.EventPager;
+import com.timetable.android.EventService;
 import com.timetable.android.R;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.alarm.AlarmServiceManager;
@@ -92,11 +93,15 @@ public class EventDayViewActivity extends Activity {
 		setContentView(R.layout.activity_event_day_view);
 		
 		//TimetableDatabase.getInstance(this).clear();
+		
 		//enable debugging
 		TimetableLogger.debugging = true;
+		
 		//start AlarmService
 		AlarmServiceManager.startService(this);
 		
+		//start EventService
+		EventService.startService(this);
 		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
 		setEventPager(new EventPager(this, TimetableUtils.getCurrentTime()));

@@ -30,6 +30,41 @@ public class EventTestCase extends TestCase {
 		assertTrue(event.isException(exception));
 		
 	}
+	
+	public void testGetNextStartTime() throws ParseException {
+		Event event = new Event.Builder().setDate(dateFormat.parse("07.08.2014")).setStartTime(timeFormat.parse("00:59:00")).build();
+		
+		Date currentTime = dateTimeFormat.parse("07.08.2014 00:57");
+		
+		assertEquals(dateTimeFormat.parse("07.08.2014 00:59"), event.getNextStartTime(currentTime));
+		
+		currentTime = dateTimeFormat.parse("07.08.2014 01:59");
+		
+		assertNull(event.getNextStartTime(currentTime));
+		
+		currentTime = dateTimeFormat.parse("08.08.2014 00:15");
+		
+		assertNull(event.getNextEndTime(currentTime));
+		
+		event.period.type = EventPeriod.Type.DAILY;
+		event.period.interval = 1;
+		event.getNextStartTime(currentTime);
+		event.getNextStartTime(currentTime);
+		assertEquals(dateTimeFormat.parse("08.08.2014 00:59"), event.getNextStartTime(currentTime));
+		
+	}
+	
+	public void testGetNextEndTime() throws ParseException {
+		Event event = new Event.Builder().setDate(dateFormat.parse("07.08.2014")).build();
+		Date currentTime = dateTimeFormat.parse("07.08.2014 1:04");
+		
+		assertNull(event.getNextEndTime(currentTime));
+	
+		event.endTime = timeFormat.parse("01:21:00");
+		
+		assertEquals(dateTimeFormat.parse("07.08.2014 01:21"), event.getNextEndTime(currentTime));
+	}
+	
 	public void testIsTodayPeriodNone() throws ParseException {
 		Event event = new Event.Builder().setDate(dateFormat.parse("27.12.2013")).build();
 		event.period = new EventPeriod();

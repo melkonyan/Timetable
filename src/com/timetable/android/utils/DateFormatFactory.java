@@ -1,27 +1,32 @@
 package com.timetable.android.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class DateFormatFactory {
 	
+	public static SimpleDateFormat getFormat(String format) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.US);
+		return dateFormat;
+	}
 	public static SimpleDateFormat getDateFormat() {
-		return new SimpleDateFormat("dd.MM.yyyy");
+		return getFormat("dd.MM.yyyy");
 	}
 	
 	public static SimpleDateFormat getTimeFormat() {
-		return new SimpleDateFormat("HH:mm");
+		return getFormat("HH:mm");
 	}
 	
 	public static SimpleDateFormat getLongTimeFormat() {
-		return new SimpleDateFormat("HH:mm:ss");
+		return getFormat("HH:mm:ss");
 	}
 	
 	public static SimpleDateFormat getDateTimeFormat() {
-		return new SimpleDateFormat("dd.MM.yyyy HH:mm");
+		return getFormat("dd.MM.yyyy HH:mm");
 	}
 	
 	public static SimpleDateFormat getLongDateTimeFormat() {
-		return new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+		return getFormat("dd.MM.yyyy HH:mm:ss");
 	}
 	
 }

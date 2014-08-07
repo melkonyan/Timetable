@@ -36,6 +36,7 @@ import com.timetable.android.Event;
 import com.timetable.android.EventChecker;
 import com.timetable.android.EventChecker.IllegalEventDateException;
 import com.timetable.android.EventPeriod;
+import com.timetable.android.EventService;
 import com.timetable.android.IllegalEventDataException;
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
@@ -77,6 +78,7 @@ public class EventAddActivity extends Activity {
 	public EditText eventDateVal;
 	public EditText eventStartTimeVal;
 	public EditText eventEndTimeVal;
+	public CheckBox eventMuteDeviceVal;
 	public EditText eventNoteVal;
 	public Spinner eventPeriodTypeSpinner;
 	public TextView eventPeriodIntervalTextLeft;
@@ -160,6 +162,7 @@ public class EventAddActivity extends Activity {
 		
 		eventStartTimeVal = (EditText) findViewById(R.id.event_add_start_time_val);
 		eventEndTimeVal = (EditText) findViewById(R.id.event_add_end_time_val);
+		eventMuteDeviceVal = (CheckBox) findViewById(R.id.event_add_mute_device_val);
 		eventNoteVal = (EditText) findViewById(R.id.event_add_note_val);
 		eventAlarmAddButton = (Button) findViewById(R.id.event_add_alarm);
 		eventAlarmAddButton.setOnClickListener(new View.OnClickListener() {
@@ -644,6 +647,7 @@ public class EventAddActivity extends Activity {
 		if (endTime != null) {
 			eventEndTimeVal.setText(timeFormat.format(endTime));
 		}
+		
 		else {
 			eventEndTimeVal.setText("");
 		}
@@ -657,6 +661,7 @@ public class EventAddActivity extends Activity {
 		eventDateVal.setText(dateFormat.format(event.date));
 		eventStartTimeVal.setText(timeFormat.format(event.startTime));
 		setEventEndTime(event.endTime);
+		eventMuteDeviceVal.setChecked(event.muteDevice);
 		eventNoteVal.setText(event.note);
 		setEventPeriod(event.period);
 		if (event.hasAlarm()) {
@@ -674,6 +679,7 @@ public class EventAddActivity extends Activity {
 					.setStartTime(checker.getStartTimeFromString(eventStartTimeVal.getText().toString()))
 					.setEndTime(checker.getEndTimeFromString(eventEndTimeVal.getText().toString()))
 					.setNote(checker.getNoteFromString(eventNoteVal.getText().toString()))
+					.setMuteDevice(eventMuteDeviceVal.isChecked())
 					.setPeriod(getEventPeriod());
 			Date alarmTime = getEventAlarmTime();
 			if (alarmTime != null) {
@@ -699,6 +705,9 @@ public class EventAddActivity extends Activity {
 		}
 		if (event.hasAlarm()) {
 			mManager.getService().createAlarm(event.alarm);
+		}
+		if (event.muteDevice) {
+			EventService.addEvent(this, event);
 		}
 		db.close();
 	}
