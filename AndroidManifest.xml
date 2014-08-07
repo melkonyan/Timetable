@@ -7,6 +7,11 @@
 	    android:largeScreens="true"
 	    android:xlargeScreens="false"/>
 	
+<<<<<<< HEAD
+=======
+	<uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+   	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+>>>>>>> Design
 	
 	<uses-sdk
         android:minSdkVersion="7"
