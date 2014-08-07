@@ -162,6 +162,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/event_add_period"
         android:layout_below="@+id/event_add_period"
+		android:layout_marginTop="10dp"
 		android:layout_centerInParent="true"       
         android:orientation="horizontal"/>
  
@@ -244,7 +245,7 @@
         android:id="@+id/event_period_interval_text_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/event_add_start_time"
+        android:layout_alignLeft="@+id/event_add_period"
         android:layout_below="@+id/event_period_weekdays_table"
         android:layout_marginTop="15dp"
         android:text="@string/event_add_interval"
@@ -278,15 +279,13 @@
         android:layout_alignBottom="@+id/event_period_end_date_spinner"
         android:ems="10"
         android:inputType="date" >
-
-        <requestFocus />
     </org.holoeverywhere.widget.EditText>
 
     <org.holoeverywhere.widget.TextView
         android:id="@+id/event_add_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_period_interval_text_left"
+        android:layout_alignLeft="@+id/event_add_mute_device"
         android:layout_below="@+id/event_add_mute_device"
         android:layout_marginTop="20dp"
         android:text="@string/event_add_note"
@@ -298,7 +297,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/event_add_end_time"
         android:layout_below="@+id/event_add_end_time"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="20dp"
         android:text="@string/event_add_mute_device"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -306,9 +305,10 @@
         android:id="@+id/event_add_mute_device_val"
         android:layout_width="40dp"
         android:layout_height="40dp"
-       	android:gravity="center"
+        android:layout_alignBaseline="@+id/event_add_mute_device"
         android:layout_alignBottom="@+id/event_add_mute_device"
-        android:layout_alignLeft="@+id/event_add_end_time_picker" />
+        android:layout_toRightOf="@+id/event_add_end_time_val"
+        android:gravity="center" />
 
 </RelativeLayout>
 

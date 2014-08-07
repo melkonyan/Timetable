@@ -58,12 +58,6 @@ public class EventAlarmDialogActivity extends Activity {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				AlarmService alarmService = mManager.getService();
-				alarmService.updateAlarm(alarm);
-				Intent intent = new Intent(EventAlarmDialogActivity.this, EventDayViewActivity.class);
-				intent.putExtra(EventDayViewActivity.EXTRAS_DATE, 
-								EventDayViewActivity.EXTRAS_DATE_FORMAT.format(alarm.getEventOccurrence(TimetableUtils.getCurrentTime())));
-				EventAlarmDialogActivity.this.startActivity(intent);
 				EventAlarmDialogActivity.this.finish();
 				
 			}
@@ -75,6 +69,14 @@ public class EventAlarmDialogActivity extends Activity {
 	@Override 
 	public void onPause() {
 		super.onPause();
+		AlarmService alarmService = mManager.getService();
+		alarmService.updateAlarm(alarm);
+		Intent intent = new Intent(EventAlarmDialogActivity.this, EventDayViewActivity.class);
+		intent.putExtra(EventDayViewActivity.EXTRAS_DATE, 
+						EventDayViewActivity.EXTRAS_DATE_FORMAT.format(alarm.getEventOccurrence(TimetableUtils.getCurrentTime())));
+		
+		EventAlarmDialogActivity.this.startActivity(intent);
+		
 		if (mediaPlayer != null && mediaPlayer.isPlaying()) {
 			mediaPlayer.stop();
 			mediaPlayer.release();
@@ -85,8 +87,9 @@ public class EventAlarmDialogActivity extends Activity {
 		int eventId = getIntent().getExtras().getInt(AlarmService.EXTRA_EVENT_ID_STRING);
 		Event event = db.searchEventById(eventId);
 		if (event == null) {
-			TimetableLogger.error("EventAlarmDialog.getAlarmFromIntent: Could not find event.");
+			TimetableLogger.error("EventAlarmDialog.getAlarmFromIntent: Could not find event with id " + Integer.toString(eventId));
 			finish();
+			return null;
 		}
 		return event.alarm;
 	}

@@ -361,6 +361,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	TimetableLogger.log("TimetablaDatabase.insertEvent: inserted id: " + Integer.toString(event.id));
     	if (event.hasAlarm()) {
     		event.alarm.id = (int) insertEventAlarm(event);
+    		event.alarm.event = event;
     		if (event.alarm.id == -1) {
         		TimetableLogger.log("TimetablseDatabase.insertEvent: Error inserting event's alarm");
         		return null;

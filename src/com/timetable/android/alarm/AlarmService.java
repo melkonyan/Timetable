@@ -84,7 +84,7 @@ public class AlarmService extends Service {
 	
 	private Intent getIntentFromAlarm(EventAlarm alarm) {
 		Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
-		intent.putExtra(EXTRA_EVENT_ID_STRING, alarm.id);
+		intent.putExtra(EXTRA_EVENT_ID_STRING, alarm.event.id);
 		return intent;
 	}
 	

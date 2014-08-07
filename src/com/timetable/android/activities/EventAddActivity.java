@@ -703,6 +703,7 @@ public class EventAddActivity extends Activity {
 		event = db.insertEvent(event);
 		if (event == null) {
 			Toast.makeText(this, "Error occured while saving event.", Toast.LENGTH_SHORT).show();
+			return;
 		}
 		if (event.hasAlarm()) {
 			mManager.getService().createAlarm(event.alarm);
@@ -711,6 +712,7 @@ public class EventAddActivity extends Activity {
 			EventService.addEvent(this, event);
 		}
 		db.close();
+		//TimetableLogger.error(event.toString());
 	}
 	
 	public class PeriodTypeListener implements OnItemSelectedListener {
