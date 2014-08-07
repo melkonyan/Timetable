@@ -16,6 +16,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Vibrator;
 
 import com.timetable.android.utils.TimetableUtils;
 
@@ -36,10 +37,14 @@ public class EventService extends Service {
 	private static final String ACTION_DELETE_EVENT = "action_delete_event";
 	
 	private static final String RECEIVER_ACTION = "com.timetable.android.RECEIVER_ACTION";
+
+	private static final long VIBRATE_DURATION_MILLIS = 500;
 	
 	private AlarmManager alarmManager;
 	
 	private AudioManager audioManager;
+	
+	private Vibrator vibrator;
 	
 	private TimetableDatabase db; 
 	
@@ -100,6 +105,7 @@ public class EventService extends Service {
 		TimetableLogger.log("EventService: service is created.");
 		alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		db = TimetableDatabase.getInstance(EventService.this);
 		mReceiver = new TaskReceiver();
 		IntentFilter intentFilter = new IntentFilter();
@@ -132,14 +138,20 @@ public class EventService extends Service {
 		return PendingIntent.getBroadcast(this.getApplicationContext(), event.id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 	}
 	
+	private void vibrate() {
+		vibrator.vibrate(VIBRATE_DURATION_MILLIS);
+	}
+	
 	private void muteDevice() {
 		TimetableLogger.log("EventService.muteDevice: try to mute device.");
 		audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+		vibrate();
 	}
 	
 	private void unmuteDevice() {
 		TimetableLogger.log("EventService.unmuteDevice: try to unmute device.");
 		audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+		vibrate();
 	}
 	
 	private void createAlarm(Event event) {
