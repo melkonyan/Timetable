@@ -31,6 +31,7 @@ public class EventView extends RelativeLayout {
 		TextView textViewEventEndTime = (TextView) findViewById(R.id.layout_event_end_time);
 		ImageView imageRepeat = (ImageView) findViewById(R.id.layout_event_image_repeat);
 		ImageView imageAlarm = (ImageView) findViewById(R.id.layout_event_image_alarm);
+		ImageView imageMuteDevice = (ImageView) findViewById(R.id.layout_event_image_mute_device);
 		
 		textViewEventId.setText(Integer.toString(event.id));
 		textViewEventName.setText(event.name);
@@ -46,6 +47,7 @@ public class EventView extends RelativeLayout {
 		
 		imageRepeat.setVisibility(event.isRepeatable() ? View.VISIBLE : View.INVISIBLE);
 		imageAlarm.setVisibility(event.hasAlarm() ? View.VISIBLE : View.INVISIBLE);
+		imageMuteDevice.setVisibility(event.muteDevice ? View.VISIBLE : View.INVISIBLE);
 		
 		TimetableLogger.log("event " + event.id + " successfully drawed");
 		

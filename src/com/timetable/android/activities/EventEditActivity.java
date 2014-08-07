@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.timetable.android.Event;
 import com.timetable.android.EventPeriod;
+import com.timetable.android.EventService;
 import com.timetable.android.IllegalEventDataException;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
@@ -149,7 +150,9 @@ public class EventEditActivity extends EventAddActivity {
 		
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
 		editedEvent = db.updateEvent(editedEvent);
+		EventService.updateEvent(this, editedEvent);
 		updateEventAlarmManager();
+		
 		db.close();
 		finish();
 	}
@@ -172,6 +175,7 @@ public class EventEditActivity extends EventAddActivity {
 			if (event.hasAlarm()) {
 				alarmService.updateAlarm(event.alarm);
 			}
+			EventService.updateEvent(this, event);
 		} else {
 			//today there is no session of this event
 			event.addException(date);
@@ -181,14 +185,16 @@ public class EventEditActivity extends EventAddActivity {
 			if (event.hasAlarm()) {
 				alarmService.updateAlarm(event.alarm);
 			}
-			
+			EventService.updateEvent(this, event);
 			editedEvent.period.type = EventPeriod.Type.NONE;
 			editedEvent = db.insertEvent(editedEvent);
+			
 		}
 		
 		if (editedEvent.hasAlarm()) {
 			alarmService.createAlarm(editedEvent.alarm);
 		}
+		EventService.addEvent(this, editedEvent);
 		db.close();
 	}
 	
@@ -198,6 +204,7 @@ public class EventEditActivity extends EventAddActivity {
 			return;
 		}
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
+		EventService.deleteEvent(this, event);
 		db.deleteEvent(event);
 		if (event.hasAlarm()) {
 			AlarmService alarmService = mManager.getService();
@@ -228,6 +235,7 @@ public class EventEditActivity extends EventAddActivity {
 				alarmService.updateAlarm(event.alarm);
 			}
 		}
+		EventService.updateEvent(this, event);
 		db.close();
 	}
 	

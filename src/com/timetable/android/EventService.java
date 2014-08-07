@@ -1,6 +1,9 @@
 package com.timetable.android;
 
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import android.app.AlarmManager;
@@ -42,6 +45,14 @@ public class EventService extends Service {
 	
 	private TaskReceiver mReceiver;
 	
+	private Set<Event> currentEvents = new TreeSet<Event>(new Comparator<Event>() {
+
+		@Override
+		public int compare(Event lhs, Event rhs) {
+			return lhs.id - rhs.id;
+		}
+	});
+	
 	public static void startService(Context context) {
 		context.startService(new Intent(context, EventService.class));			
 	}
@@ -65,7 +76,7 @@ public class EventService extends Service {
 	private static void sendTask(Context context, String action, Event event) {
 		Intent intent = new Intent(RECEIVER_ACTION);
 		intent.putExtra(EXTRA_ACTION, action);
-		intent.putExtra(EXTRA_EVENT_ID, Integer.toString(event.id));
+		intent.putExtra(EXTRA_EVENT_ID, event.id);
 		context.sendBroadcast(intent);
 	}
 	
@@ -91,7 +102,10 @@ public class EventService extends Service {
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		db = TimetableDatabase.getInstance(EventService.this);
 		mReceiver = new TaskReceiver();
-		registerReceiver(mReceiver, new IntentFilter(RECEIVER_ACTION));
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(RECEIVER_ACTION);
+		intentFilter.addAction(Intent.ACTION_BOOT_COMPLETED);
+		registerReceiver(mReceiver, intentFilter);
 		loadEvents();
 	}
 	
@@ -129,14 +143,17 @@ public class EventService extends Service {
 	}
 	
 	private void createAlarm(Event event) {
-		Date nextStartTime = event.getNextStartTime(TimetableUtils.getCurrentTime());
-		if (nextStartTime == null && event.isCurrent(TimetableUtils.getCurrentTime())) {
-			TimetableLogger.error("event is current");
+		Date nextStartTime;
+		if (event.isCurrent(TimetableUtils.getCurrentTime())) {
+			//TimetableLogger.error("event is current");
 			nextStartTime = TimetableUtils.getCurrentTime();
+		}
+		else {
+			nextStartTime = event.getNextStartTime(TimetableUtils.getCurrentTime());
 		}
 		
 		if (nextStartTime == null) {
-			TimetableLogger.error("no start time");
+			//TimetableLogger.error("no start time");
 			return;
 		}
 		TimetableLogger.log("EventService.createAlarm: creating alarm at " + nextStartTime.toString());
@@ -166,6 +183,7 @@ public class EventService extends Service {
 	private void deleteAlarm(Event event) {
 		//TODO: if device is muted by this event, unmute id immediately
 		alarmManager.cancel(getPendingIntentFromEvent(event, ACTION_MUTE_DEVICE));
+		alarmManager.cancel(getPendingIntentFromEvent(event, ACTION_UNMUTE_DEVICE));
 	}
 	
 	public class TaskReceiver extends BroadcastReceiver {
@@ -173,39 +191,52 @@ public class EventService extends Service {
 		public TaskReceiver() {
 			super();
 		}
+		
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			//TODO: receive boot complete event
+			if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+				context.startService(new Intent(context, EventService.class));
+				return;
+			}
+			
 			Bundle extras = intent.getExtras();
 			if (extras == null) {
 				TimetableLogger.error("EventService.TaskReceiver.onReceive: intent with no data is received");
 				return;
 			}
+			
 			String action = extras.getString(EXTRA_ACTION);
 			TimetableLogger.log("EventService.TaskReceiver: action " + action + " received.");
 			int eventId = extras.getInt(EXTRA_EVENT_ID);
 			Event event = db.searchEventById(eventId);
 			if (event == null) {
 				TimetableLogger.error("EventService.TaskReceiver.onReceive: event with id " + Integer.toString(eventId) + " is not found.");
-				return;
+				event = new Event();
+				event.id = eventId;
+			}
+			if (currentEvents.contains(event)) {
+				currentEvents.remove(event);
+				if (currentEvents.isEmpty()) {
+					unmuteDevice();
+				}
 			}
 			//TimetableLogger.error("EventService: event received: " + event.toString());
-			if (action == ACTION_ADD_EVENT) {
+			if (action.equals(ACTION_ADD_EVENT)) {
 				createAlarm(event);
-			} else if (action == ACTION_UPDATE_EVENT) {
+			} else if (action.equals(ACTION_UPDATE_EVENT)) {
 				updateAlarm(event);
-			} else if (action == ACTION_DELETE_EVENT) {
+			} else if (action.equals(ACTION_DELETE_EVENT)) {
 				deleteAlarm(event);
 			} else if (action.equals(ACTION_MUTE_DEVICE)) {
 				//TimetableLogger.error("EventService: event is current - " + Boolean.toString(event.isCurrent(TimetableUtils.getCurrentTime())));
 				if (event.isCurrent(TimetableUtils.getCurrentTime())) {
 					//TimetableLogger.error("EventService. event is current");
+					currentEvents.add(event);
 					muteDevice();
 					createUnmuteAlarm(event);
 						
 				}
-			} else if (action == ACTION_UNMUTE_DEVICE) {
-				unmuteDevice();
+			} else if (action.equals(ACTION_UNMUTE_DEVICE)) {
 			}
 		}
 		

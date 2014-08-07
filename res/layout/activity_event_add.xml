@@ -306,6 +306,7 @@
         android:id="@+id/event_add_mute_device_val"
         android:layout_width="40dp"
         android:layout_height="40dp"
+       	android:gravity="center"
         android:layout_alignBottom="@+id/event_add_mute_device"
         android:layout_alignLeft="@+id/event_add_end_time_picker" />
 

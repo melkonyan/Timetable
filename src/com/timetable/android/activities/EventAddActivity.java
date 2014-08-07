@@ -700,7 +700,8 @@ public class EventAddActivity extends Activity {
 	public void saveEvent() throws IllegalEventDataException {
 		Event event = getEvent();
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
-		if (db.insertEvent(event) == null) {
+		event = db.insertEvent(event);
+		if (event == null) {
 			Toast.makeText(this, "Error occured while saving event.", Toast.LENGTH_SHORT).show();
 		}
 		if (event.hasAlarm()) {

@@ -74,7 +74,7 @@
 	    android:layout_alignTop="@+id/layout_event_name"
 	    android:layout_toLeftOf="@+id/layout_event_image_alarm"
 	    android:src="@drawable/ic_action_refresh" />
-
+	
 	<View
 	    android:layout_width="fill_parent"
 	    android:layout_height="0.2dp"
@@ -82,6 +82,13 @@
 	    android:layout_alignParentLeft="true"
 	    android:layout_marginBottom="0dp"
 	    android:background="#808080" />
+
+	<ImageView
+	    android:id="@+id/layout_event_image_mute_device"
+	    style="@style/EventViewImageStyle"
+	    android:layout_alignTop="@+id/layout_event_image_repeat"
+	    android:layout_toLeftOf="@+id/layout_event_image_repeat"
+	    android:src="@drawable/ic_action_volume_muted" />
 	
 </RelativeLayout>
 <!-- </merge> -->
