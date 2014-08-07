@@ -21,4 +21,29 @@
         <item name="android:layout_height">20dp</item>
         <item name="android:layout_width">20dp</item>
     </style>
+    
+    <style name = "ActivityEventAddLayoutStyle">
+      	<item name="android:layout_width">match_parent</item>
+    	<item name="android:layout_height">wrap_content</item>
+    	<item name="android:orientation">horizontal</item>
+    	<item name="android:paddingBottom">5dp</item>
+    	<item name="android:paddingTop">5dp</item>
+    	<item name="android:paddingLeft">20dp</item>
+    	<item name="android:paddingRight">20dp</item>
+    </style>
+    
+    <style name = "ActivityEventAddTextStyle">
+        <item name="android:layout_width">60dp</item>
+	    <item name="android:layout_height">wrap_content</item>
+	    <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+    
+    <style name = "ActivityEventAddEditTextStyle">
+       	<item name="android:layout_width">0px</item>
+	  	<item name="android:layout_height">wrap_content</item>
+	 	<item name="android:layout_weight">1</item>
+		<item name="android:ems">10</item>
+    </style>
+    
+    
 </resources>

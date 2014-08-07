@@ -4,294 +4,234 @@
     android:layout_height="fill_parent"
     >
 
-<RelativeLayout
+<LinearLayout
     android:id="@+id/event_add_container"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:orientation="vertical"
     android:descendantFocusability="beforeDescendants"
     android:focusable="true"
     android:focusableInTouchMode="true" >
+	
+    <LinearLayout
+       style="@style/ActivityEventAddLayoutStyle">
+	    
+	    <org.holoeverywhere.widget.TextView
+	        android:id="@+id/event_add_name"
+	        style="@style/ActivityEventAddTextStyle"
+	        android:text="@string/event_add_name"
+	         />
 
-    <org.holoeverywhere.widget.TextView
-        android:id="@+id/event_add_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="25dp"
-        android:layout_marginTop="25dp"
-        android:text="@string/event_add_name"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+	    <org.holoeverywhere.widget.EditText
+	        android:id="@+id/event_add_name_val"
+	        style="@style/ActivityEventAddEditTextStyle"
+	        android:inputType="text" >
 
-    <org.holoeverywhere.widget.EditText
-        android:id="@+id/event_add_name_val"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/event_add_name"
-        android:layout_alignBottom="@+id/event_add_name"
-        android:layout_alignParentRight="true"
-        android:ems="10"
-        android:inputType="text" />
-
-    <org.holoeverywhere.widget.TextView
-        android:id="@+id/event_add_place"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_add_name"
-        android:layout_below="@+id/event_add_name"
-        android:layout_marginTop="20dp"
-        android:text="@string/event_add_place"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <org.holoeverywhere.widget.TextView
-        android:id="@+id/event_add_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_add_start_time"
-        android:layout_below="@+id/event_add_place"
-        android:layout_marginTop="20dp"
-        android:text="@string/event_add_date"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <org.holoeverywhere.widget.TextView
-        android:id="@+id/event_add_start_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_add_place"
-        android:layout_below="@+id/event_add_date_val"
-        android:layout_marginTop="20dp"
-        android:text="@string/event_add_start_time"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <org.holoeverywhere.widget.TextView
-        android:id="@+id/event_add_end_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_add_start_time"
-        android:layout_below="@+id/event_add_start_time_val"
-        android:layout_marginTop="20dp"
-        android:text="@string/event_add_end_time"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <org.holoeverywhere.widget.TextView
-        android:id="@+id/event_add_note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_add_end_time"
-        android:layout_below="@+id/event_add_end_time_val"
-        android:layout_marginTop="20dp"
-        android:text="@string/event_add_note"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <org.holoeverywhere.widget.EditText
-        android:id="@+id/event_add_start_time_val"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/event_add_start_time"
-        android:layout_alignBottom="@+id/event_add_start_time"
-        android:layout_alignLeft="@+id/event_add_end_time_val"
-        android:layout_alignRight="@+id/event_add_date_val"
-        android:ems="10"
-        android:inputType="time" />
-
-    <org.holoeverywhere.widget.EditText
-        android:id="@+id/event_add_end_time_val"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/event_add_end_time"
-        android:layout_alignBottom="@+id/event_add_end_time"
-        android:layout_alignLeft="@+id/event_add_note_val"
-        android:layout_alignRight="@+id/event_add_date_val"
-        android:ems="10"
-        android:inputType="time" />
-
-    <org.holoeverywhere.widget.EditText
-        android:id="@+id/event_add_note_val"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/event_add_note"
-        android:layout_alignBottom="@+id/event_add_note"
-        android:layout_alignParentRight="true"
-        android:ems="10" 
-        android:inputType="text"/>
-
-    <org.holoeverywhere.widget.EditText
-        android:id="@+id/event_add_place_val"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/event_add_place"
-        android:layout_alignBottom="@+id/event_add_place"
-        android:layout_alignParentRight="true"
-        android:ems="10"
-        android:inputType="text" />
+	        <requestFocus />
+	    </org.holoeverywhere.widget.EditText>
+	
+	</LinearLayout>
     
-    <org.holoeverywhere.widget.EditText
-        android:id="@+id/event_period_interval_val"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/event_period_interval_text_left"
-        android:layout_alignBottom="@+id/event_period_interval_text_left"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/event_period_interval_text_left"
-        android:ems="10"
-        android:gravity="center"
-        android:inputType="number"
-        android:width="60dp" 
-        android:text="@string/event_add_interval_init_value"/>
+    <LinearLayout
+        style="@style/ActivityEventAddLayoutStyle">
+	
+	    <org.holoeverywhere.widget.TextView
+	        android:id="@+id/event_add_place"
+	        android:text="@string/event_add_place"
+	        style="@style/ActivityEventAddTextStyle"/>
+	
+		<org.holoeverywhere.widget.EditText
+	        android:id="@+id/event_add_place_val"
+	        style="@style/ActivityEventAddEditTextStyle"
+	        android:inputType="text" />
+	</LinearLayout>
+	
+    <LinearLayout
+       style="@style/ActivityEventAddLayoutStyle">
+	
+	    <org.holoeverywhere.widget.TextView
+	        android:id="@+id/event_add_date"
+	        android:text="@string/event_add_date"
+	       	style="@style/ActivityEventAddTextStyle" />
+	
+		<org.holoeverywhere.widget.EditText
+	        android:id="@+id/event_add_date_val"
+	        style="@style/ActivityEventAddEditTextStyle"
+	        android:inputType="date" />
+	 
+		 <org.holoeverywhere.widget.ImageButton
+	        android:id="@+id/event_add_date_picker"
+	        android:layout_width="40dp"
+	        android:layout_height="40dp"
+	        android:layout_gravity="left"
+	        android:background="@drawable/button_background"
+	        android:src="@drawable/ic_button_calendar"
+	        android:contentDescription="@string/event_add_date_picker_description" />
+		        
+	</LinearLayout>
+	
+    <LinearLayout
+        style="@style/ActivityEventAddLayoutStyle">
+	
+	    <org.holoeverywhere.widget.TextView
+	        android:id="@+id/event_add_start_time"
+	        android:text="@string/event_add_start_time"
+	        style="@style/ActivityEventAddTextStyle" />
+	
+		<org.holoeverywhere.widget.EditText
+	        android:id="@+id/event_add_start_time_val"
+	        style="@style/ActivityEventAddEditTextStyle"
+	        android:inputType="time" />
+	    
+	    <org.holoeverywhere.widget.ImageButton
+	        android:id="@+id/event_add_start_time_picker"
+	        android:layout_width="40dp"
+	        android:layout_height="40dp"
+	       	android:background="@drawable/button_background"
+	        android:src="@drawable/ic_button_watches"
+	        android:contentDescription="@string/event_add_start_time_picker_description" />
 
-    <org.holoeverywhere.widget.TextView
-        android:id="@+id/event_period_interval_text_right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/event_period_interval_val"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/event_period_interval_val"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+   </LinearLayout>
+   
+   <LinearLayout
+   		style="@style/ActivityEventAddLayoutStyle">
+	
+	   <org.holoeverywhere.widget.TextView
+	        android:id="@+id/event_add_end_time"
+	        android:text="@string/event_add_end_time"
+	       	style="@style/ActivityEventAddTextStyle" />
+	
+	    <org.holoeverywhere.widget.EditText
+	        android:id="@+id/event_add_end_time_val"
+	        style="@style/ActivityEventAddEditTextStyle"
+	        android:inputType="time" />
+	    
+	     <org.holoeverywhere.widget.ImageButton
+	        android:id="@+id/event_add_end_time_picker"
+	        android:layout_width="40dp"
+	        android:layout_height="40dp"
+	        android:background="@drawable/button_background"
+	        android:src="@drawable/ic_button_watches" 
+	        android:contentDescription="@string/event_add_end_time_picker_description"/>
+	
+	</LinearLayout> 
+    
+	<LinearLayout
+   		style="@style/ActivityEventAddLayoutStyle">
+	   
+	    <org.holoeverywhere.widget.TextView
+	        android:id="@+id/event_add_note"
+	        android:text="@string/event_add_note"
+	        style="@style/ActivityEventAddTextStyle" />
+	
+	
+	
+	    <org.holoeverywhere.widget.EditText
+	        android:id="@+id/event_add_note_val"
+	        style="@style/ActivityEventAddEditTextStyle"
+	        android:inputType="text"/>
 
-    <org.holoeverywhere.widget.Spinner
-        android:id="@+id/event_period_end_date_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_period_interval_text_left"
-        android:layout_alignRight="@+id/event_period_interval_val"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:layout_below="@+id/event_period_interval_text_left" />
-
-    <org.holoeverywhere.widget.Spinner
-        android:id="@+id/event_period_type_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/event_add_period"
-        android:layout_alignLeft="@+id/event_add_note_val"
-        android:layout_alignRight="@+id/event_add_end_time_picker" />
-
-    <org.holoeverywhere.widget.LinearLayout
+	</LinearLayout> 
+	
+	<LinearLayout
+   		style="@style/ActivityEventAddLayoutStyle">
+		 <org.holoeverywhere.widget.Button
+	        android:id="@+id/event_add_alarm"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="60dp"
+	        android:text="@string/event_add_alarm" />
+	</LinearLayout>
+		
+	<LinearLayout
+   		style="@style/ActivityEventAddLayoutStyle">
+	
+		<org.holoeverywhere.widget.Spinner
+	        android:id="@+id/event_alarm_type_spinner"
+	       	style="@style/ActivityEventAddTextStyle"
+	        android:gravity="bottom" />
+		
+		<org.holoeverywhere.widget.EditText
+	        android:id="@+id/event_alarm_time_val"
+	        style="@style/ActivityEventAddEditTextStyle"
+	        android:inputType="time"/>
+	        
+		<org.holoeverywhere.widget.ImageButton
+	        android:id="@+id/event_delete_alarm"
+	        android:layout_width="40dp"
+	        android:layout_height="40dp"
+	        android:background="@drawable/button_background"
+	        android:src="@drawable/ic_action_cancel" />
+	</LinearLayout>
+	
+	<LinearLayout
+   		style="@style/ActivityEventAddLayoutStyle">
+	 
+       <org.holoeverywhere.widget.TextView
+	        android:id="@+id/event_add_period"
+	        android:text="@string/event_add_period"
+	        style="@style/ActivityEventAddTextStyle" />
+	   
+	   <org.holoeverywhere.widget.Spinner
+	        android:id="@+id/event_period_type_spinner"
+	        android:layout_width="0px"
+	        android:layout_weight="1"
+	        android:layout_height="wrap_content"/>
+	
+	</LinearLayout>
+   	
+   	<LinearLayout
+   		style="@style/ActivityEventAddLayoutStyle">
+	
+	   <org.holoeverywhere.widget.TextView
+	        android:id="@+id/event_period_interval_text_left"
+	        style="@style/ActivityEventAddTextStyle"
+	        android:text="@string/event_add_interval" />
+	   
+	   <org.holoeverywhere.widget.EditText
+	        android:id="@+id/event_period_interval_val"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="10dp"
+	        android:ems="10"
+	        android:gravity="center"
+	        android:inputType="number"
+	        android:width="60dp" 
+	        android:text="@string/event_add_interval_init_value"/>
+	
+	    <org.holoeverywhere.widget.TextView
+	        android:id="@+id/event_period_interval_text_right"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="10dp"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	</LinearLayout>
+	
+	<org.holoeverywhere.widget.LinearLayout
         android:id="@+id/event_period_weekdays_table"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_add_period"
-        android:layout_below="@+id/event_add_period"
-		android:layout_centerInParent="true"       
         android:orientation="horizontal"/>
- 
-
-    <org.holoeverywhere.widget.EditText
-        android:id="@+id/event_add_date_val"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/event_add_date"
-        android:layout_alignBottom="@+id/event_add_date"
-        android:layout_alignLeft="@+id/event_add_place_val"
-        android:ems="10"
-        android:inputType="date" />
-
-    <org.holoeverywhere.widget.ImageButton
-        android:id="@+id/event_add_start_time_picker"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_above="@+id/event_add_end_time"
-        android:layout_alignLeft="@+id/event_add_date_picker"
-       	android:background="@drawable/button_background"
-        android:src="@drawable/ic_button_watches"
-        android:contentDescription="@string/event_add_start_time_picker_description" />
-
-    <org.holoeverywhere.widget.ImageButton
-        android:id="@+id/event_add_end_time_picker"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignBottom="@+id/event_add_end_time_val"
-        android:layout_alignLeft="@+id/event_add_start_time_picker"
-        android:background="@drawable/button_background"
-        android:src="@drawable/ic_button_watches" 
-        android:contentDescription="@string/event_add_end_time_picker_description"/>
-
-    <org.holoeverywhere.widget.ImageButton
-        android:id="@+id/event_add_date_picker"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_below="@+id/event_add_place_val"
-        android:layout_toRightOf="@+id/event_add_date_val"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/button_background"
-        android:src="@drawable/ic_button_calendar"
-        android:contentDescription="@string/event_add_date_picker_description" />
-
-    <org.holoeverywhere.widget.Button
-        android:id="@+id/event_add_alarm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_add_note_val"
-        android:layout_below="@+id/event_add_note_val"
-        android:layout_marginTop="11dp"
-        android:text="@string/event_add_alarm" />
-
-    <org.holoeverywhere.widget.EditText
-        android:id="@+id/event_alarm_time_val"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_period_type_spinner"
-        android:layout_alignRight="@+id/event_add_end_time_val"
-        android:layout_below="@+id/event_add_alarm"
-        android:layout_marginTop="12dp"
-        android:ems="10"
-        android:inputType="time" >
-
-    </org.holoeverywhere.widget.EditText>
-
-    <org.holoeverywhere.widget.Spinner
-        android:id="@+id/event_alarm_type_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/event_alarm_time_val"
-        android:layout_alignLeft="@+id/event_add_period"
-        android:layout_below="@+id/event_add_alarm"
-        android:layout_marginTop="10dp"
-        android:layout_toLeftOf="@+id/event_alarm_time_val"
-        android:gravity="bottom" />
-
-    <org.holoeverywhere.widget.TextView
-        android:id="@+id/event_period_interval_text_left"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/event_add_start_time"
-        android:layout_below="@+id/event_period_weekdays_table"
-        android:layout_marginTop="15dp"
-        android:text="@string/event_add_interval"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <org.holoeverywhere.widget.TextView
-        android:id="@+id/event_add_period"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_add_note"
-        android:layout_below="@+id/event_alarm_type_spinner"
-        android:layout_marginTop="30dp"
-        android:text="@string/event_add_period"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <org.holoeverywhere.widget.ImageButton
-        android:id="@+id/event_delete_alarm"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignBottom="@+id/event_alarm_time_val"
-        android:layout_alignLeft="@+id/event_add_end_time_picker"
-        android:layout_marginLeft="11dp"
-        android:background="@drawable/button_background"
-        android:src="@drawable/ic_action_cancel" />
-
-    <org.holoeverywhere.widget.EditText
-        android:id="@+id/event_period_end_date_val"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/event_period_interval_text_right"
-        android:layout_alignBottom="@+id/event_period_end_date_spinner"
-        android:ems="10"
-        android:inputType="date" >
-
-        <requestFocus />
-    </org.holoeverywhere.widget.EditText>
-
-</RelativeLayout>
+ 	
+    <LinearLayout
+   		style="@style/ActivityEventAddLayoutStyle">
+	
+		<org.holoeverywhere.widget.Spinner
+	        android:id="@+id/event_period_end_date_spinner"
+	        style="@style/ActivityEventAddTextStyle"
+	        />
+	    
+	    <org.holoeverywhere.widget.EditText
+	        android:id="@+id/event_period_end_date_val"
+	        android:layout_width="100dp"
+	        android:layout_height="wrap_content"
+	        android:ems="10"
+	        android:inputType="date" />
+	
+	</LinearLayout>
+	    	
+</LinearLayout>
 
 </ScrollView>
