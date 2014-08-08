@@ -71,6 +71,12 @@ public class EventAddActivity extends Activity {
 
 	private boolean isSetEventAlarm = false;
 	
+	//Initial event date and time
+	public Calendar initEventDate;
+	public Calendar initEventStartTime;
+	public Calendar initEventEndTime;
+	public Calendar initPeriodEndDate;
+	
 	public CheckBox eventPeriodWeekDayCheckBoxes [] = new CheckBox[7]; 
 	
 	public LinearLayout mContainer;
@@ -102,9 +108,8 @@ public class EventAddActivity extends Activity {
 	public ImageButton eventStartTimePickerButton;
 	public ImageButton eventEndTimePickerButton;
 	public ImageButton eventAlarmDeleteButton;
+	public ImageButton eventPeriodEndDatePickerButton;
 	
-	//Initial event date and time
-	public Calendar initDate;
 	
 	private EventChecker checker;
 	
@@ -307,6 +312,37 @@ public class EventAddActivity extends Activity {
 			}
 		});
 		
+		eventPeriodEndDatePickerButton = (ImageButton) findViewById(R.id.event_period_end_date_picker);
+		eventPeriodEndDatePickerButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
+
+					@Override
+					public void onDateSet(DatePickerDialog dialog, int year,
+							int monthOfYear, int dayOfMonth) {
+						Calendar cal = Calendar.getInstance();
+						cal.set(Calendar.YEAR, year);
+						cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+						cal.set(Calendar.MONTH, monthOfYear);
+						setEventPeriodEndDate(cal.getTime());
+						
+					}
+					
+				};
+				
+				DatePickerDialog mDialog = DatePickerDialog.newInstance(mOnDateSetListener, 
+						getPeriodEndDate().get(Calendar.YEAR), getPeriodEndDate().get(Calendar.MONTH), getPeriodEndDate().get(Calendar.DAY_OF_MONTH));
+				if (getSupportFragmentManager() == null) {
+					TimetableLogger.error("EventAddActivity: fragmentmanager is null");
+				}
+				mDialog.show(getSupportFragmentManager());
+				
+				
+			}
+		});
+
 		setMaxLength(eventPeriodIntervalVal, Event.MAX_PERIOD_INTERVAL_LENGTH);
 		setMaxLength(eventNameVal, Event.MAX_NAME_LENGTH);
 		setMaxLength(eventPlaceVal, Event.MAX_PLACE_LENGTH);
@@ -366,8 +402,8 @@ public class EventAddActivity extends Activity {
 			return;
 		}
 		try {
-			initDate = Calendar.getInstance();
-			initDate.setTime(INIT_DATE_FORMAT.parse(extras.getString(EventAddActivity.INTENT_EXTRA_DATE)));
+			initEventDate = Calendar.getInstance();
+			initEventDate.setTime(INIT_DATE_FORMAT.parse(extras.getString(EventAddActivity.INTENT_EXTRA_DATE)));
 			setEventDate(getInitDate());
 			setEventStartTime(getInitStartTime());
 			setEventEndTime(getInitEndTime());
@@ -383,38 +419,44 @@ public class EventAddActivity extends Activity {
 	 * returns date, that was set by default
 	 */
 	public Calendar getInitDate() {
-		return initDate;
+		return initEventDate;
 	}
 	
 	/*
 	 * returns event's start time, that was set by default 
 	 */
 	public Calendar getInitStartTime() {
-		Calendar initStartTime = Calendar.getInstance();
-		initStartTime.setTime(initDate.getTime());
-		initStartTime.add(Calendar.HOUR, 1);
-		initStartTime.set(Calendar.MINUTE, 0);
-		return initStartTime;
+		initEventStartTime = Calendar.getInstance();
+		initEventStartTime.setTime(initEventDate.getTime());
+		initEventStartTime.add(Calendar.HOUR, 1);
+		initEventStartTime.set(Calendar.MINUTE, 0);
+		return initEventStartTime;
 	}
 	
 	public Calendar getInitEndTime() {
-		Calendar initEndTime = Calendar.getInstance();
-		initEndTime.setTime(getInitStartTime().getTime());
-		initEndTime.add(Calendar.HOUR, 1);
-		return initEndTime;
+		initEventEndTime = Calendar.getInstance();
+		initEventEndTime.setTime(getInitStartTime().getTime());
+		initEventEndTime.add(Calendar.HOUR, 1);
+		return initEventEndTime;
 	}
 	
-
+	
 	public Calendar getInitAlarmTime() {
 		Calendar initAlarmTime = Calendar.getInstance();
-		initAlarmTime.setTime(initDate.getTime());
+		initAlarmTime.setTime(initEventDate.getTime());
 		initAlarmTime.add(Calendar.HOUR, -1);
 		return initAlarmTime;
 	}
 	
+	public Calendar getInitPeriodEndDate() {
+		initPeriodEndDate = Calendar.getInstance();
+		initPeriodEndDate.setTime(getEventDate().getTime());
+		return initPeriodEndDate;
+	}
+	
 	public boolean [] getInitWeekOccurences() {
 		boolean [] initWeekOccurences = new boolean[7];
-		initWeekOccurences[initDate.get(Calendar.DAY_OF_WEEK) - 1] = true;
+		initWeekOccurences[initEventDate.get(Calendar.DAY_OF_WEEK) - 1] = true;
 		setEventPeriodWeekOccurrences(initWeekOccurences);
 		return initWeekOccurences;
 	}
@@ -483,11 +525,24 @@ public class EventAddActivity extends Activity {
 		try {
 			cal.setTime(timeFormat.parse(eventEndTimeVal.getText().toString()));
 		} catch (ParseException e) {
-			return getEventEndTime();
+			return getInitEndTime();
 		}
 		return cal;
 	}
 	
+	public void setPeriodEndDate(Calendar endDate) {
+		eventPeriodEndDateVal.setText(dateFormat.format(endDate.getTime()));
+	}
+	
+	public Calendar getPeriodEndDate() {
+		Calendar cal = Calendar.getInstance();
+		try {
+			cal.setTime(dateFormat.parse(eventPeriodEndDateVal.getText().toString()));
+		} catch (ParseException e) {
+			return getInitPeriodEndDate();
+		}
+		return cal;
+	}
 	public boolean isSetEventAlarm() {
 		return isSetEventAlarm;
 	}
@@ -613,9 +668,11 @@ public class EventAddActivity extends Activity {
 	 public void showPeriodEndDate() {
 		if (isSetEventPeriodEndDate()  && getEventPeriodType() != EventPeriod.Type.NONE) {
 			eventPeriodEndDateVal.setVisibility(View.VISIBLE);
+			eventPeriodEndDatePickerButton.setVisibility(View.VISIBLE);
 		}
 		else {
 			eventPeriodEndDateVal.setVisibility(View.GONE);
+			eventPeriodEndDatePickerButton.setVisibility(View.GONE);
 		}
 	}
 	
