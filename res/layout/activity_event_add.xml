@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
 
-<LinearLayout
+<org.holoeverywhere.widget.LinearLayout
     android:id="@+id/event_add_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="10dp"
     android:paddingBottom="10dp"
     android:orientation="vertical"
-    android:descendantFocusability="beforeDescendants"
+   	android:descendantFocusability="beforeDescendants"
     android:focusable="true"
-    android:focusableInTouchMode="true" >
+    android:focusableInTouchMode="true"
+   >
 	
-    <LinearLayout
+    <org.holoeverywhere.widget.LinearLayout
        style="@style/ActivityEventAddLayoutStyle">
 	    
 	    <org.holoeverywhere.widget.TextView
@@ -28,13 +29,11 @@
 	        android:id="@+id/event_add_name_val"
 	        style="@style/ActivityEventAddEditTextStyle"
 	        android:inputType="text" >
-
-	        <requestFocus />
-	    </org.holoeverywhere.widget.EditText>
+		</org.holoeverywhere.widget.EditText>
 	
-	</LinearLayout>
+	</org.holoeverywhere.widget.LinearLayout>
     
-    <LinearLayout
+    <org.holoeverywhere.widget.LinearLayout
         style="@style/ActivityEventAddLayoutStyle">
 	
 	    <org.holoeverywhere.widget.TextView
@@ -46,9 +45,9 @@
 	        android:id="@+id/event_add_place_val"
 	        style="@style/ActivityEventAddEditTextStyle"
 	        android:inputType="text" />
-	</LinearLayout>
+	</org.holoeverywhere.widget.LinearLayout>
 	
-    <LinearLayout
+    <org.holoeverywhere.widget.LinearLayout
        style="@style/ActivityEventAddLayoutStyle">
 	
 	    <org.holoeverywhere.widget.TextView
@@ -70,10 +69,10 @@
 	        android:src="@drawable/ic_button_calendar"
 	        android:contentDescription="@string/event_add_date_picker_description" />
 		        
-	</LinearLayout>
+	</org.holoeverywhere.widget.LinearLayout>
 	
-    <LinearLayout
-        style="@style/ActivityEventAddLayoutStyle">
+    <org.holoeverywhere.widget.LinearLayout
+     	style="@style/ActivityEventAddLayoutStyle">
 	
 	    <org.holoeverywhere.widget.TextView
 	        android:id="@+id/event_add_start_time"
@@ -93,9 +92,9 @@
 	        android:src="@drawable/ic_button_watches"
 	        android:contentDescription="@string/event_add_start_time_picker_description" />
 
-   </LinearLayout>
+   </org.holoeverywhere.widget.LinearLayout>
    
-   <LinearLayout
+   <org.holoeverywhere.widget.LinearLayout
    		style="@style/ActivityEventAddLayoutStyle">
 	
 	   <org.holoeverywhere.widget.TextView
@@ -116,9 +115,38 @@
 	        android:src="@drawable/ic_button_watches" 
 	        android:contentDescription="@string/event_add_end_time_picker_description"/>
 	
-	</LinearLayout> 
+	</org.holoeverywhere.widget.LinearLayout> 
     
-	<LinearLayout
+   	<org.holoeverywhere.widget.LinearLayout
+   		android:layout_height="wrap_content"
+   		android:layout_width="match_parent"
+   		android:orientation="horizontal"
+   		android:paddingLeft="20dp"
+   		
+   		android:paddingRight="20dp"
+   		android:paddingTop="10dp"
+   		android:paddingBottom="0dp">
+	 
+	   <org.holoeverywhere.widget.TextView
+	        android:id="@+id/event_add_mute_device"
+	        android:layout_width="0px"
+	        android:layout_weight="1"
+	        android:layout_height="wrap_content"
+	        android:text="@string/event_add_mute_device"
+	        android:layout_gravity="bottom"
+	        android:layout_marginBottom="5dp"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <org.holoeverywhere.widget.CheckBox
+	        android:id="@+id/event_add_mute_device_val"
+	        android:layout_width="40dp"
+	        android:layout_height="40dp"
+	        android:gravity="bottom"
+	        android:layout_gravity="bottom" />
+	
+	</org.holoeverywhere.widget.LinearLayout>	
+	
+	<org.holoeverywhere.widget.LinearLayout
    		style="@style/ActivityEventAddLayoutStyle">
 	   
 	    <org.holoeverywhere.widget.TextView
@@ -133,19 +161,20 @@
 	        style="@style/ActivityEventAddEditTextStyle"
 	        android:inputType="text"/>
 
-	</LinearLayout> 
+	</org.holoeverywhere.widget.LinearLayout> 
 	
-	<LinearLayout
+	<org.holoeverywhere.widget.LinearLayout
    		style="@style/ActivityEventAddLayoutStyle">
+		 
 		 <org.holoeverywhere.widget.Button
 	        android:id="@+id/event_add_alarm"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_marginLeft="60dp"
+	        android:layout_marginLeft="80dp"
 	        android:text="@string/event_add_alarm" />
-	</LinearLayout>
+	</org.holoeverywhere.widget.LinearLayout>
 		
-	<LinearLayout
+	<org.holoeverywhere.widget.LinearLayout
    		style="@style/ActivityEventAddLayoutStyle">
 	
 		<org.holoeverywhere.widget.Spinner
@@ -164,9 +193,9 @@
 	        android:layout_height="40dp"
 	        android:background="@drawable/button_background"
 	        android:src="@drawable/ic_action_cancel" />
-	</LinearLayout>
+	</org.holoeverywhere.widget.LinearLayout>
 	
-	<LinearLayout
+	<org.holoeverywhere.widget.LinearLayout
    		style="@style/ActivityEventAddLayoutStyle">
 	 
        <org.holoeverywhere.widget.TextView
@@ -180,9 +209,10 @@
 	        android:layout_weight="1"
 	        android:layout_height="wrap_content"/>
 	
-	</LinearLayout>
+	</org.holoeverywhere.widget.LinearLayout>
    	
-   	<LinearLayout
+   	<org.holoeverywhere.widget.LinearLayout
+   		android:id="@+id/event_add_period_container"
    		style="@style/ActivityEventAddLayoutStyle">
 	
 	   <org.holoeverywhere.widget.TextView
@@ -194,7 +224,6 @@
 	        android:id="@+id/event_period_interval_val"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_marginLeft="10dp"
 	        android:ems="10"
 	        android:gravity="center"
 	        android:inputType="number"
@@ -206,16 +235,16 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="10dp"
+	        android:layout_gravity="bottom"
 	        android:textAppearance="?android:attr/textAppearanceMedium" />
-	</LinearLayout>
+	</org.holoeverywhere.widget.LinearLayout>
 	
 	<org.holoeverywhere.widget.LinearLayout
-        android:id="@+id/event_period_weekdays_table"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"/>
+        android:id="@+id/event_period_weekdays_container"
+        style="@style/ActivityEventAddLayoutStyle"/>
  	
-    <LinearLayout
+    <org.holoeverywhere.widget.LinearLayout
+   		android:id="@+id/event_add_period_end_date_container"
    		style="@style/ActivityEventAddLayoutStyle">
 	
 		<org.holoeverywhere.widget.Spinner
@@ -225,13 +254,13 @@
 	    
 	    <org.holoeverywhere.widget.EditText
 	        android:id="@+id/event_period_end_date_val"
-	        android:layout_width="100dp"
+	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:ems="10"
 	        android:inputType="date" />
 	
-	</LinearLayout>
+	</org.holoeverywhere.widget.LinearLayout>
 	    	
-</LinearLayout>
+</org.holoeverywhere.widget.LinearLayout>
     
 </ScrollView>

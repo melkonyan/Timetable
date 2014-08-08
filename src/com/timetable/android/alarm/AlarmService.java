@@ -98,11 +98,8 @@ public class AlarmService extends Service {
 	 * Create alarm with pending intent, that will be broadcasted to this class, when alarm should run.
 	 */
 	public void createAlarm(EventAlarm alarm) {
-		TimetableLogger.log("AlarmService.createAlarm: creating alarm");
-		
 		Date nextOccurrence = alarm.getNextOccurrence(TimetableUtils.getCurrentTime());
 		if (nextOccurrence == null) {
-			TimetableLogger.log("AlarmService.creeateAlarm: has no next occurrence");
 			return;
 		}
 		
@@ -116,7 +113,8 @@ public class AlarmService extends Service {
 		}
 		alarmQueue.offer(alarm);
 		updateNotification();
-		TimetableLogger.log("Alarm successfully created.");
+		TimetableLogger.log("AlarmService.createAlarm: creating alarm on date: " + nextOccurrence.toString());
+		
 	}
 	
 	

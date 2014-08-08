@@ -21,6 +21,7 @@ import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 import org.holoeverywhere.widget.datetimepicker.time.RadialPickerLayout;
 import org.holoeverywhere.widget.datetimepicker.time.TimePickerDialog;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -30,7 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.RelativeLayout;
+import android.widget.TableRow;
 
 import com.timetable.android.Event;
 import com.timetable.android.EventChecker;
@@ -72,7 +73,11 @@ public class EventAddActivity extends Activity {
 	
 	public CheckBox eventPeriodWeekDayCheckBoxes [] = new CheckBox[7]; 
 	
-	public RelativeLayout mContainer;
+	public LinearLayout mContainer;
+	public LinearLayout mPeriodContainer;
+	//table containing checkboxes of weekdays
+	public LinearLayout eventPeriodWeekDaysContainer;
+	public LinearLayout mEndDateContainer;
 	public EditText eventNameVal;
 	public EditText eventPlaceVal;
 	public EditText eventDateVal;
@@ -92,8 +97,6 @@ public class EventAddActivity extends Activity {
 	
 	public TextWatcher eventAddTextWatcher;
 	
-	//table containing checkboxes of weekdays
-	public LinearLayout eventPeriodWeekDaysTable;
 	
 	public ImageButton eventDatePickerButton;
 	public ImageButton eventStartTimePickerButton;
@@ -123,7 +126,10 @@ public class EventAddActivity extends Activity {
 		
 		eventPeriodWeekDayNames = getResources().getStringArray(R.array.event_period_week_day_names_array);
 		
-		mContainer = (RelativeLayout) findViewById(R.id.event_add_container);
+		mContainer = (LinearLayout) findViewById(R.id.event_add_container);
+		mPeriodContainer = (LinearLayout) findViewById(R.id.event_add_period_container);
+		mEndDateContainer = (LinearLayout) findViewById(R.id.event_add_period_end_date_container);
+		
 		eventNameVal = (EditText) findViewById(R.id.event_add_name_val);
 		eventPlaceVal = (EditText) findViewById(R.id.event_add_place_val);
 		eventDateVal = (EditText) findViewById(R.id.event_add_date_val);
@@ -314,17 +320,17 @@ public class EventAddActivity extends Activity {
 	}
 
 	private void createEventPeriodWeekDaysTable() {
-		eventPeriodWeekDaysTable = (LinearLayout) findViewById(R.id.event_period_weekdays_table);
+		eventPeriodWeekDaysContainer = (LinearLayout) findViewById(R.id.event_period_weekdays_container);
 		for (int i = 0; i < 7; i++) {
 			TextView weekdayName = new TextView(this);
 			weekdayName.setText(eventPeriodWeekDayNames[i]);
 			eventPeriodWeekDayCheckBoxes[i] = new CheckBox(this);
 			
 			LinearLayout weekdayLayout = new LinearLayout(this);
-			LinearLayout.LayoutParams weekdayLayoutParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			LinearLayout.LayoutParams weekdayLayoutParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f);
 			weekdayLayout.setLayoutParams(weekdayLayoutParams);
 			
-			LinearLayout.LayoutParams weekdayParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			LinearLayout.LayoutParams weekdayParams = new TableRow.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			weekdayParams.gravity = Gravity.CENTER_HORIZONTAL;
 			weekdayName.setLayoutParams(weekdayParams);
 			eventPeriodWeekDayCheckBoxes[i].setLayoutParams(weekdayParams);
@@ -332,7 +338,7 @@ public class EventAddActivity extends Activity {
 			weekdayLayout.setOrientation(LinearLayout.VERTICAL);
 			weekdayLayout.addView(weekdayName);
 			weekdayLayout.addView(eventPeriodWeekDayCheckBoxes[i]);
-			eventPeriodWeekDaysTable.addView(weekdayLayout);
+			eventPeriodWeekDaysContainer.addView(weekdayLayout);
 		}
 	}
 	
@@ -576,7 +582,7 @@ public class EventAddActivity extends Activity {
 	
 	public void showEventPeriodWeekOccurrences() {
 		int isVisible = (getEventPeriodType() == EventPeriod.Type.WEEKLY ?  View.VISIBLE : View.GONE);
-		eventPeriodWeekDaysTable.setVisibility(isVisible);
+		eventPeriodWeekDaysContainer.setVisibility(isVisible);
 	}
 	
 	public void setEventPeriodWeekOccurrences(boolean [] weekOccurrences) {
@@ -715,20 +721,27 @@ public class EventAddActivity extends Activity {
 		//TimetableLogger.error(event.toString());
 	}
 	
+	private void resizeLayout() {
+		//bug in HoloEverywhere. Need to do this, to resize layout.
+		mContainer.post(new Runnable() {
+             @Override
+             public void run() {
+                 mContainer.requestLayout();
+                 mPeriodContainer.requestLayout();
+                 mEndDateContainer.requestLayout();
+                 eventPeriodWeekDaysContainer.requestLayout();
+             }
+         });  
+
+	}
+	
 	public class PeriodTypeListener implements OnItemSelectedListener {
 	
 		@Override
 		public void onItemSelected(AdapterView<?> arg0, View arg1, int pos,
 				long id) {
 			showEventPeriod();
-			//bug in HoloEverywhere. Need to do this, to resize layout.
-			mContainer.post(new Runnable() {
-                 @Override
-                 public void run() {
-                     mContainer.requestLayout();
-                 }
-             });  
-
+			resizeLayout();
 		}
 
 		@Override
@@ -742,14 +755,8 @@ public class EventAddActivity extends Activity {
 		public void onItemSelected(AdapterView<?> arg0, View arg1, int pos,
 				long arg3) {
 			showPeriodEndDate();
-			//bug in HoloEverywhere. Need to do this, to resize layout.
-			mContainer.post(new Runnable() {
-                 @Override
-                 public void run() {
-                     mContainer.requestLayout();
-                 }
-             });  
-
+			resizeLayout();
+			
 		}
 
 		@Override
