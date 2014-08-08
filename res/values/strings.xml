@@ -56,8 +56,9 @@
 	<string name = "event_checker_empty_period_end_date">Event period end date is empty.</string>
 	<string name = "event_checker_empty_name">Event name is empty.</string>
 	<string name = "event_checker_invalid_alarm_time">Reminder time is invalid.</string>
-	
-	<string name ="event_pager_no_events">No events today.</string>
+	<string name = "event_checker_start_time_before_end_time">End time is less than start time.</string>
+	<string name = "event_checker_end_date_before_start_date">End date is less start date.</string>
+	<string name = "event_pager_no_events">No events today.</string>
 	
 	<string name = "menu_save_event">Save</string>
 	<string name = "menu_delete_event">Delete</string>

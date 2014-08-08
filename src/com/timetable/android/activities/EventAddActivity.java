@@ -21,7 +21,6 @@ import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 import org.holoeverywhere.widget.datetimepicker.time.RadialPickerLayout;
 import org.holoeverywhere.widget.datetimepicker.time.TimePickerDialog;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -749,6 +748,7 @@ public class EventAddActivity extends Activity {
 				builder.setAlarmTime(alarmTime);
 			}
 			Event event = builder.build();
+			checker.checkEvent(event);
 			TimetableLogger.log("EventAddActivity.getEvent:\n" +  event.toString());
 			return event;
 		}  catch (IllegalEventDateException e) {

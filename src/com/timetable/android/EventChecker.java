@@ -7,8 +7,6 @@ import java.util.Date;
 import android.content.Context;
 import android.content.res.Resources;
 
-import com.timetable.android.R;
-
 public class EventChecker {
 	
 	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
@@ -23,7 +21,13 @@ public class EventChecker {
 		resources = context.getResources();
 	}
 	
-	public void checkEvent(Event event) {
+	public void checkEvent(Event event) throws IllegalEventEndTimeException, IllegalEventPeriodEndDateException {
+		if (event.hasStartTime() && event.hasEndTime() && event.startTime.compareTo(event.endTime) >= 0) {
+			throw new IllegalEventEndTimeException(resources.getString(R.string.event_checker_start_time_before_end_time));
+		}
+		if (event.period.endDate != null && event.date.compareTo(event.period.endDate) >= 0) {
+			throw new IllegalEventPeriodEndDateException(resources.getString(R.string.event_checker_end_date_before_start_date));
+		}
 	}
 	
 	public String getNameFromString(String nameString) throws IllegalEventNameException {
