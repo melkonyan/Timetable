@@ -1,16 +1,20 @@
 package com.timetable.android;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 
+import android.os.Bundle;
+
 import com.timetable.android.alarm.EventAlarm;
+import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.TimetableUtils;
 
 public class Event {
-	
 	
 	public static final int MIN_NAME_LENGTH = 1;
 	
@@ -21,6 +25,28 @@ public class Event {
 	public static final int MAX_NOTE_LENGTH = 200;
 	
 	public static final int MAX_PERIOD_INTERVAL_LENGTH = 2;
+
+	public static final String BUNDLE_EVENT_ID = "evt_id";
+	
+	public static final String BUNDLE_EVENT_NAME = "evt_name";
+	
+	public static final String BUNDLE_EVENT_PLACE = "evt_place";
+	
+	public static final String BUNDLE_EVENT_DATE = "evt_date";
+	
+	public static final String BUNDLE_EVENT_START_TIME = "evt_start_time";
+	
+	public static final String BUNDLE_EVENT_END_TIME = "evt_end_time";
+	
+	public static final String BUNDLE_EVENT_MUTE_DEVICE = "evt_mute_device";
+	
+	public static final String BUNDLE_EVENT_NOTE = "evt_note";
+	
+	public static final String BUNDLE_EVENT_EXCEPTIONS = "evt_exceptions";
+	
+	public static final SimpleDateFormat dateFormat = DateFormatFactory.getDateFormat();
+	
+	public static final SimpleDateFormat timeFormat = DateFormatFactory.getTimeFormat();
 	
 	public int id;
 	
@@ -52,23 +78,84 @@ public class Event {
 		}
 	});
 	
-	@Deprecated
+	public Event(Bundle data) throws ParseException {
+		this();
+		id = data.getInt(BUNDLE_EVENT_ID);
+		name = data.getString(BUNDLE_EVENT_NAME);
+		place = data.getString(BUNDLE_EVENT_PLACE);
+		setDate(data.getString(BUNDLE_EVENT_DATE));
+		setStartTime(data.getString(BUNDLE_EVENT_START_TIME));
+		setEndTime(data.getString(BUNDLE_EVENT_END_TIME));
+		muteDevice = data.getBoolean(BUNDLE_EVENT_MUTE_DEVICE);
+		note = data.getString(BUNDLE_EVENT_NOTE);
+		addExceptions(data.getStringArray(BUNDLE_EVENT_EXCEPTIONS));
+		period = new EventPeriod(data);
+		if (data.containsKey(EventAlarm.BUNDLE_ALARM_ID)) {
+			alarm = new EventAlarm(data, this);
+		}
+	}
+	
 	public Event(int id) {
 		this.id = id;
 		this.period = new EventPeriod();
 	}
 	
-	@Deprecated
 	public Event() {
 		this(-1);
+	}
+	
+	/*
+	 * Save event information into ContentValues
+	 */
+	public Bundle convert() {
+		Bundle bundle = new Bundle();
+		bundle.putInt(BUNDLE_EVENT_ID, id);
+		bundle.putString(BUNDLE_EVENT_NAME, name);
+		bundle.putString(BUNDLE_EVENT_PLACE, place);
+		bundle.putString(BUNDLE_EVENT_DATE, getDateString());
+		bundle.putString(BUNDLE_EVENT_START_TIME, getStartTimeString());
+		bundle.putString(BUNDLE_EVENT_END_TIME, getEndTimeString());
+		bundle.putBoolean(BUNDLE_EVENT_MUTE_DEVICE, muteDevice);
+		bundle.putString(BUNDLE_EVENT_NOTE, note);
+		bundle.putStringArray(BUNDLE_EVENT_EXCEPTIONS, getExceptionStrings());
+		bundle.putAll(period.convert());
+		if (hasAlarm()) {
+			bundle.putAll(alarm.convert());
+		}
+		return bundle;
+	}
+	
+	
+	public void setDate(String dateString) throws ParseException {
+		date = DateUtils.getDateFromString(dateFormat,dateString, false);
+	}
+	
+	public String getDateString() {
+		return date == null ? "" : dateFormat.format(date);
 	}
 	
 	public boolean hasStartTime() {
 		return startTime != null;
 	}
 	
+	public void setStartTime(String startTimeString) throws ParseException {
+		startTime = DateUtils.getDateFromString(timeFormat, startTimeString, false);
+	}
+	
+	public String getStartTimeString() {
+		return hasStartTime() ?  timeFormat.format(startTime) : "";
+	}
+	
 	public boolean hasEndTime() {
 		return endTime != null;
+	}
+	
+	public void setEndTime(String endTimeString) throws ParseException {
+		endTime = DateUtils.getDateFromString(timeFormat, endTimeString);
+	}
+	
+	public String getEndTimeString() {
+		return hasEndTime() ? timeFormat.format(endTime) : "";
 	}
 	
 	public boolean hasAlarm() {
@@ -83,6 +170,16 @@ public class Event {
 		return period.isEveryWeek();
 	}
 	
+	public void addExceptions(String[] exceptionDates) throws ParseException {
+		for (int i = 0; i < exceptionDates.length; i++) {
+			addException(exceptionDates[i]);
+		}
+	}
+	
+	public void addException(String exceptionDate) throws ParseException {
+		exceptions.add(DateUtils.getDateFromString(dateFormat, exceptionDate, false));
+	}
+	
 	public void addException(Date exception) {
 		exceptions.add(exception);
 	}
@@ -95,8 +192,25 @@ public class Event {
 		return exceptions != null && exceptions.contains(today);
 	}
 	
+	public Date[] getExceptions() {
+		return exceptions.toArray(new Date[0]);
+	}
+	
+	public String[] getExceptionStrings() {
+		Date[] exDates = getExceptions();
+		String[] exStrings = new String[exDates.length];
+		for (int i = 0; i < exStrings.length; i++) {
+			exStrings[i] = dateFormat.format(exDates[i]);
+		}
+		return exStrings;
+	}
+	
 	public boolean isToday(Date today) {
 		return period.hasOccurrenceOnDate(date, today)  && !isException(today);
+	}
+	
+	public boolean isCurrent() {
+		return isCurrent(TimetableUtils.getCurrentTime());
 	}
 	
 	/* 
@@ -106,6 +220,10 @@ public class Event {
 		return hasStartTime() && hasEndTime() && isToday(currentTime) 
 					&& DateUtils.compareTimes(startTime, currentTime) != DateUtils.AFTER 
 					&& DateUtils.compareTimes(endTime, currentTime) == DateUtils.AFTER;
+	}
+	
+	public Date getNextOccurrence() {
+		return getNextOccurrence(TimetableUtils.getCurrentTime());
 	}
 	
 	public Date getNextOccurrence(Date today) {
@@ -122,6 +240,11 @@ public class Event {
 			nextEventDate = DateUtils.addDay(nextEventDate, 1);
 		}
 		return nextEventDate;
+	}
+	
+	
+	public Date getNextStartTime() {
+		return getNextStartTime(TimetableUtils.getCurrentTime());
 	}
 	
 	/*
@@ -141,6 +264,10 @@ public class Event {
 			return null;
 		}
 		return DateUtils.setTime(nextStartTime, startTime);
+	}
+	
+	public Date getNexEndTime() {
+		return getNextEndTime(TimetableUtils.getCurrentTime());
 	}
 	
 	/*
@@ -200,6 +327,8 @@ public class Event {
 	    	
 	}
 	
+	
+	
 	@Override 
 	public String toString() {
 		return "---------------\nName: " + name + "\nPlace: " + place + 
@@ -207,7 +336,7 @@ public class Event {
 				"\nStart time: " + (hasStartTime() ? startTime.toString() : "none") + 
 				"\nEnd time: " + (hasEndTime() ? endTime.toString(): "none") + 
 				"\nMute device: " + Boolean.toString(muteDevice) + "\nNote: " + note + "\n" + period.toString()
-				+ (hasAlarm() ? "\n" + alarm.toString() : "No alarm") + "\n---------------\n";
+				+ (hasAlarm() ? "\n" + alarm.toString() : "\nAlarm: none") + "\n---------------\n";
 	}
 	
 	public static class Builder {
@@ -233,13 +362,27 @@ public class Event {
 			return this;
 		}
 		
+		public Builder setDate(String dateString) throws ParseException {
+			event.setDate(dateString);
+			return this;
+		}
+		
 		public Builder setDate(Date date) {
 			event.date = date;
 			return this;
 		}
 		
+		public Builder setStartTime(String startTimeString) throws ParseException {
+			event.setStartTime(startTimeString);
+			return this;
+		}
 		public Builder setStartTime(Date startTime) {
 			event.startTime = startTime;
+			return this;
+		}
+		
+		public Builder setEndTime(String endTimeString) throws ParseException {
+			event.setEndTime(endTimeString);
 			return this;
 		}
 		
@@ -273,6 +416,11 @@ public class Event {
 			return this;
 		}
 		
+		public Builder setPeriodEndDate(String endDateString) throws ParseException {
+			event.period.setEndDate(endDateString);
+			return this;
+		}
+		
 		public Builder setPeriodEndDate(Date endDate) {
 			event.period.endDate = endDate;
 			return this;
@@ -280,6 +428,14 @@ public class Event {
 		
 		public Builder setAlarm(EventAlarm alarm) {
 			event.alarm = alarm;
+			return this;
+		}
+		
+		public Builder setAlarmTime(String timeString) throws ParseException {
+			if (!event.hasAlarm()) {
+				event.alarm = new EventAlarm(event);
+			}
+			event.alarm.setTime(timeString);
 			return this;
 		}
 		
@@ -296,8 +452,13 @@ public class Event {
 			return this;
 		}
 		
+		public Builder addException(String exString) throws ParseException {
+			event.addException(exString);
+			return this;
+		}
 		public Event build() {
 			return event;
 		}
+	
 	}
 }

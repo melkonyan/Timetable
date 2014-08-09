@@ -9,41 +9,46 @@ import java.util.PriorityQueue;
 import java.util.Vector;
 
 import android.app.AlarmManager;
+import android.app.Notification.Action;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
+import com.timetable.android.BroadcastActions;
 import com.timetable.android.Event;
+import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.utils.TimetableUtils;
-import com.timetable.android.R;
 
 public class AlarmService extends Service {
 
 	public  static final int ALARM_NOTIFICATION_CODE = 123;
 
-	public static final String EXTRA_EVENT_ID_STRING = "event_id"; 
-
+	public static final String ACTION_ALARM_FIRED = "com.timetable.android.ACTION_ALARM_FIRED";
+	
+	public static final String ACTION_ALARM_UPDATED = "com.timetable.android.ACTION_ALARM_UPDATED";
+	
 	public static final int MAX_QUEUE_SIZE = 10000;
 	
 	private static final String NEXT_ALARM_NOTIFICATION_PREFIX = "Next alarm is on: ";
 	
 	public static final SimpleDateFormat alarmTimeFormat = new SimpleDateFormat("EEE, d. MMM yyyy 'at' HH:mm", Locale.US);
 	
-	private final AlarmServiceBinder mBinder = new AlarmServiceBinder(); 
-
 	private NotificationManager notificationManager;
 
 	private AlarmManager alarmManager;
 	
+	private AlarmBroadcastReceiver mReceiver;
 	
 	private PriorityQueue<EventAlarm> alarmQueue = new PriorityQueue<EventAlarm>(MAX_QUEUE_SIZE, new AlarmTimeComparator());
 	
@@ -56,62 +61,68 @@ public class AlarmService extends Service {
 		}
 	}
 	
+	@Override
+	public IBinder onBind(Intent arg0) {
+		return null;
+	}
+	
 	@Override 
 	public void onCreate() {
 		super.onCreate();
 		alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
 		notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+		mReceiver = new AlarmBroadcastReceiver();
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(BroadcastActions.ACTION_EVENT_ADDED);
+		intentFilter.addAction(BroadcastActions.ACTION_EVENT_UPDATED);
+		intentFilter.addAction(BroadcastActions.ACTION_EVENT_ENDED);
+		intentFilter.addAction(AlarmService.ACTION_ALARM_FIRED);
+		intentFilter.addAction(AlarmService.ACTION_ALARM_UPDATED);
+		registerReceiver(mReceiver, intentFilter);
+		loadAlarms();
+		TimetableLogger.log("AlarmService.onCreate: service is successfully created");
 	}
 	
 	@Override 
-	public IBinder onBind(Intent intent) {
-		return mBinder;
+	public void onDestroy() {
+		super.onDestroy();
+		unregisterReceiver(mReceiver);
 	}
 	
 	@Override 
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		
-		loadAlarms();
-		
+		TimetableLogger.log("AlarmService.onStartCommand: service is successfully started");
 		return Service.START_STICKY; 
 	}
 	
-	public class AlarmServiceBinder extends Binder {
-		public AlarmService getService() {
-			return AlarmService.this;
-		}
-	}
-	
-	private Intent getIntentFromAlarm(EventAlarm alarm) {
-		Intent intent = new Intent(this, AlarmBroadcastReceiver.class);
-		intent.putExtra(EXTRA_EVENT_ID_STRING, alarm.event.id);
+	private Intent getIntentFromEvent(Event event) {
+		Intent intent = new Intent(ACTION_ALARM_FIRED);
+		intent.putExtras(event.convert());
 		return intent;
 	}
 	
-	private PendingIntent getPendingIntentFromAlarm(EventAlarm alarm) {
-		return PendingIntent.getBroadcast(this, alarm.event.id, getIntentFromAlarm(alarm), PendingIntent.FLAG_UPDATE_CURRENT);
+	private PendingIntent getPendingIntentFromEvent(Event event) {
+		return PendingIntent.getBroadcast(this, event.id, getIntentFromEvent(event), PendingIntent.FLAG_UPDATE_CURRENT);
 	}
-	
-	
 	
 	/*
 	 * Create alarm with pending intent, that will be broadcasted to this class, when alarm should run.
 	 */
-	public void createAlarm(EventAlarm alarm) {
-		Date nextOccurrence = alarm.getNextOccurrence(TimetableUtils.getCurrentTime());
+	public void createAlarm(Event event) {
+		Date nextOccurrence = event.alarm.getNextOccurrence();
 		if (nextOccurrence == null) {
 			return;
 		}
 		
-		alarmManager.set(AlarmManager.RTC_WAKEUP, nextOccurrence.getTime(), getPendingIntentFromAlarm(alarm));
+		alarmManager.set(AlarmManager.RTC_WAKEUP, nextOccurrence.getTime(), getPendingIntentFromEvent(event));
 		Iterator<EventAlarm> iterator = alarmQueue.iterator();
 		while(iterator.hasNext()) {
-			if (iterator.next().id == alarm.id) {
+			if (iterator.next().id == event.alarm.id) {
 				iterator.remove();
 				break;
 			}
 		}
-		alarmQueue.offer(alarm);
+		alarmQueue.offer(event.alarm);
 		updateNotification();
 		TimetableLogger.log("AlarmService.createAlarm: creating alarm on date: " + nextOccurrence.toString());
 		
@@ -122,28 +133,28 @@ public class AlarmService extends Service {
 	 * Delete alarm.
 	 * Delete notification, if needed.
 	 */
-	public void deleteAlarm(EventAlarm alarm) {
+	public void deleteAlarm(Event event) {
 		TimetableLogger.log("AlarmService.updateAlarm: deleting alarm");
-		if (!alarmQueue.contains(alarm)) {
+		if (!alarmQueue.contains(event.alarm)) {
 			return;
 		}
-		PendingIntent mIntent = getPendingIntentFromAlarm(alarm);
+		PendingIntent mIntent = getPendingIntentFromEvent(event);
 		alarmManager.cancel(mIntent);
 		mIntent.cancel();
-		alarmQueue.remove(alarm);
+		alarmQueue.remove(event.alarm);
 		updateNotification();
 	}
 	
-	public void updateAlarm(EventAlarm alarm) {
-		if (alarm.getNextOccurrence(TimetableUtils.getCurrentTime()) != null) {
-			createAlarm(alarm);
+	public void updateAlarm(Event event) {
+		if (event.alarm.getNextOccurrence() != null) {
+			createAlarm(event);
 		} else {
-			deleteAlarm(alarm);
+			deleteAlarm(event);
 		}	
 	}
 	
-	public boolean existAlarm(EventAlarm alarm) {
-		return PendingIntent.getBroadcast(this, alarm.event.id, getIntentFromAlarm(alarm), PendingIntent.FLAG_NO_CREATE) != null;
+	public boolean existAlarm(Event event) {
+		return PendingIntent.getBroadcast(this, event.id, getIntentFromEvent(event), PendingIntent.FLAG_NO_CREATE) != null;
 	}
 	
 	public EventAlarm getNextAlarm() {
@@ -159,7 +170,7 @@ public class AlarmService extends Service {
 			EventAlarm alarm = event.alarm;
 			if (alarm.getNextOccurrence(today) != null) {
 				TimetableLogger.error("Creating alarm.");
-				createAlarm(alarm);
+				createAlarm(event);
 			}
 		}
 		db.close();
@@ -221,5 +232,42 @@ public class AlarmService extends Service {
 		}
 		
 	}
-
+	
+	/*
+	 * Class for working with event alarm.
+	 * It contains functional for creating and deleting alarms, receiving them, updating notification, that informs user, that alarm is set. 
+	 */
+	public class AlarmBroadcastReceiver extends BroadcastReceiver {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			Bundle eventData = intent.getExtras();
+			Event event;
+			try {
+				event = new Event(eventData);
+			} catch (Exception e) {
+				TimetableLogger.error("AlarmService.onReceive: unable to create event from received data. " + e.getMessage());
+				return;
+			}
+			TimetableLogger.log("AlarmService.onReceive: action " + action + " received with event " + event.name + ", id " + Integer.toString(event.id));
+			if (!event.hasAlarm()) {
+				return;
+			}
+			if (action.equals(BroadcastActions.ACTION_EVENT_ADDED)) {
+				createAlarm(event);
+			} else if (action.equals(BroadcastActions.ACTION_EVENT_UPDATED) || action.equals(ACTION_ALARM_UPDATED)) {
+				updateAlarm(event);
+			} else if (action.equals(BroadcastActions.ACTION_EVENT_DELETED)) {
+				deleteAlarm(event);
+			} else if (action.equals(AlarmService.ACTION_ALARM_FIRED)) {
+				Intent alarmDialogIntent = new Intent(context, EventAlarmDialogActivity.class);
+				alarmDialogIntent.putExtras(eventData);
+				alarmDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+				context.startActivity(alarmDialogIntent);
+			}
+		}
+	}
 }
+
+	

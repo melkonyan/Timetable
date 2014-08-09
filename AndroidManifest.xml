@@ -46,13 +46,17 @@
             
         </activity>
     	
-    	<receiver android:name="com.timetable.android.alarm.AlarmBroadcastReceiver" android:enabled="true" android:exported="false">
-    		<intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-    	</receiver> 
-		
+    	<receiver android:name="com.timetable.android.ServiceStarter" android:enabled="true" android:exported="false">
+		    <intent-filter>
+		        <action android:name="com.timetable.android.ACTION_APP_STARTED"/>
+		        <action android:name="android.intent.action.BOOT_COMPLETED"/>
+		    </intent-filter>
+		</receiver>
+    	
     	<service android:name="com.timetable.android.alarm.AlarmService" android:exported="false" android:enabled="true">
+    	</service>
+		
+		<service android:name="com.timetable.android.EventMuter" android:exported="false" android:enabled="true">
     	</service>
 		
 		<service android:name="com.timetable.android.EventService" android:exported="false" android:enabled="true">

@@ -6,6 +6,12 @@ public class TimetableLogger {
 	public static final String logTag = "Timetable";
 	public static boolean debugging = false;
 	
+	public static void verbose(String message) {
+		if (debugging && message != null) {
+			Log.v(logTag, message);
+		}
+	}
+	
 	public static void log(String message) {
 		if (debugging && message != null) {
 			Log.i(logTag, message);

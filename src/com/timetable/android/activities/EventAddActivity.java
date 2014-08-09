@@ -33,17 +33,17 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TableRow;
 
 import com.timetable.android.Event;
+import com.timetable.android.EventBroadcastSender;
 import com.timetable.android.EventChecker;
 import com.timetable.android.EventChecker.IllegalEventDateException;
 import com.timetable.android.EventPeriod;
-import com.timetable.android.EventService;
 import com.timetable.android.IllegalEventDataException;
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.alarm.AlarmService;
-import com.timetable.android.alarm.AlarmServiceManager;
 import com.timetable.android.alarm.EventAlarm;
+import com.timetable.android.utils.DateFormatFactory;
 
 
 /*
@@ -53,7 +53,7 @@ import com.timetable.android.alarm.EventAlarm;
  */
 public class EventAddActivity extends Activity {
 	
-	public static final SimpleDateFormat INIT_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+	public static final SimpleDateFormat INIT_DATE_FORMAT = DateFormatFactory.getDateTimeFormat();
 	
 	public static final String INTENT_EXTRA_DATE = "date";
 	
@@ -113,7 +113,6 @@ public class EventAddActivity extends Activity {
 	private EventChecker checker;
 	
 	public AlarmService alarmService;
-	public AlarmServiceManager mManager;
 	public static final SimpleDateFormat dateFormat = EventChecker.dateFormat;
 	
 	public static final SimpleDateFormat timeFormat = EventChecker.timeFormat;	
@@ -380,17 +379,12 @@ public class EventAddActivity extends Activity {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		mManager = new AlarmServiceManager(this);
-		if (!mManager.bindService()) {
-			TimetableLogger.error("Cannot bind to Service");
-		}
 		TimetableLogger.log("EventAddActivity: onResume()");
 	}
 	
 	@Override 
 	public void onPause() {
 		super.onPause();
-		mManager.unbindService();
 	}
 	/*
 	 * try to get event date from intent extras and fill appropriate fields
@@ -768,12 +762,7 @@ public class EventAddActivity extends Activity {
 			Toast.makeText(this, "Error occured while saving event.", Toast.LENGTH_SHORT).show();
 			return;
 		}
-		if (event.hasAlarm()) {
-			mManager.getService().createAlarm(event.alarm);
-		}
-		if (event.muteDevice) {
-			EventService.addEvent(this, event);
-		}
+		EventBroadcastSender.sendEventAddedBroadcast(this, event);
 		db.close();
 		//TimetableLogger.error(event.toString());
 	}

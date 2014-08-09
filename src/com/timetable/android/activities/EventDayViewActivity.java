@@ -20,11 +20,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import com.timetable.android.BroadcastActions;
 import com.timetable.android.EventPager;
-import com.timetable.android.EventService;
 import com.timetable.android.R;
 import com.timetable.android.TimetableLogger;
-import com.timetable.android.alarm.AlarmServiceManager;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.TimetableUtils;
@@ -49,6 +48,7 @@ public class EventDayViewActivity extends Activity {
 	private DatePickerDialog datePickerDialog;
 	
 	private EventPagerListener mListener = new EventPagerListener();
+	
 	
 	public EventPager getEventPager() {
 		return eventPager;
@@ -97,11 +97,8 @@ public class EventDayViewActivity extends Activity {
 		//enable debugging
 		TimetableLogger.debugging = true;
 		
-		//start AlarmService
-		AlarmServiceManager.startService(this);
-		
-		//start EventService
-		EventService.startService(this);
+		//send broadcast, that application is started.
+		sendBroadcast(new Intent(BroadcastActions.ACTION_APP_STARTED));
 		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
 		setEventPager(new EventPager(this, TimetableUtils.getCurrentTime()));

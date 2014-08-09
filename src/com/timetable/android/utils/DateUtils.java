@@ -1,5 +1,7 @@
 package com.timetable.android.utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -14,6 +16,23 @@ public class DateUtils {
 	public static final int EQUALS = 0;
 	
 	public static final int AFTER = 1;
+	
+	/*
+	 * Try to parse date from string. If string is empty, return null;
+	 */
+	public static Date getDateFromString(SimpleDateFormat format, String dateString) throws ParseException {
+		return getDateFromString(format, dateString, true);
+	}
+	
+	/*
+	 * Try to parse date from string. If string is empty and date can be null, return null.
+	 */
+	public static Date getDateFromString(SimpleDateFormat format, String dateString, boolean canBeNull) throws ParseException {
+		if (dateString.isEmpty() && canBeNull) {
+			return null;
+		}
+		return format.parse(dateString);
+	}
 	
 	/*
 	 * Return new date with hours, minutes and second set to zero.

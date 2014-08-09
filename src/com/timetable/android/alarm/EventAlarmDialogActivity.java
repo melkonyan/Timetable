@@ -22,27 +22,35 @@ import com.timetable.android.utils.TimetableUtils;
 public class EventAlarmDialogActivity extends Activity {
 	
 	public static final int DEFAULT_ALARM_SOUND = R.raw.new_gitar;
-	private TimetableDatabase db;
 	
-	private EventAlarm alarm;
+	private Event event;
 	
-	private AlarmServiceManager mManager;
+	private Bundle eventData;
 	
 	private MediaPlayer mediaPlayer;
+	
+	private boolean ok = true;
 	
 	@Override 
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 	    super.onCreate(savedInstanceState);
 	    
-	    db = TimetableDatabase.getInstance(this);
-		alarm = getEventAlarmFromIntent();
-		if (db.isException(alarm.event, alarm.getEventOccurrence(TimetableUtils.getCurrentTime()))) {
-			finish();
+	    eventData = getIntent().getExtras();
+		if (eventData == null) {
+			TimetableLogger.error("EventAlarmDialogActiovity.onCreate: intent with no data received");
+			return;
 		}
 		
-		mManager = new AlarmServiceManager(this);
-		mManager.bindService();
+		try {
+			event = new Event(eventData);
+		} catch (Exception e) {
+			TimetableLogger.error("EventAlarmDialogActivity.onReceive: unable to create event from received data. " + e.getMessage());
+			ok = false;
+			return;
+		}
+		
+	    
 		mediaPlayer = MediaPlayer.create(this, DEFAULT_ALARM_SOUND);
 		
 		try {
@@ -62,35 +70,30 @@ public class EventAlarmDialogActivity extends Activity {
 				
 			}
 		});
-	    builder.setTitle(alarm.event.name).create().show();
+	    builder.setTitle(event.name).create().show();
 	    
 	}
 	
 	@Override 
-	public void onPause() {
-		super.onPause();
-		AlarmService alarmService = mManager.getService();
-		alarmService.updateAlarm(alarm);
-		Intent intent = new Intent(EventAlarmDialogActivity.this, EventDayViewActivity.class);
-		intent.putExtra(EventDayViewActivity.EXTRAS_DATE, 
-						EventDayViewActivity.EXTRAS_DATE_FORMAT.format(alarm.getEventOccurrence(TimetableUtils.getCurrentTime())));
-		
-		EventAlarmDialogActivity.this.startActivity(intent);
-		
+	public void onDestroy() {
+		super.onDestroy();
 		if (mediaPlayer != null && mediaPlayer.isPlaying()) {
 			mediaPlayer.stop();
 			mediaPlayer.release();
 		}
-	}
-
-	private EventAlarm getEventAlarmFromIntent() {
-		int eventId = getIntent().getExtras().getInt(AlarmService.EXTRA_EVENT_ID_STRING);
-		Event event = db.searchEventById(eventId);
-		if (event == null) {
-			TimetableLogger.error("EventAlarmDialog.getAlarmFromIntent: Could not find event with id " + Integer.toString(eventId));
-			finish();
-			return null;
+		if (!ok) {
+			return;
 		}
-		return event.alarm;
+		
+		Intent broadcast = new Intent(AlarmService.ACTION_ALARM_UPDATED);
+		broadcast.putExtras(eventData);
+		sendBroadcast(broadcast);
+	
+		Intent intent = new Intent(EventAlarmDialogActivity.this, EventDayViewActivity.class);
+		intent.putExtra(EventDayViewActivity.EXTRAS_DATE, 
+						EventDayViewActivity.EXTRAS_DATE_FORMAT.format(event.alarm.getEventOccurrence(TimetableUtils.getCurrentTime())));
+		EventAlarmDialogActivity.this.startActivity(intent);
+		
 	}
+	
 }

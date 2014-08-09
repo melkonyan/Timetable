@@ -49,7 +49,7 @@ public class EventView extends RelativeLayout {
 		imageAlarm.setVisibility(event.hasAlarm() ? View.VISIBLE : View.INVISIBLE);
 		imageMuteDevice.setVisibility(event.muteDevice ? View.VISIBLE : View.INVISIBLE);
 		
-		TimetableLogger.log("event " + event.id + " successfully drawed");
+		TimetableLogger.verbose("event " + event.id + " successfully drawed");
 		
 		this.setOnClickListener(new OnClickListener() {
 			

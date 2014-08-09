@@ -15,13 +15,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.timetable.android.Event;
+import com.timetable.android.EventBroadcastSender;
 import com.timetable.android.EventPeriod;
-import com.timetable.android.EventService;
 import com.timetable.android.IllegalEventDataException;
+import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.alarm.AlarmService;
-import com.timetable.android.R;
 
 /*
  * Activity provides user interface to edit event
@@ -150,8 +150,7 @@ public class EventEditActivity extends EventAddActivity {
 		
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
 		editedEvent = db.updateEvent(editedEvent);
-		EventService.updateEvent(this, editedEvent);
-		updateEventAlarmManager();
+		EventBroadcastSender.sendEventUpdatedBroadcast(this, editedEvent);
 		
 		db.close();
 		finish();
@@ -159,7 +158,6 @@ public class EventEditActivity extends EventAddActivity {
 	
 	private void saveRepeatableEvent(boolean overrideFutureEvents) {
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
-		AlarmService alarmService = mManager.getService(); 
 		if (overrideFutureEvents) {
 			//from today on this event ends
 			TimetableLogger.log("EventEditActivity.saveRepetableEvent: saving event" + editedEvent.toString());
@@ -172,29 +170,18 @@ public class EventEditActivity extends EventAddActivity {
 			for (Date exception: event.exceptions) {
 				db.insertException(editedEvent, exception);
 			}
-			if (event.hasAlarm()) {
-				alarmService.updateAlarm(event.alarm);
-			}
-			EventService.updateEvent(this, event);
+		
 		} else {
 			//today there is no session of this event
 			event.addException(date);
 			db.insertException(event, date);
-			
-			//TODO: eliminate code duplication(same code as in deleteRepeatableEvent)
-			if (event.hasAlarm()) {
-				alarmService.updateAlarm(event.alarm);
-			}
-			EventService.updateEvent(this, event);
 			editedEvent.period.type = EventPeriod.Type.NONE;
 			editedEvent = db.insertEvent(editedEvent);
-			
+		
 		}
 		
-		if (editedEvent.hasAlarm()) {
-			alarmService.createAlarm(editedEvent.alarm);
-		}
-		EventService.addEvent(this, editedEvent);
+		EventBroadcastSender.sendEventAddedBroadcast(this, editedEvent);
+		EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
 		db.close();
 	}
 	
@@ -204,51 +191,29 @@ public class EventEditActivity extends EventAddActivity {
 			return;
 		}
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
-		EventService.deleteEvent(this, event);
 		db.deleteEvent(event);
-		if (event.hasAlarm()) {
-			AlarmService alarmService = mManager.getService();
-			alarmService.deleteAlarm(event.alarm);
-		}
+		EventBroadcastSender.sendEventDeletedBroadcast(this, event);
 		db.close();
 		finish();
 	}
 	
 	private void deleteRepeatableEvent(boolean deleteFutureEvents) {
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
-		AlarmService alarmService = mManager.getService();
-		
 		if (deleteFutureEvents) {
 			//from today on this event ends
 			long day = 1000*60*60*24;
 			event.period.endDate = new Date();
 			event.period.endDate.setTime(date.getTime() - day);
 			event = db.updateEvent(event);
-			if (event.hasAlarm()) {
-				alarmService.updateAlarm(event.alarm);
-			}
 		} else {
 			//today there is no session of this event
 			event.addException(date);
 			db.insertException(event, date);
-			if (event.hasAlarm()) {
-				alarmService.updateAlarm(event.alarm);
-			}
 		}
-		EventService.updateEvent(this, event);
+		EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
 		db.close();
 	}
 	
-	private void updateEventAlarmManager() {
-		//TODO: may be event updated listener would be better
-		AlarmService alarmService = mManager.getService();
-		if (editedEvent.hasAlarm()) {
-			alarmService.updateAlarm(editedEvent.alarm);
-		} else if (event.hasAlarm()) {
-			alarmService.deleteAlarm(event.alarm);
-		}
-		mManager.unbindService();
-	}
 	
 	private class SaveDialog extends AlertDialog {
 		

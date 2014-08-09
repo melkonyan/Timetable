@@ -69,7 +69,7 @@ public class EventPager extends ViewPager {
 	 * Display specified date.
 	 */
 	public void goToDate(Date date) {
-		TimetableLogger.error("EventPager.goToDate: go to page: " + getPageNumberByDate(date));
+		//TimetableLogger.error("EventPager.goToDate: go to page: " + getPageNumberByDate(date));
 		setCurrentItem(getPageNumberByDate(date), false);
 	}
 	
@@ -98,7 +98,7 @@ public class EventPager extends ViewPager {
 		
 		@Override
 		public Object instantiateItem(View viewPager, int pageNumber) {
-			TimetableLogger.log("EventPager: try instantiate page " + Integer.toString(pageNumber));
+			TimetableLogger.verbose("EventPager: try instantiate page " + Integer.toString(pageNumber));
 			Date currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			
 			TimetableDatabase db = TimetableDatabase.getInstance(EventPager.this.activity);
@@ -143,7 +143,7 @@ public class EventPager extends ViewPager {
 		
 		@Override
 	    public void destroyItem(View viewPager, int pageNumber, Object view) {
-	            TimetableLogger.log("EventPagerAdapter destroys page number " + pageNumber);
+	            TimetableLogger.verbose("EventPagerAdapter destroys page number " + pageNumber);
 	            ((ViewPager) viewPager).removeView((View) view);
 	    }
 	}

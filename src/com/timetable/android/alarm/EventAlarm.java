@@ -1,12 +1,15 @@
 package com.timetable.android.alarm;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.os.Bundle;
+
 import com.timetable.android.Event;
-import com.timetable.android.EventChecker;
 import com.timetable.android.EventPeriod;
 import com.timetable.android.TimetableLogger;
+import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.TimetableUtils;
 
@@ -17,6 +20,12 @@ public class EventAlarm {
 	}
 	
 	public static int INITIAL_ALARM_ID = -1;
+	
+	public static final String BUNDLE_ALARM_ID = "alm_id";
+	
+	public static final String BUNDLE_ALARM_TYPE = "alm_type";
+	
+	public static final String BUNDLE_ALARM_TIME = "alm_time";
 	
 	public int id = INITIAL_ALARM_ID;
 	
@@ -34,7 +43,14 @@ public class EventAlarm {
 	@Deprecated
 	public EventPeriod period;
 	
-	public static final SimpleDateFormat timeFormat = EventChecker.alarmTimeFormat;
+	public static final SimpleDateFormat timeFormat = DateFormatFactory.getDateTimeFormat();
+	
+	public EventAlarm(Bundle data, Event event) throws ParseException {
+		this(event);
+		id = data.getInt(BUNDLE_ALARM_ID);
+		type = EventAlarm.Type.values()[data.getInt(BUNDLE_ALARM_TYPE)];
+		setTime(data.getString(BUNDLE_ALARM_TIME));
+	}
 	
 	public EventAlarm(Event event) {
 		this();
@@ -48,11 +64,34 @@ public class EventAlarm {
 		period = new EventPeriod();
 	}
 	
+	public Bundle convert() {
+		Bundle bundle = new Bundle();
+		bundle.putInt(BUNDLE_ALARM_ID, id);
+		bundle.putInt(BUNDLE_ALARM_TYPE, type.ordinal());
+		bundle.putString(BUNDLE_ALARM_TIME, getTimeString());
+		return bundle;
+	}
+
 	/*
 	 * Return true if this alarm has not been insrted into the database yet.
 	 */
 	public boolean isNew() {
 		return id == INITIAL_ALARM_ID;
+	}
+	
+	/*
+	 * Return true, if alarm time is set.
+	 */
+	public boolean hasTime() {
+		return time != null;
+	}
+	
+	public String getTimeString() {
+		return hasTime() ? timeFormat.format(time) : "";
+	}
+	
+	public void setTime(String timeString) throws ParseException {
+		time = DateUtils.getDateFromString(timeFormat, timeString, false);
 	}
 	
 	public Date getEventOccurrence(Date alarmOccurrence) {
@@ -71,6 +110,10 @@ public class EventAlarm {
 	
 	public Date getNextEventOccurrence(Date today) {
 		return getEventOccurrence(getNextOccurrence(today));
+	}
+	
+	public Date getNextOccurrence() {
+		return getNextOccurrence(TimetableUtils.getCurrentTime());
 	}
 	
 	public Date getNextOccurrence(Date today) {

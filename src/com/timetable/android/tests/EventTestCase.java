@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import junit.framework.TestCase;
+import android.os.Bundle;
 
 import com.timetable.android.Event;
 import com.timetable.android.EventPeriod;
@@ -20,6 +21,38 @@ public class EventTestCase extends TestCase {
 	
 	public void setUp() {
 		
+	}
+	
+	public void testContentValues() throws ParseException {
+		Event event = new Event.Builder()
+						.setId(20)
+						.setName("name")
+						.setPlace("place")
+						.setDate("09.08.2014")
+						.setStartTime("11:03")
+						.setEndTime("12:03")
+						.setMuteDevice(true)
+						.setNote("note")
+						.addException("09.08.2014")
+						.setPeriodType(EventPeriod.DAILY)
+						.setPeriodInterval(1)
+						.setPeriodEndDate("09.08.2014")
+						.setAlarmTime("08.08.2014 11:37")
+						.build();
+		
+		Bundle eventData = event.convert();
+		assertEquals(event, new Event(eventData));
+		
+		event.endTime = null;
+		event.period.endDate = null;
+		eventData = event.convert();
+		
+		assertEquals(event, new Event(eventData));
+		
+		event.alarm = null;
+		eventData = event.convert();
+		
+		assertEquals(event, new Event(eventData));
 	}
 	
 	public void testIsException() throws ParseException {

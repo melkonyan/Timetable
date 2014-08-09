@@ -12,6 +12,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.timetable.android.alarm.EventAlarm;
+import com.timetable.android.utils.DateFormatFactory;
+import com.timetable.android.utils.TimetableUtils;
 /*
  * Class for working with database(inserting, updating and deleting events, etc.).
  */
@@ -19,11 +21,11 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 	
 	private static final String DB_NAME = "TimeTable";
 	
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private static final SimpleDateFormat dateFormat = DateFormatFactory.getFormat("yyyy-MM-dd");
 	
-	private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+	private static final SimpleDateFormat timeFormat = DateFormatFactory.getLongTimeFormat();
 	
-	private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final SimpleDateFormat dateTimeFormat = DateFormatFactory.getFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private SQLiteDatabase dbRead;
 	
@@ -119,7 +121,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	try {
     		alarm.time = dateTimeFormat.parse(cursor.getString(cursor.getColumnIndex("alm_time")));
     	} catch (Exception e) {
-    		TimetableLogger.error("TimetableDatabase.getEventAlarmFromCursor: could not parse alarm time.");
+    		TimetableLogger.error("TimetableDatabase.getEventAlarmFromCursor: could not parse alarm time. " + e.getMessage());
     		return null;
     	}
     	return alarm;
@@ -133,7 +135,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	try {
     		alarm.time = dateTimeFormat.parse(cursor.getString(cursor.getColumnIndex("alm_time")));
     	} catch (Exception e) {
-    		TimetableLogger.error("TimetableDatabase.getEventAlarmFromCursor: could not parse alarm time.");
+    		TimetableLogger.error("TimetableDatabase.getEventAlarmFromCursor: could not parse alarm time. " + e.getMessage());
     		return null;
     	}
     	alarm.event = event;
@@ -343,7 +345,6 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	values.put("per_id", event.period.id);
     	values.put("evt_mute_device", event.muteDevice);
     	values.put("evt_note", event.note);
-    	
     	return values;
     }
     
@@ -429,8 +430,10 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 			builder.setStartTime(timeFormat.parse(cursor.getString(cursor.getColumnIndex("evt_start_time"))))
 					.setDate(dateFormat.parse(cursor.getString(cursor.getColumnIndex("evt_date"))));
 		} catch(Exception e) {
-    		return null;
-    	}
+    		TimetableLogger.error("TimetableDatabase.getEventFromCursor: Error parsing event\n"+e.getMessage());
+			return null;
+    		
+		}
 		
 		try {
 			builder.setEndTime(timeFormat.parse(cursor.getString(cursor.getColumnIndex("evt_end_time"))));
@@ -461,6 +464,28 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     }
     
     /*
+     * Return all events, that have not finished. 
+     */
+    public Vector<Event> getAllEvents() {
+    	Cursor cursor = dbRead.rawQuery("SELECT * FROM Events", new String [] {});
+    	Vector<Event> events = new Vector<Event>(); 
+    	if (cursor.getCount() == 0) {
+    		cursor.close();
+    		return events;
+    	}
+    	cursor.moveToFirst();
+    	do {
+    		Event event = getEventFromCursor(cursor);
+    		if (event == null) {
+    			TimetableLogger.error("TimetableDatabase.getAllEvents: Error creating event");
+    		}
+    		events.add(event);
+    	} while (cursor.moveToNext());
+    	cursor.close();
+    	return events;
+    }
+    
+    /*
      * Return events, that have alarm.
      */
     public Vector<Event> searchEventsWithAlarm() {
@@ -473,6 +498,9 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	cursor.moveToFirst();
     	do {
     		Event event = getEventFromCursor(cursor);
+    		if (event == null) {
+    			TimetableLogger.error("TimetableDatabase.searchEventsWithAlarm: Error creating event");
+    		}
     		events.add(event);
     	} while (cursor.moveToNext());
     	cursor.close();

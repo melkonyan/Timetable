@@ -1,8 +1,13 @@
 package com.timetable.android;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.os.Bundle;
+
+import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.TimetableUtils;
 
@@ -27,8 +32,32 @@ public class EventPeriod {
 	public static final int THURSDAY = 4;
 	
 	public static final int FRIDAY = 5;
-	
+
 	public static final int SATURDAY = 6;
+	
+	public static final Type NONE = Type.NONE;
+	
+	public static final Type DAILY = Type.DAILY;
+	
+	public static final Type WEEKLY = Type.WEEKLY;
+	
+	public static final Type MONTHLY = Type.MONTHLY;
+	
+	public static final Type YEARLY = Type.YEARLY;
+	
+	public static final String BUNDLE_PERIOD_ID = "per_id";
+	
+	public static final String BUNDLE_PERIOD_TYPE = "per_type";
+	
+	public static final String BUNDLE_PERIOD_INTERVAL = "per_interval";
+	
+	public static final String BUNDLE_PERIOD_WEEK_OCCURRENCES = "per_week_occurences";
+	
+	public static final String BUNDLE_PERIOD_NUM_OF_REPEATS = "per_num_of_repeats";
+	
+	public static final String BUNDLE_PERIOD_END_DATE = "per_end_date";
+	
+	public static final SimpleDateFormat dateFormat = DateFormatFactory.getDateFormat();
 	
 	public int id;
 	
@@ -42,12 +71,32 @@ public class EventPeriod {
 	
 	public int numberOfRepeats;
 	
+	public EventPeriod(Bundle data) throws ParseException {
+		id = data.getInt(BUNDLE_PERIOD_ID);
+		interval = data.getInt(BUNDLE_PERIOD_INTERVAL);
+		numberOfRepeats = data.getInt(BUNDLE_PERIOD_NUM_OF_REPEATS);
+		setWeekOccurrences(data.getInt(BUNDLE_PERIOD_WEEK_OCCURRENCES));
+		type = EventPeriod.Type.values()[data.getInt(BUNDLE_PERIOD_TYPE)];
+		setEndDate(data.getString(BUNDLE_PERIOD_END_DATE));
+	}
+	
 	public EventPeriod(int id) {
 		this.id = id;
 	}
 	
 	public EventPeriod() {
 		this(-1);
+	}
+	
+	public Bundle convert() {
+		Bundle bundle = new Bundle();
+		bundle.putInt(BUNDLE_PERIOD_ID, id);
+		bundle.putInt(BUNDLE_PERIOD_INTERVAL, interval);
+		bundle.putInt(BUNDLE_PERIOD_NUM_OF_REPEATS, numberOfRepeats);
+		bundle.putInt(BUNDLE_PERIOD_TYPE, type.ordinal());
+		bundle.putInt(BUNDLE_PERIOD_WEEK_OCCURRENCES, getWeekOccurrences());
+		bundle.putString(BUNDLE_PERIOD_END_DATE, getEndDateString());
+		return bundle;
 	}
 	
 	public void setWeekOccurrences(int val) {
@@ -99,8 +148,20 @@ public class EventPeriod {
 		return weekOccurrences[day];
 	}
 	
+	public void setEndDate(String endDateString) throws ParseException {
+		endDate = DateUtils.getDateFromString(dateFormat,endDateString);
+	}
+	
+ 	public String getEndDateString() {
+		return hasEndDate() ? dateFormat.format(endDate) : "";
+	}
+	
+	public boolean hasEndDate() {
+		return endDate != null;
+	}
+	
 	public boolean isFinished(Date today) {
-		return endDate != null && DateUtils.compareDates(today, endDate) != DateUtils.BEFORE;
+		return hasEndDate() && DateUtils.compareDates(today, endDate) != DateUtils.BEFORE;
 	}
 	
 	/*

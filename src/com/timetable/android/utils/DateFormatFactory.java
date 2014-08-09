@@ -2,13 +2,16 @@ package com.timetable.android.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class DateFormatFactory {
 	
 	public static SimpleDateFormat getFormat(String format) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.US);
+		//dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 		return dateFormat;
 	}
+	
 	public static SimpleDateFormat getDateFormat() {
 		return getFormat("dd.MM.yyyy");
 	}
