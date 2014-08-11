@@ -18,6 +18,8 @@ import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import com.timetable.android.BroadcastActions;
@@ -94,6 +96,12 @@ public class EventDayViewActivity extends Activity {
 		}
 		setContentView(R.layout.activity_event_day_view);
 		
+		//unlock keyguard and wake up screen, when activity is started. is needed for alarm. 
+		Window window = getWindow();
+	    window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+	    window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+	    window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+	    
 		//TimetableDatabase.getInstance(this).clear();
 		
 		//enable debugging

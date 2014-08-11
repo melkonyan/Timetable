@@ -7,6 +7,8 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.timetable.android.Event;
 import com.timetable.android.R;
@@ -35,6 +37,7 @@ public class EventAlarmDialogActivity extends Activity {
 	{
 	    super.onCreate(savedInstanceState);
 	    
+	    
 	    eventData = getIntent().getExtras();
 		if (eventData == null) {
 			TimetableLogger.error("EventAlarmDialogActiovity.onCreate: intent with no data received");
@@ -51,6 +54,7 @@ public class EventAlarmDialogActivity extends Activity {
 		
 	    
 		mediaPlayer = MediaPlayer.create(this, DEFAULT_ALARM_SOUND);
+		
 		
 		try {
 			mediaPlayer.prepare();
