@@ -163,7 +163,16 @@ public class EventEditActivity extends EventAddActivity {
 			long day = 1000*60*60*24;
 			event.period.endDate = new Date();
 			event.period.endDate.setTime(date.getTime() - day);
-			db.updateEvent(event);
+			if (event.period.isFinished(event.date)) {
+				db.deleteEvent(event);
+				EventBroadcastSender.sendEventDeletedBroadcast(this, event);
+				
+			} else {
+				db.updateEvent(event);
+				EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
+				
+			}
+			
 			editedEvent = db.insertEvent(editedEvent);
 			//copy exception to new event
 			for (Date exception: event.exceptions) {
@@ -176,12 +185,11 @@ public class EventEditActivity extends EventAddActivity {
 			db.insertException(event, date);
 			editedEvent.period.type = EventPeriod.Type.NONE;
 			editedEvent = db.insertEvent(editedEvent);
-		
+			EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
+			
 		}
 		
 		EventBroadcastSender.sendEventAddedBroadcast(this, editedEvent);
-		EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
-		db.close();
 	}
 	
 	public void deleteEvent() {
@@ -203,13 +211,20 @@ public class EventEditActivity extends EventAddActivity {
 			long day = 1000*60*60*24;
 			event.period.endDate = new Date();
 			event.period.endDate.setTime(date.getTime() - day);
-			event = db.updateEvent(event);
+			if (event.period.isFinished(event.date)) {
+				db.deleteEvent(event);
+				EventBroadcastSender.sendEventDeletedBroadcast(this, event);
+			} else {
+				db.updateEvent(event);
+				EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
+			}
+			
 		} else {
 			//today there is no session of this event
 			event.addException(date);
 			db.insertException(event, date);
+			EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
 		}
-		EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
 		db.close();
 	}
 	

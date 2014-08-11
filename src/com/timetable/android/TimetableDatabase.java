@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.timetable.android.alarm.EventAlarm;
 import com.timetable.android.utils.DateFormatFactory;
+
 /*
  * Class for working with database(inserting, updating and deleting events, etc.).
  */
@@ -560,6 +561,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     }
     
     @Override
+    @Deprecated
     public void close() {
     	//super.close();
     }

@@ -7,8 +7,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowManager;
+import android.os.Handler;
 
 import com.timetable.android.Event;
 import com.timetable.android.R;
@@ -24,6 +23,9 @@ public class EventAlarmDialogActivity extends Activity {
 	
 	public static final int DEFAULT_ALARM_SOUND = R.raw.new_gitar;
 	
+	//Time, that activity should run, until it will be automatically killed.
+	private static final int TIME_TO_RUN_MILLIS = 3*60*1000;
+	
 	private Event event;
 	
 	private Bundle eventData;
@@ -31,6 +33,19 @@ public class EventAlarmDialogActivity extends Activity {
 	private MediaPlayer mediaPlayer;
 	
 	private boolean ok = true;
+	
+	
+	//handler, that will finish activity after a given amount of time
+	private Handler autoKiller = new Handler();
+	
+	private Runnable autoKill = new Runnable() {
+		
+		@Override
+		public void run() {
+			EventAlarmDialogActivity.this.finish();
+		}
+	};
+	
 	
 	@Override 
 	protected void onCreate(Bundle savedInstanceState) 
@@ -53,8 +68,9 @@ public class EventAlarmDialogActivity extends Activity {
 		}
 		
 	    
-		mediaPlayer = MediaPlayer.create(this, DEFAULT_ALARM_SOUND);
+		autoKiller.postDelayed(autoKill, TIME_TO_RUN_MILLIS);
 		
+		mediaPlayer = MediaPlayer.create(this, DEFAULT_ALARM_SOUND);
 		
 		try {
 			mediaPlayer.prepare();
@@ -74,16 +90,18 @@ public class EventAlarmDialogActivity extends Activity {
 			}
 		});
 	    builder.setTitle(event.name).create().show();
-	    
 	}
 	
+	
+	
 	@Override 
-	public void onDestroy() {
-		super.onDestroy();
+	public void onPause() {
+		super.onPause();
 		if (mediaPlayer != null && mediaPlayer.isPlaying()) {
 			mediaPlayer.stop();
 			mediaPlayer.release();
 		}
+		
 		if (!ok) {
 			return;
 		}
