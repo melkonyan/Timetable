@@ -164,6 +164,8 @@ public class EventDayViewActivity extends Activity {
 	        case R.id.action_go_to_date:
 	        	datePickerDialog.show(getSupportFragmentManager());
 	        	return true;
+	        case R.id.action_settings:
+	        	startActivity(new Intent(this, SettingsActivity.class));
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }

@@ -14,4 +14,9 @@
 	<item 
 	    android:id="@+id/action_go_to_date"
 	    android:title="@string/menu_go_to_date"/>
+	
+	<item 
+	    android:id="@+id/action_settings"
+	    android:title="@string/menu_settings"/>	
+
 </menu>

@@ -32,7 +32,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+       	<activity 
+       	    android:name="com.timetable.android.activities.SettingsActivity">
+       	</activity> 
+       	
         <activity
             android:name="com.timetable.android.activities.EventAddActivity">
         </activity>
