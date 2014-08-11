@@ -10,7 +10,6 @@ import android.os.Bundle;
 
 import com.timetable.android.Event;
 import com.timetable.android.R;
-import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.utils.TimetableUtils;

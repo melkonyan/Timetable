@@ -21,7 +21,6 @@ import com.timetable.android.IllegalEventDataException;
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
-import com.timetable.android.alarm.AlarmService;
 
 /*
  * Activity provides user interface to edit event

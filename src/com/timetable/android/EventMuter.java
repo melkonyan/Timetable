@@ -1,13 +1,9 @@
 package com.timetable.android;
 
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,8 +13,6 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
-
-import com.timetable.android.utils.TimetableUtils;
 
 /*
  * Service, that mutes device when event is started.
@@ -31,9 +25,7 @@ public class EventMuter extends Service {
 	private AudioManager audioManager;
 	
 	private Vibrator vibrator;
-	
-	private TimetableDatabase db; 
-	
+
 	private TaskReceiver mReceiver;
 	
 	private Set<Event> currentEvents = new TreeSet<Event>(new Comparator<Event>() {
@@ -56,7 +48,6 @@ public class EventMuter extends Service {
 		TimetableLogger.log("EventMuter: service is created.");
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-		db = TimetableDatabase.getInstance(EventMuter.this);
 		mReceiver = new TaskReceiver();
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(BroadcastActions.ACTION_EVENT_STARTED);
