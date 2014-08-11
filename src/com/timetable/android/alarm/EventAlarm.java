@@ -98,14 +98,14 @@ public class EventAlarm {
 		if (event == null) {
 			return null;
 		}
-		return new Date(alarmOccurrence.getTime() + (event.date.getTime() - time.getTime()));
+		return new Date(DateUtils.extractDate(alarmOccurrence).getTime() + (event.date.getTime() - DateUtils.extractDate(time).getTime()));
 	}
 	
 	public Date getAlarmOccurrence(Date eventOccurrence) {
 		if (event == null) {
 			return null;
 		}
-		return new Date(eventOccurrence.getTime() + (time.getTime() - event.date.getTime()));
+		return new Date(DateUtils.extractDate(eventOccurrence).getTime() + (time.getTime() - event.date.getTime()));
 	}
 	
 	public Date getNextEventOccurrence(Date today) {

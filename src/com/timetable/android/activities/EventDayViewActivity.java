@@ -89,7 +89,9 @@ public class EventDayViewActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-				
+		if (true) {
+		//	throw new RuntimeException();		
+		}
 		setContentView(R.layout.activity_event_day_view);
 		
 		//TimetableDatabase.getInstance(this).clear();

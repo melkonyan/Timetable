@@ -8,6 +8,7 @@ import junit.framework.TestCase;
 
 import com.timetable.android.Event;
 import com.timetable.android.EventPeriod;
+import com.timetable.android.EventPeriod.Type;
 import com.timetable.android.alarm.EventAlarm;
 
 public class EventAlarmTestCase extends TestCase {
@@ -70,6 +71,14 @@ public class EventAlarmTestCase extends TestCase {
 		
 		assertEquals(dateTimeFormat.parse("02.08.2014 14:00"), alarm.getNextOccurrence(today));
 		
+		event.period.endDate = null;
+		
+		alarm.setTime("10.08.2014 21:15");
+		event.period.type = Type.NONE;
+		event.setDate("10.08.2014");
+		today = dateTimeFormat.parse("11.08.2014 00:15");
+		alarm.getNextOccurrence(today);
+		assertNull(alarm.getNextOccurrence(today));
 	}	
 	
 	public void testGetEventOccurrence() throws ParseException {
@@ -80,6 +89,20 @@ public class EventAlarmTestCase extends TestCase {
 		EventAlarm alarm = event.alarm;
 		assertEquals(dateFormat.parse("10.07.2014"), alarm.getEventOccurrence(alarm.time));
 		
+		event.setDate("10.08.2014");
+		alarm.setTime("10.08.2014 21:15");
+		Date today = dateTimeFormat.parse("11.08.2014 00:15");
+		assertEquals(dateFormat.parse("11.08.2014"), alarm.getEventOccurrence(today));
+	}
+	
+	public void testGetAlarmOccurrence() throws ParseException {
+		Event event = new Event.Builder()
+						.setDate("11.08.2014")
+						.setAlarmTime("11.08.2014 9:00")
+						.build();
+		Date today = dateTimeFormat.parse("11.08.2014 11:51");
+		
+		assertEquals(event.alarm.time, event.alarm.getAlarmOccurrence(today));
 	}
 	
 	public void testIsOk() {

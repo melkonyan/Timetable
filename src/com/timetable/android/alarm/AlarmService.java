@@ -9,7 +9,6 @@ import java.util.PriorityQueue;
 import java.util.Vector;
 
 import android.app.AlarmManager;
-import android.app.Notification.Action;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -113,7 +112,12 @@ public class AlarmService extends Service {
 		if (nextOccurrence == null) {
 			return;
 		}
-		
+		if (nextOccurrence.compareTo(TimetableUtils.getCurrentTime()) <= 0) {
+			TimetableLogger.error("AlarmService.createAlarm: next alarm occurrence is before current time. \n Next alarm: " 
+									+ nextOccurrence.toString() + "\n current time: " + TimetableUtils.getCurrentTime().toString() 
+									+ "Event information: \n" + event.toString());
+			return;
+		}
 		alarmManager.set(AlarmManager.RTC_WAKEUP, nextOccurrence.getTime(), getPendingIntentFromEvent(event));
 		Iterator<EventAlarm> iterator = alarmQueue.iterator();
 		while(iterator.hasNext()) {
