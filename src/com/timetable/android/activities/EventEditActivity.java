@@ -151,7 +151,6 @@ public class EventEditActivity extends EventAddActivity {
 		editedEvent = db.updateEvent(editedEvent);
 		EventBroadcastSender.sendEventUpdatedBroadcast(this, editedEvent);
 		
-		db.close();
 		finish();
 	}
 	
@@ -200,7 +199,6 @@ public class EventEditActivity extends EventAddActivity {
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
 		db.deleteEvent(event);
 		EventBroadcastSender.sendEventDeletedBroadcast(this, event);
-		db.close();
 		finish();
 	}
 	
@@ -225,7 +223,6 @@ public class EventEditActivity extends EventAddActivity {
 			db.insertException(event, date);
 			EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
 		}
-		db.close();
 	}
 	
 	
