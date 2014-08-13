@@ -177,7 +177,6 @@ public class AlarmService extends Service {
 				createAlarm(event);
 			}
 		}
-		db.close();
 	}
 	
 	public Intent getNotificationIntent() {
@@ -193,9 +192,7 @@ public class AlarmService extends Service {
 	public PendingIntent getNotificationPendingIntent() {
 		PendingIntent intent = PendingIntent.getActivity(this, 0, getNotificationIntent(), 0);
 		return intent;
-        //return PendingIntent.getBroadcast(this, ALARM_NOTIFICATION_CODE, 
-		//		new Intent(this, EventDayViewActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-	}
+    }
 	
 	/*
 	 * Create notification informing user, that there are some alarms set.
@@ -215,6 +212,7 @@ public class AlarmService extends Service {
 			.setContentTitle("Timetable")
 			.setContentText(nextAlarmString)
 			.setLargeIcon(((BitmapDrawable)this.getResources().getDrawable(R.drawable.ic_action_alarms_light)).getBitmap())
+			.setWhen(0)
 			.setContentIntent(mIntent);
 		notificationManager.notify(ALARM_NOTIFICATION_CODE, mBuilder.build());
 		TimetableLogger.log("Creating notification");
@@ -265,7 +263,7 @@ public class AlarmService extends Service {
 			} else if (action.equals(BroadcastActions.ACTION_EVENT_DELETED)) {
 				deleteAlarm(event);
 			} else if (action.equals(AlarmService.ACTION_ALARM_FIRED)) {
-				Intent alarmDialogIntent = new Intent(context, EventAlarmDialogActivity.class);
+				Intent alarmDialogIntent = new Intent(context, AlarmDialogActivity.class);
 				alarmDialogIntent.putExtras(eventData);
 				alarmDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
 				context.startActivity(alarmDialogIntent);

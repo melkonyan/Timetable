@@ -8,18 +8,21 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 
+import com.timetable.android.AlarmSoundPreference;
 import com.timetable.android.Event;
 import com.timetable.android.R;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
+import com.timetable.android.activities.SettingsActivity;
 import com.timetable.android.utils.TimetableUtils;
 
 /*
  * Activity, that is created when event alarm is fired. Contains the single button, that allows user to disable alarm.
  * When alarm is disabled, it is deleted from the database.
  */
-public class EventAlarmDialogActivity extends Activity {
+public class AlarmDialogActivity extends Activity {
 	
 	public static final int DEFAULT_ALARM_SOUND = R.raw.new_gitar;
 	
@@ -42,7 +45,7 @@ public class EventAlarmDialogActivity extends Activity {
 		
 		@Override
 		public void run() {
-			EventAlarmDialogActivity.this.finish();
+			AlarmDialogActivity.this.finish();
 		}
 	};
 	
@@ -51,7 +54,7 @@ public class EventAlarmDialogActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 	    super.onCreate(savedInstanceState);
-	    
+	    TimetableLogger.error("creating activity.");
 	    
 	    eventData = getIntent().getExtras();
 		if (eventData == null) {
@@ -62,7 +65,7 @@ public class EventAlarmDialogActivity extends Activity {
 		try {
 			event = new Event(eventData);
 		} catch (Exception e) {
-			TimetableLogger.error("EventAlarmDialogActivity.onReceive: unable to create event from received data. " + e.getMessage());
+			TimetableLogger.error("AlarmDialogActivity.onReceive: unable to create event from received data. " + e.getMessage());
 			ok = false;
 			return;
 		}
@@ -70,12 +73,18 @@ public class EventAlarmDialogActivity extends Activity {
 	    
 		autoKiller.postDelayed(autoKill, TIME_TO_RUN_MILLIS);
 		
-		mediaPlayer = MediaPlayer.create(this, DEFAULT_ALARM_SOUND);
-		
+		mediaPlayer = new MediaPlayer();
 		try {
-			mediaPlayer.prepare();
+			String songFileString = PreferenceManager.getDefaultSharedPreferences(this).getString(SettingsActivity.ALARM_SOUND_KEY, AlarmSoundPreference.DEFAULT_ALARM_SOUND);
+			TimetableLogger.error(songFileString);
+			if (songFileString.equals(AlarmSoundPreference.DEFAULT_ALARM_SOUND)) {
+				mediaPlayer = AlarmSoundPreference.getDefaulPlayer(this);
+			} else {
+				mediaPlayer.setDataSource(songFileString);
+				mediaPlayer.prepare();
+			}
 		} catch (Exception e) {
-			TimetableLogger.log("EventAlarmDialogActivity: Could not play alarm sound");
+			TimetableLogger.error("AlarmDialogActivity: Could not play alarm sound " + e.getMessage());
 		}
 		
 	    mediaPlayer.setLooping(true);
@@ -85,7 +94,7 @@ public class EventAlarmDialogActivity extends Activity {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				EventAlarmDialogActivity.this.finish();
+				AlarmDialogActivity.this.finish();
 				
 			}
 		});
@@ -95,8 +104,8 @@ public class EventAlarmDialogActivity extends Activity {
 	
 	
 	@Override 
-	public void onPause() {
-		super.onPause();
+	public void onStop() {
+		super.onStop();
 		if (mediaPlayer != null && mediaPlayer.isPlaying()) {
 			mediaPlayer.stop();
 			mediaPlayer.release();
@@ -110,11 +119,11 @@ public class EventAlarmDialogActivity extends Activity {
 		broadcast.putExtras(eventData);
 		sendBroadcast(broadcast);
 	
-		Intent intent = new Intent(EventAlarmDialogActivity.this, EventDayViewActivity.class);
+		Intent intent = new Intent(AlarmDialogActivity.this, EventDayViewActivity.class);
 		intent.putExtra(EventDayViewActivity.EXTRAS_DATE, 
 						EventDayViewActivity.EXTRAS_DATE_FORMAT.format(event.alarm.getEventOccurrence(TimetableUtils.getCurrentTime())));
-		EventAlarmDialogActivity.this.startActivity(intent);
-		
+		AlarmDialogActivity.this.startActivity(intent);
+		finish();
 	}
 	
 }

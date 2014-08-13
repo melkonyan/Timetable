@@ -1,6 +1,7 @@
 package com.timetable.android.activities;
 
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -13,6 +14,8 @@ import org.holoeverywhere.widget.TextView;
 import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.view.Menu;
@@ -22,6 +25,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
+import com.timetable.android.AlarmSoundPreference;
 import com.timetable.android.BroadcastActions;
 import com.timetable.android.EventPager;
 import com.timetable.android.R;
@@ -91,10 +95,9 @@ public class EventDayViewActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (true) {
-		//	throw new RuntimeException();		
-		}
+		
 		setContentView(R.layout.activity_event_day_view);
+		
 		
 		//unlock keyguard and wake up screen, when activity is started. is needed for alarm. 
 		Window window = getWindow();
@@ -214,4 +217,7 @@ public class EventDayViewActivity extends Activity {
 			getSupportActionBar().setTitle(dateString);
 		}
 	}
+
+
+	
 }
