@@ -74,7 +74,7 @@ public class AlarmService extends Service {
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(BroadcastActions.ACTION_EVENT_ADDED);
 		intentFilter.addAction(BroadcastActions.ACTION_EVENT_UPDATED);
-		intentFilter.addAction(BroadcastActions.ACTION_EVENT_ENDED);
+		intentFilter.addAction(BroadcastActions.ACTION_EVENT_DELETED);
 		intentFilter.addAction(AlarmService.ACTION_ALARM_FIRED);
 		intentFilter.addAction(AlarmService.ACTION_ALARM_UPDATED);
 		registerReceiver(mReceiver, intentFilter);
@@ -150,7 +150,7 @@ public class AlarmService extends Service {
 	}
 	
 	public void updateAlarm(Event event) {
-		if (event.hasAlarm() && event.alarm.getNextOccurrence() != null) {
+		if (event.alarm.getNextOccurrence() != null) {
 			createAlarm(event);
 		} else {
 			deleteAlarm(event);
