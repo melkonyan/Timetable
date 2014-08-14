@@ -44,6 +44,7 @@ import com.timetable.android.TimetableLogger;
 import com.timetable.android.alarm.AlarmService;
 import com.timetable.android.alarm.EventAlarm;
 import com.timetable.android.utils.DateFormatFactory;
+import com.timetable.android.utils.DateUtils;
 
 
 /*
@@ -193,6 +194,29 @@ public class EventAddActivity extends Activity {
 			}
 		});
 		eventAlarmTime = (EditText) findViewById(R.id.event_alarm_time_val);
+		eventAlarmTime.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+					TimePickerDialog.OnTimeSetListener mOnAlarmTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+					
+					@Override
+					public void onTimeSet(RadialPickerLayout view,
+							int hourOfDay, int minute) {
+						Calendar cal = Calendar.getInstance();
+						cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+						cal.set(Calendar.MINUTE, minute);
+						setEventAlarmTime(cal);
+						
+					}
+				};
+				
+				TimePickerDialog.newInstance(mOnAlarmTimeSetListener, 
+										getEventAlarmTime().get(Calendar.HOUR_OF_DAY), getEventAlarmTime().get(Calendar.MINUTE), true)
+										.show(getSupportFragmentManager());
+		
+			}
+		});
 		eventAlarmTypeSpinner = (Spinner) findViewById(R.id.event_alarm_type_spinner);
 		ArrayAdapter<CharSequence> eventAlarmTypeSpinnerAdapter = ArrayAdapter.createFromResource(this,
 		        R.array.event_alarm_type_array, android.R.layout.simple_spinner_item);
@@ -233,7 +257,6 @@ public class EventAddActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				TimetableLogger.log("Creating DatePickerDialog");
 				DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
 					@Override
@@ -290,7 +313,6 @@ public class EventAddActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				TimetableLogger.log("Creating EndTimePickerDialog");
 				TimePickerDialog.OnTimeSetListener mOnTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
 					
 					@Override
@@ -540,16 +562,21 @@ public class EventAddActivity extends Activity {
 		return isSetEventAlarm;
 	}
 	
-	public Date getEventAlarmTime() throws IllegalEventDataException {
-		if (!isSetEventAlarm()) {
-			return null;
+	
+	public Calendar getEventAlarmTime() {
+		Calendar cal = Calendar.getInstance();
+		try {
+			cal.setTime(timeFormat.parse(eventAlarmTime.getText().toString()));
+		} catch (ParseException e) {
+			return getInitAlarmTime();
 		}
-		return checker.getAlarmTimeFromString(eventAlarmTime.getText().toString());
+		return cal;
+	
 	}
 	
 	public void setEventAlarm(EventAlarm alarm) {
 		isSetEventAlarm = true;
-		eventAlarmTime.setText(EventAlarm.timeFormat.format(alarm.time));
+		eventAlarmTime.setText(timeFormat.format(alarm.time));
 	}
 	
 	public void showEventAlarm() {
@@ -567,7 +594,7 @@ public class EventAddActivity extends Activity {
 	}
 	
 	public void setEventAlarmTime(Calendar alarmTime) {
-		eventAlarmTime.setText(EventAlarm.timeFormat.format(alarmTime.getTime()));
+		eventAlarmTime.setText(timeFormat.format(alarmTime.getTime()));
 	}
 	
 	public void showEventPeriodIntervalText() {
@@ -737,11 +764,13 @@ public class EventAddActivity extends Activity {
 					.setNote(checker.getNoteFromString(eventNoteVal.getText().toString()))
 					.setMuteDevice(eventMuteDeviceVal.isChecked())
 					.setPeriod(getEventPeriod());
-			Date alarmTime = getEventAlarmTime();
-			if (alarmTime != null) {
-				builder.setAlarmTime(alarmTime);
-			}
 			Event event = builder.build();
+			if (isSetEventAlarm()) {
+				Date alarmTime = checker.getAlarmTimeFromString(eventAlarmTime.getText().toString());
+				alarmTime = DateUtils.setTime(event.date, alarmTime);
+				event.alarm = new EventAlarm(event);
+				event.alarm.time = alarmTime;
+			}
 			checker.checkEvent(event);
 			TimetableLogger.log("EventAddActivity.getEvent:\n" +  event.toString());
 			return event;
@@ -763,8 +792,6 @@ public class EventAddActivity extends Activity {
 			return;
 		}
 		EventBroadcastSender.sendEventAddedBroadcast(this, event);
-		db.close();
-		//TimetableLogger.error(event.toString());
 	}
 	
 	private void resizeLayout() {

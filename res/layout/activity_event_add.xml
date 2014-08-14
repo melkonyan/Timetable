@@ -185,6 +185,9 @@
 		<org.holoeverywhere.widget.EditText
 	        android:id="@+id/event_alarm_time_val"
 	        style="@style/ActivityEventAddEditTextStyle"
+	        android:focusable="false"
+	        android:focusableInTouchMode="false"
+	        android:cursorVisible="false"
 	        android:inputType="time"/>
 	        
 		<org.holoeverywhere.widget.ImageButton

@@ -150,11 +150,29 @@ public class AlarmService extends Service {
 	}
 	
 	public void updateAlarm(Event event) {
-		if (event.alarm.getNextOccurrence() != null) {
+		if (event.hasAlarm() && event.alarm.getNextOccurrence() != null) {
 			createAlarm(event);
 		} else {
 			deleteAlarm(event);
 		}	
+	}
+	
+	/*
+	 * Method to call, event ACTION_EVENT_UPDATED is received, and received event has no alarm.
+	 * We need to check, if event's alarm was deleted, and if so, delete it from alarmQueue.
+	 */
+	public void deleteEventAlarm(Event event) {
+		Iterator<EventAlarm> iterator = alarmQueue.iterator();
+		while(iterator.hasNext()) {
+			EventAlarm nextAlarm = iterator.next();
+			if (nextAlarm.event.id == event.id) {
+				iterator.remove();
+				PendingIntent mIntent = getPendingIntentFromEvent(event);
+				alarmManager.cancel(mIntent);
+				mIntent.cancel();
+				updateNotification();
+			}
+		}
 	}
 	
 	public boolean existAlarm(Event event) {
@@ -254,11 +272,12 @@ public class AlarmService extends Service {
 			}
 			TimetableLogger.log("AlarmService.onReceive: action " + action + " received with event " + event.name + ", id " + Integer.toString(event.id));
 			if (!event.hasAlarm()) {
-				return;
+				deleteEventAlarm(event);
 			}
 			if (action.equals(BroadcastActions.ACTION_EVENT_ADDED)) {
 				createAlarm(event);
 			} else if (action.equals(BroadcastActions.ACTION_EVENT_UPDATED) || action.equals(ACTION_ALARM_UPDATED)) {
+				
 				updateAlarm(event);
 			} else if (action.equals(BroadcastActions.ACTION_EVENT_DELETED)) {
 				deleteAlarm(event);

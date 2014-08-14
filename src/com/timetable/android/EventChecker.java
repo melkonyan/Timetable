@@ -13,7 +13,7 @@ public class EventChecker {
 	
 	public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 	
-	public static final SimpleDateFormat alarmTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+	public static final SimpleDateFormat alarmTimeFormat = new SimpleDateFormat("HH:mm");
 	
 	private Resources resources;
 	
