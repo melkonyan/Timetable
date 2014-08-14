@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/pref_title" >
+	
 	<com.timetable.android.AlarmSoundPreference 
 	    android:key="pref_alarm_tone"
 	    android:title="@string/pref_alarm_tone_title"

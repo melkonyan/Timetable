@@ -3,6 +3,7 @@
 
     <string name="app_name">Timetable</string>
     
+    <string name="pref_title">Settings</string>
  	<string name="pref_alarm_tone_title">Alarm ringtone</string>
  	<string name="pref_alarm_tone_summary">Choose ringtone to play, when alarm is fired.</string>
  	

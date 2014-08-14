@@ -33,7 +33,10 @@
             </intent-filter>
         </activity>
        	<activity 
-       	    android:name="com.timetable.android.activities.SettingsActivity">
+       	    android:name="com.timetable.android.activities.SettingsActivity"
+       	    android:label="@string/pref_title"
+       	    android:theme="@style/Holo.Theme.Light.DarkActionBar">
+       		
        	</activity> 
        	
         <activity
