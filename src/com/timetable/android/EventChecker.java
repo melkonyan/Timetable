@@ -4,16 +4,21 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.timetable.android.utils.DateFormatFactory;
+
 import android.content.Context;
 import android.content.res.Resources;
 
+/*
+ * Class, that checks event data, and throws exception, if it is incorrect
+ */
 public class EventChecker {
 	
-	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+	public static final SimpleDateFormat dateFormat =  DateFormatFactory.getDateFormat();
 	
-	public static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+	public static final SimpleDateFormat timeFormat = DateFormatFactory.getTimeFormat();
 	
-	public static final SimpleDateFormat alarmTimeFormat = new SimpleDateFormat("HH:mm");
+	public static final SimpleDateFormat alarmTimeFormat = DateFormatFactory.getTimeFormat();
 	
 	private Resources resources;
 	

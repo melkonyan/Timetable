@@ -48,9 +48,9 @@ import com.timetable.android.utils.DateUtils;
 
 
 /*
- * Activity that provides an user interface to add event.
- * If Intent has extra field 'date' contains date in format 'dd.MM.yyyy HH:mm',
- * this values will be set to appropriate fields
+ * Activity that provides user interface to add event.
+ * If Intent has extra field 'date',that contains date in format 'dd.MM.yyyy HH:mm',
+ * this values will be set to appropriate fields.
  */
 public class EventAddActivity extends Activity {
 	
@@ -632,13 +632,13 @@ public class EventAddActivity extends Activity {
 	}
 
 	public void setEventPeriod(EventPeriod period) {
-		setEventPeriodType(period.type);
+		setEventPeriodType(period.getType());
 		if (period.isRepeatable()) {
-			eventPeriodIntervalVal.setText(Integer.toString(period.interval));
+			eventPeriodIntervalVal.setText(Integer.toString(period.getInterval()));
 			if (period.isEveryWeek()) {
-				setEventPeriodWeekOccurrences(period.weekOccurrences);
+				setEventPeriodWeekOccurrences(period.getWeekOccurrences());
 			}
-			setEventPeriodEndDate(period.endDate);
+			setEventPeriodEndDate(period.getEndDate());
 		}
 	}
 

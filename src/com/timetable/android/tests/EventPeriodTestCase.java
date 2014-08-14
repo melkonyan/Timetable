@@ -15,6 +15,16 @@ public class EventPeriodTestCase extends TestCase {
 	
 	private SimpleDateFormat dateTimeFormat = DateFormatFactory.getDateTimeFormat();
 	
+	public void testGetTypeInt() {
+		EventPeriod period = new EventPeriod();
+		period.setType(EventPeriod.DAILY);
+		
+		period.setType(period.getTypeInt());
+		
+		assertEquals(EventPeriod.DAILY, period.getType());
+		
+	}
+	
 	public void testIsFinished() throws ParseException {
 		EventPeriod period = new EventPeriod(); 
 		period.type = EventPeriod.Type.DAILY;
@@ -43,7 +53,7 @@ public class EventPeriodTestCase extends TestCase {
 		
 		period.weekOccurrences[4] = true;
 		
-		assertEquals(6, period.getWeekOccurrences());
+		assertEquals(6, period.getWeekOccurrencesInt());
 		
 		period.addWeekOccurrence(EventPeriod.TUESDAY);
 		

@@ -29,6 +29,11 @@ import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.utils.TimetableUtils;
 
+/*
+ * Service, that creates alarm, that would be fired later.
+ * Has internal BroadcastReceiver, that receives actions: ACTION_EVENT_ADDED, ACTION_EVENT_UPDATED, ACTION_EVENT_DELETED 
+ * and ACTION_ALARM_UPDATED, that is broadcasted by AlarmDialogActivity, when user dismisses alarm, and it should be recreated.
+ */
 public class AlarmService extends Service {
 
 	public  static final int ALARM_NOTIFICATION_CODE = 123;
@@ -273,6 +278,7 @@ public class AlarmService extends Service {
 			TimetableLogger.log("AlarmService.onReceive: action " + action + " received with event " + event.name + ", id " + Integer.toString(event.id));
 			if (!event.hasAlarm()) {
 				deleteEventAlarm(event);
+				return;
 			}
 			if (action.equals(BroadcastActions.ACTION_EVENT_ADDED)) {
 				createAlarm(event);

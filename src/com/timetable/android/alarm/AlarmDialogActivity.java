@@ -20,7 +20,7 @@ import com.timetable.android.utils.TimetableUtils;
 
 /*
  * Activity, that is created when event alarm is fired. Contains the single button, that allows user to disable alarm.
- * When alarm is disabled, it is deleted from the database.
+ * When alarm is disabled, it is recreated on it's next occurrence of deleted.
  */
 public class AlarmDialogActivity extends Activity {
 	

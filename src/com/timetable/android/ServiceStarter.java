@@ -6,6 +6,9 @@ import android.content.Intent;
 
 import com.timetable.android.alarm.AlarmService;
 
+/*
+ * Class, that receives broadcast, when device is restarted and starts all services.
+ */
 public class ServiceStarter extends BroadcastReceiver {
 
 	@Override

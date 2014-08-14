@@ -2,7 +2,11 @@ package com.timetable.android;
 
 import android.util.Log;
 
+/*
+ * Class, that helps to log debug and error's information.
+ */
 public class TimetableLogger {
+	
 	public static final String logTag = "Timetable";
 	public static boolean debugging = false;
 	

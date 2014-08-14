@@ -25,7 +25,7 @@ import com.timetable.android.TimetableLogger;
 /*
  * Activity provides user interface to edit event
  * Should be started with extra field 'event_id' that contains id of event,
- * that should be edited and field 'date', that contains date, when event was edited
+ * that should be edited and field 'date', that contains date, when event was edited.
  */
 public class EventEditActivity extends EventAddActivity {
 

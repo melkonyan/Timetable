@@ -13,6 +13,9 @@ import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.TimetableUtils;
 
+/*
+ * Class, that contains all alarm's data, and has method's to work with this data.
+ */
 public class EventAlarm {
 	
 	public enum Type {
@@ -45,6 +48,9 @@ public class EventAlarm {
 	
 	public static final SimpleDateFormat timeFormat = DateFormatFactory.getDateTimeFormat();
 	
+	/*
+	 * Create alarm for given @event with given @data.
+	 */
 	public EventAlarm(Bundle data, Event event) throws ParseException {
 		this(event);
 		id = data.getInt(BUNDLE_ALARM_ID);
@@ -52,6 +58,9 @@ public class EventAlarm {
 		setTime(data.getString(BUNDLE_ALARM_TIME));
 	}
 	
+	/*
+	 * Construct alarm for given @event.
+	 */
 	public EventAlarm(Event event) {
 		this();
 		this.event = event;
@@ -64,6 +73,9 @@ public class EventAlarm {
 		period = new EventPeriod();
 	}
 	
+	/*
+	 * Create bundle, that contains all information about alarm.
+	 */
 	public Bundle convert() {
 		Bundle bundle = new Bundle();
 		bundle.putInt(BUNDLE_ALARM_ID, id);
@@ -73,7 +85,7 @@ public class EventAlarm {
 	}
 
 	/*
-	 * Return true if this alarm has not been insrted into the database yet.
+	 * Return true if this alarm has not been inserted into the database yet.
 	 */
 	public boolean isNew() {
 		return id == INITIAL_ALARM_ID;
@@ -86,14 +98,23 @@ public class EventAlarm {
 		return time != null;
 	}
 	
+	/*
+	 * Get alarm time, formated to string.
+	 */
 	public String getTimeString() {
 		return hasTime() ? timeFormat.format(time) : "";
 	}
 	
+	/*
+	 * Set alarm time, given a string, that suits alarm's time format.
+	 */
 	public void setTime(String timeString) throws ParseException {
 		time = DateUtils.getDateFromString(timeFormat, timeString, false);
 	}
 	
+	/*
+	 * If alarm is on given @alarmOccurrence, compute the date of appropriate event, to which this alarm is set.
+	 */
 	public Date getEventOccurrence(Date alarmOccurrence) {
 		if (event == null) {
 			return null;
@@ -101,6 +122,9 @@ public class EventAlarm {
 		return new Date(DateUtils.extractDate(alarmOccurrence).getTime() + (event.date.getTime() - DateUtils.extractDate(time).getTime()));
 	}
 	
+	/*
+	 * If event is on given @eventOccurrence, compute the time of it's alarm.
+	 */
 	public Date getAlarmOccurrence(Date eventOccurrence) {
 		if (event == null) {
 			return null;
@@ -108,20 +132,30 @@ public class EventAlarm {
 		return new Date(DateUtils.extractDate(eventOccurrence).getTime() + (time.getTime() - event.date.getTime()));
 	}
 	
+	
+	/*
+	 * Get event occurrence of next alarm occurrence for given date.
+	 */
 	public Date getNextEventOccurrence(Date today) {
 		return getEventOccurrence(getNextOccurrence(today));
 	}
 	
+	
+	/*
+	 * Get next occurrence of alarm for current date.
+	 */
 	public Date getNextOccurrence() {
 		return getNextOccurrence(TimetableUtils.getCurrentTime());
 	}
 	
+	/*
+	 * Get next alarm occurrence for given date.
+	 */
 	public Date getNextOccurrence(Date today) {
 		if (event == null) {
 			TimetableLogger.error("EventAlarm.getNextOccurrence: Alarm has no reference to event;");
 			return null;
 		}
-		//Date todayDate = DateUtils.extractDate(today);
 		Date todayDate = today;
 		if (DateUtils.compareTimes(time, today) != DateUtils.AFTER) {
 			todayDate = DateUtils.addDay(todayDate, 1);
@@ -132,102 +166,28 @@ public class EventAlarm {
 			return null;
 		}
 		return getAlarmOccurrence(nextEventOccurrence);
-	/*	if (time.after(today)) {
-			if (period.type != EventPeriod.Type.WEEKLY) {
-				return time;
-			}
-		}
-		
-		Calendar todayCal = Calendar.getInstance();
-		todayCal.setTime(today);
-		Calendar dateCal = Calendar.getInstance();
-		dateCal.setTime(time);
-		Calendar ansCal = Calendar.getInstance();
-		
-		if (todayCal.get(Calendar.HOUR_OF_DAY)*60 + todayCal.get(Calendar.MINUTE) >= dateCal.get(Calendar.HOUR_OF_DAY)*60 + dateCal.get(Calendar.MINUTE)) {
-			todayCal.add(Calendar.DATE, 1);
-		}
-		
-		long dateLong = time.getTime(), todayLong = todayCal.getTime().getTime(); 
-		long day = 1000*60*60*24, week = 1000*60*60*24*7;
-		
-		int diff;
-		switch(period.type) {
-			case NONE:
-				return null;
-			case DAILY:
-				diff = period.interval - (int) (todayLong / day - dateLong / day) % period.interval;
-				System.out.println(todayLong + " " + dateLong + " " + todayLong / day + " " + dateLong / day);
-				
-				if (diff == period.interval) diff = 0;
-				TimetableLogger.log(Integer.toString(diff));
-				ansCal.setTime(todayCal.getTime());
-				ansCal.add(Calendar.DATE, diff);
-				System.out.println(diff);
-				break;
-			case WEEKLY:
-				if (today.before(time)) {
-					todayCal.setTime(time);
-				}
-				
-				ansCal.setTime(todayCal.getTime());
-				ansCal.set(Calendar.HOUR_OF_DAY, dateCal.get(Calendar.HOUR_OF_DAY));
-				ansCal.set(Calendar.MINUTE,	dateCal.get(Calendar.MINUTE));
-				
-				while(!period.hasOccurrenceOnDate(time, ansCal.getTime())) {
-					ansCal.add(Calendar.DATE, 1);
-					if (period.endDate != null && ansCal.getTime().after(period.endDate)) {
-						return null;
-					}
-				}
-				break;
-			case MONTHLY:
-				diff = period.interval - ((todayCal.get(Calendar.YEAR)- dateCal.get(Calendar.YEAR))*12 
-										+ todayCal.get(Calendar.MONTH) - dateCal.get(Calendar.MONTH)) % period.interval;
-				if (diff == period.interval && todayCal.get(Calendar.DAY_OF_MONTH) < dateCal.get(Calendar.DAY_OF_MONTH)) diff = 0;
-				ansCal.setTime(todayCal.getTime());
-				ansCal.add(Calendar.MONTH, diff);
-				ansCal.set(Calendar.DAY_OF_MONTH, dateCal.get(Calendar.DAY_OF_MONTH));
-				break;
-				
-			case YEARLY:
-				diff = period.interval - (todayCal.get(Calendar.YEAR) - dateCal.get(Calendar.YEAR)) % period.interval;
-				if (diff == period.interval && todayCal.get(Calendar.DAY_OF_YEAR) >  dateCal.get(Calendar.DAY_OF_YEAR)) diff = 0;
-				ansCal.setTime(todayCal.getTime());
-				ansCal.add(Calendar.YEAR, diff);
-				ansCal.set(Calendar.MONTH, dateCal.get(Calendar.MONTH));
-				ansCal.set(Calendar.DAY_OF_MONTH, dateCal.get(Calendar.DAY_OF_MONTH));
-				break;
-			default:
-				return null;
-		}
-		ansCal.set(Calendar.HOUR_OF_DAY, dateCal.get(Calendar.HOUR_OF_DAY));
-		ansCal.set(Calendar.MINUTE,	dateCal.get(Calendar.MINUTE));
-		
-		if (period.endDate != null && ansCal.getTime().after(period.endDate)) {
-			return null;
-		}
-		
-		return ansCal.getTime();
-	*/
 	}
 	
 
 	/*
-	 * return true if alarm's type and time are both set
+	 * Return true, if alarm's type and time are both set.
+	 * Alarm should also has a reference to event, to which it is set.
 	 */
 	public boolean isOk() {
-		return type != null && time != null;	
+		return type != null && time != null && event != null;	
 	}
 	
+	/*
+	 * Convert alarm to string. 
+	 */
 	@Override 
 	public String toString() { 
 		return "Alarm. Type: " + type.toString() + "; Time: " + time.toString() + "\n";  
 	}
 	
 	/*
-	 * return true if two alarm have the same type and time
-	 * */
+	 * Return true if two alarm have the same type, time and id.
+	 */
 	@Override 
 	public boolean equals(Object other) {
 		if (!(other instanceof EventAlarm)) {

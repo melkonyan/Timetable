@@ -14,6 +14,9 @@ import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.TimetableUtils;
 
+/*
+ * Class, that contains all information about event and methods to work with it.
+ */
 public class Event {
 	
 	public static final int MIN_NAME_LENGTH = 1;
@@ -48,35 +51,47 @@ public class Event {
 	
 	public static final SimpleDateFormat timeFormat = DateFormatFactory.getTimeFormat();
 	
-	public int id;
-	
-	public String name = "";
-	
-	public String place = ""; 
-	
-	public Date startTime;
-	
-	public Date endTime; 
-	
-	public Date date;
-	
-	//indicates, whether a device should be muted during the event
-	public boolean muteDevice = false; 
-	
-	public EventAlarm alarm;
-	
-	public EventPeriod period;
-	
-	public String note = "";
-	
-	//Dates, on which repeated event has no occurrence, even though it should
-	public Set<Date> exceptions = new TreeSet<Date>(new Comparator<Date>() {
-
+	public static final Comparator<Date> EXCEPTION_COMPARATOR = new Comparator<Date>() {
 		@Override
 		public int compare(Date first, Date second) {
 			return DateUtils.compareDates(first, second); 
 		}
-	});
+	
+	};
+	@Deprecated
+	public int id;
+	
+	@Deprecated
+	public String name = "";
+	
+	@Deprecated
+	public String place = ""; 
+	
+	@Deprecated
+	public Date date;
+	
+	@Deprecated
+	public Date startTime;
+	
+	@Deprecated
+	public Date endTime; 
+	
+	//indicates, whether a device should be muted during the event
+	@Deprecated
+	public boolean muteDevice = false; 
+	
+	@Deprecated
+	public EventAlarm alarm;
+	
+	@Deprecated
+	public String note = "";
+	
+	@Deprecated
+	public EventPeriod period;
+	
+	//Dates, on which repeated event has no occurrence, even though it should
+	@Deprecated
+	public Set<Date> exceptions = new TreeSet<Date>(EXCEPTION_COMPARATOR);
 	
 	public Event(Bundle data) throws ParseException {
 		this();
@@ -125,51 +140,149 @@ public class Event {
 		return bundle;
 	}
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPlace() {
+		return place;
+	}
+
+	public void setPlace(String place) {
+		this.place = place;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public String getDateString() {
+		return date == null ? "" : dateFormat.format(date);
+	}
+	
+	public void setDate(Date date) {
+		this.date = date;
+	}
 	
 	public void setDate(String dateString) throws ParseException {
 		date = DateUtils.getDateFromString(dateFormat,dateString, false);
-	}
-	
-	public String getDateString() {
-		return date == null ? "" : dateFormat.format(date);
 	}
 	
 	public boolean hasStartTime() {
 		return startTime != null;
 	}
 	
-	public void setStartTime(String startTimeString) throws ParseException {
-		startTime = DateUtils.getDateFromString(timeFormat, startTimeString, false);
+	public Date getStartTime() {
+		return startTime;
 	}
-	
+
 	public String getStartTimeString() {
 		return hasStartTime() ?  timeFormat.format(startTime) : "";
+	}
+	
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+
+	public void setStartTime(String startTimeString) throws ParseException {
+		startTime = DateUtils.getDateFromString(timeFormat, startTimeString, false);
 	}
 	
 	public boolean hasEndTime() {
 		return endTime != null;
 	}
 	
-	public void setEndTime(String endTimeString) throws ParseException {
-		endTime = DateUtils.getDateFromString(timeFormat, endTimeString);
+	public Date getEndTime() {
+		return endTime;
 	}
-	
+
 	public String getEndTimeString() {
 		return hasEndTime() ? timeFormat.format(endTime) : "";
 	}
 	
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}
+	
+	public void setEndTime(String endTimeString) throws ParseException {
+		endTime = DateUtils.getDateFromString(timeFormat, endTimeString);
+	}
+	
+	/*
+	 * Return true, if device should be muted during event.
+	 */
+	public boolean mutesDevice() {
+		return muteDevice;
+	}
+
+	public void setMuteDevice(boolean muteDevice) {
+		this.muteDevice = muteDevice;
+	}
+
 	public boolean hasAlarm() {
 		return alarm != null;
 	}
 	
-	public boolean isRepeatable() {
-		return period.isRepeatable();
+	public EventAlarm getAlarm() {
+		return alarm;
+	}
+
+	public void setAlarm(EventAlarm alarm) {
+		this.alarm = alarm;
+		if (alarm != null) {
+			this.alarm.event = this;
+		}
+	}
+
+	public EventPeriod getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(EventPeriod period) {
+		this.period = period;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public Set<Date> getExceptions() {
+		return exceptions;
 	}
 	
-	public boolean isEveryWeek() {
-		return period.isEveryWeek();
+	public Date[] getExceptionDates() {
+		return exceptions.toArray(new Date[0]);
 	}
 	
+	public String[] getExceptionStrings() {
+		Date[] exDates = getExceptionDates();
+		String[] exStrings = new String[exDates.length];
+		for (int i = 0; i < exStrings.length; i++) {
+			exStrings[i] = dateFormat.format(exDates[i]);
+		}
+		return exStrings;
+	}
+	
+	public void setExceptions(Set<Date> exceptions) {
+		this.exceptions = exceptions;
+	}
+
 	public void addExceptions(String[] exceptionDates) throws ParseException {
 		for (int i = 0; i < exceptionDates.length; i++) {
 			addException(exceptionDates[i]);
@@ -192,29 +305,45 @@ public class Event {
 		return exceptions != null && exceptions.contains(today);
 	}
 	
-	public Date[] getExceptions() {
-		return exceptions.toArray(new Date[0]);
+	
+	
+	/*
+	 * Return true, if event is repeatable.
+	 */
+	public boolean isRepeatable() {
+		return period.isRepeatable();
 	}
 	
-	public String[] getExceptionStrings() {
-		Date[] exDates = getExceptions();
-		String[] exStrings = new String[exDates.length];
-		for (int i = 0; i < exStrings.length; i++) {
-			exStrings[i] = dateFormat.format(exDates[i]);
-		}
-		return exStrings;
+	/*
+	 * Return true, if event has weekly period.
+	 */
+	public boolean isEveryWeek() {
+		return period.isEveryWeek();
 	}
 	
+	/*
+	 * Return true, if event has period on given date.
+	 */
 	public boolean isToday(Date today) {
-		return period.hasOccurrenceOnDate(date, today)  && !isException(today);
+		return !isException(today) && period.hasOccurrenceOnDate(date, today);
 	}
 	
+	/*
+	 * Return true, if event has period on current date.
+	 */
+	public boolean isToday() {
+		return isToday(TimetableUtils.getCurrentTime());
+	}
+	
+	/*
+	 * Return true, if event is taking place right now.
+	 */
 	public boolean isCurrent() {
 		return isCurrent(TimetableUtils.getCurrentTime());
 	}
 	
 	/* 
-	 * Return true, if event has occurrence at specified time.
+	 * Return true, if event takes place at specified time.
 	 */
 	public boolean isCurrent(Date currentTime) {
 		return hasStartTime() && hasEndTime() && isToday(currentTime) 
@@ -222,10 +351,16 @@ public class Event {
 					&& DateUtils.compareTimes(endTime, currentTime) == DateUtils.AFTER;
 	}
 	
+	/*
+	 * Return nearest event's occurrence, that is later than current date.
+	 */
 	public Date getNextOccurrence() {
 		return getNextOccurrence(TimetableUtils.getCurrentTime());
 	}
 	
+	/*
+	 * Return nearest event's occurrence, that is later than given date.
+	 */
 	public Date getNextOccurrence(Date today) {
 		Date nextEventDate = today;
 		while (true) {
@@ -242,13 +377,15 @@ public class Event {
 		return nextEventDate;
 	}
 	
-	
+	/*
+	 * Return nearest event's start time, that is later than current time.
+	 */
 	public Date getNextStartTime() {
 		return getNextStartTime(TimetableUtils.getCurrentTime());
 	}
 	
 	/*
-	 * Return start time of next occurrence
+	 * Return start time of next occurrence.
 	 */
 	public Date getNextStartTime(Date currentTime) {
 		if (!hasStartTime()) {
@@ -313,17 +450,17 @@ public class Event {
 	        return false;
 	    }
 	    Event that = (Event) other;
-	    return this.id == that.id
-	    	&& this.muteDevice == that.muteDevice
-	    	&& TimetableUtils.areEqualOrNulls(this.name, that.name)
-	        && TimetableUtils.areEqualOrNulls(this.place, that.place)
-	        && TimetableUtils.areEqualOrNulls(this.date, that.date)
-	        && TimetableUtils.areEqualOrNulls(this.startTime, that.startTime)
-	        && TimetableUtils.areEqualOrNulls(this.endTime, that.endTime)
-	        && TimetableUtils.areEqualOrNulls(this.note, that.note)
-	        && TimetableUtils.areEqualOrNulls(this.period, that.period)
-	        && TimetableUtils.areEqualOrNulls(this.alarm, that.alarm)
-	    	&& TimetableUtils.areEqualOrNulls(this.exceptions, that.exceptions);
+	    return this.getId() == that.getId()
+	    	&& this.mutesDevice() == that.mutesDevice()
+	    	&& TimetableUtils.areEqualOrNulls(this.getName(), that.getName())
+	        && TimetableUtils.areEqualOrNulls(this.getPlace(), that.getPlace())
+	        && TimetableUtils.areEqualOrNulls(this.getDate(), that.getDate())
+	        && TimetableUtils.areEqualOrNulls(this.getStartTime(), that.getStartTime())
+	        && TimetableUtils.areEqualOrNulls(this.getEndTime(), that.getEndTime())
+	        && TimetableUtils.areEqualOrNulls(this.getNote(), that.getNote())
+	        && TimetableUtils.areEqualOrNulls(this.getPeriod(), that.getPeriod())
+	        && TimetableUtils.areEqualOrNulls(this.getAlarm(), that.getAlarm())
+	    	&& TimetableUtils.areEqualOrNulls(this.getExceptions(), that.getExceptions());
 	    	
 	}
 	
@@ -332,13 +469,16 @@ public class Event {
 	@Override 
 	public String toString() {
 		return "---------------\nName: " + name + "\nPlace: " + place + 
-				"\nDate: " + date.toString() + 
+				"\nDate: " + getDate().toString() + 
 				"\nStart time: " + (hasStartTime() ? startTime.toString() : "none") + 
 				"\nEnd time: " + (hasEndTime() ? endTime.toString(): "none") + 
 				"\nMute device: " + Boolean.toString(muteDevice) + "\nNote: " + note + "\n" + period.toString()
 				+ (hasAlarm() ? "\n" + alarm.toString() : "\nAlarm: none") + "\n---------------\n";
 	}
 	
+	/*
+	 * Class that should be used to create events.
+	 */
 	public static class Builder {
 		
 		private Event event =  new Event();
@@ -348,17 +488,17 @@ public class Event {
 		}
 		
 		public Builder setId(int id) {
-			event.id = id;
+			event.setId(id);
 			return this;
 		}
 		
 		public Builder setName(String name) {
-			event.name = name;
+			event.setName(name);
 			return this;
 		}
 		
 		public Builder setPlace(String place) {
-			event.place = place;
+			event.setPlace(place);
 			return this;
 		}
 		
@@ -368,7 +508,7 @@ public class Event {
 		}
 		
 		public Builder setDate(Date date) {
-			event.date = date;
+			event.setDate(date);
 			return this;
 		}
 		
@@ -377,7 +517,7 @@ public class Event {
 			return this;
 		}
 		public Builder setStartTime(Date startTime) {
-			event.startTime = startTime;
+			event.setStartTime(startTime);
 			return this;
 		}
 		
@@ -387,32 +527,32 @@ public class Event {
 		}
 		
 		public Builder setEndTime(Date endTime) {
-			event.endTime = endTime;
+			event.setEndTime(endTime);
 			return this;
 		}
 		
 		public Builder setMuteDevice(boolean muteDevice) {
-			event.muteDevice = muteDevice;
+			event.setMuteDevice(muteDevice);
 			return this;
 		}
 		
 		public Builder setNote(String note) {
-			event.note = note;
+			event.setNote(note);
 			return this;
 		}
 		
 		public Builder setPeriod(EventPeriod period) {
-			event.period = period;
+			event.setPeriod(period);
 			return this;
 		}
 		
 		public Builder setPeriodType(EventPeriod.Type type) {
-			event.period.type = type;
+			event.period.setType(type);
 			return this;
 		}
 		
 		public Builder setPeriodInterval(int interval) {
-			event.period.interval = interval;
+			event.period.setInterval(interval);
 			return this;
 		}
 		
@@ -422,12 +562,12 @@ public class Event {
 		}
 		
 		public Builder setPeriodEndDate(Date endDate) {
-			event.period.endDate = endDate;
+			event.period.setEndDate(endDate);
 			return this;
 		}
 		
 		public Builder setAlarm(EventAlarm alarm) {
-			event.alarm = alarm;
+			event.setAlarm(alarm);
 			return this;
 		}
 		
@@ -448,7 +588,7 @@ public class Event {
 		}
 		
 		public Builder setExceptions(Set<Date> exceptions) {
-			event.exceptions = exceptions;
+			event.setExceptions(exceptions);
 			return this;
 		}
 		
@@ -456,6 +596,7 @@ public class Event {
 			event.addException(exString);
 			return this;
 		}
+		
 		public Event build() {
 			return event;
 		}

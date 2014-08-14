@@ -11,14 +11,43 @@ import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.TimetableUtils;
 
+/*
+ * Class, that contains information about event period and methods to work with it.
+ */
 public class EventPeriod {
 	
 	public enum Type {
-		NONE,
-		DAILY,
-		WEEKLY,
-		MONTHLY,
-		YEARLY
+		
+		NONE(0),
+		DAILY(1),
+		WEEKLY(2),
+		MONTHLY(3),
+		YEARLY(4);
+		
+		private int _value;
+		
+		Type(int Value) {
+	        this._value = Value;
+	    }
+
+	    public int getValue() {
+	            return _value;
+	    }
+	    
+	    public boolean Compare(int i) {
+	    	return _value == i;
+	    }
+	    public static Type getType(int val) {
+	    	
+             Type[] values = Type.values();
+             for(int i = 0; i < values.length; i++)
+             {
+                 if(values[i].Compare(val))
+                     return values[i];
+             }
+             return Type.NONE;
+         }
+    
 	}
 	
 	public static final int SUNDAY = 0;
@@ -59,16 +88,22 @@ public class EventPeriod {
 	
 	public static final SimpleDateFormat dateFormat = DateFormatFactory.getDateFormat();
 	
+	@Deprecated
 	public int id;
 	
+	@Deprecated
 	public EventPeriod.Type type = EventPeriod.Type.NONE;
 	
+	@Deprecated
 	public int interval;
 	
+	@Deprecated
 	public boolean [] weekOccurrences = new boolean[7];
 	
+	@Deprecated
 	public Date endDate;
 	
+	@Deprecated
 	public int numberOfRepeats;
 	
 	public EventPeriod(Bundle data) throws ParseException {
@@ -94,20 +129,83 @@ public class EventPeriod {
 		bundle.putInt(BUNDLE_PERIOD_INTERVAL, interval);
 		bundle.putInt(BUNDLE_PERIOD_NUM_OF_REPEATS, numberOfRepeats);
 		bundle.putInt(BUNDLE_PERIOD_TYPE, type.ordinal());
-		bundle.putInt(BUNDLE_PERIOD_WEEK_OCCURRENCES, getWeekOccurrences());
+		bundle.putInt(BUNDLE_PERIOD_WEEK_OCCURRENCES, getWeekOccurrencesInt());
 		bundle.putString(BUNDLE_PERIOD_END_DATE, getEndDateString());
 		return bundle;
 	}
 	
-	public void setWeekOccurrences(int val) {
-		for (int i = 0; i < 7; i++) {
-			weekOccurrences[7 - i - 1] = (val % 2) != 0;
-			val = val >> 1;
-		}
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getTypeInt() {
+		return type.getValue();
 	}
 	
-	public int getWeekOccurrences() {
-		if (type != Type.WEEKLY) {
+	public EventPeriod.Type getType() {
+		return type;
+	}
+
+	public void setType(EventPeriod.Type type) {
+		this.type = type;
+	}
+
+	public void setType(int typeInt) {
+		type = Type.getType(typeInt);
+	}
+	public int getInterval() {
+		return interval;
+	}
+
+	public void setInterval(int interval) {
+		this.interval = interval;
+	}
+
+	public boolean hasEndDate() {
+		return endDate != null;
+	}
+	
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public String getEndDateString() {
+		return hasEndDate() ? dateFormat.format(endDate) : "";
+	}
+	
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+	
+	public void setEndDate(String endDateString) throws ParseException {
+		endDate = DateUtils.getDateFromString(dateFormat,endDateString);
+	}
+	
+	public int getNumberOfRepeats() {
+		return numberOfRepeats;
+	}
+
+	public void setNumberOfRepeats(int numberOfRepeats) {
+		this.numberOfRepeats = numberOfRepeats;
+	}
+
+	/*
+	 * Return true, if weekly event has occurrence on the given day of week.  
+	 */
+	public boolean isWeekOccurrence(int day) {
+		if (day > 6 || type != WEEKLY) {
+			return false;
+		}
+		
+		return weekOccurrences[day];
+	}
+	
+	public int getWeekOccurrencesInt() {
+		if (type != WEEKLY) {
 			return 0;
 		}
 		int val = 0;
@@ -117,11 +215,25 @@ public class EventPeriod {
 		return val;
 	}
 	
+	public boolean[] getWeekOccurrences() {
+		return weekOccurrences;
+	}
+	
+	public void setWeekOccurrences(int val) {
+		for (int i = 0; i < 7; i++) {
+			weekOccurrences[7 - i - 1] = (val % 2) != 0;
+			val = val >> 1;
+		}
+	}
+	
+	public void setWeekOccurrences(boolean[] occurrences) {
+		this.weekOccurrences = occurrences;
+	}
 	/*
 	 * Add session of weekly period on given day of the week.
 	 */
 	public void addWeekOccurrence(int day) {
-		if (day > 6) {
+		if (day > 6 || day < 0) {
 			return;
 		}
 		weekOccurrences[day] = true;
@@ -131,33 +243,10 @@ public class EventPeriod {
 	 * Delete session of weekly period on given day of the week.
 	 */
 	public void deleteWeekOccurrence(int day) {
-		if (day > 6) {
+		if (day > 6 || day < 0) {
 			return;
 		}
 		weekOccurrences[day] = false;
-	}
-	
-	/*
-	 * Return true, if weekly event has occurrence on the given day of week.  
-	 */
-	public boolean isWeekOccurrence(int day) {
-		if (day > 6 || type != Type.WEEKLY) {
-			return false;
-		}
-		
-		return weekOccurrences[day];
-	}
-	
-	public void setEndDate(String endDateString) throws ParseException {
-		endDate = DateUtils.getDateFromString(dateFormat,endDateString);
-	}
-	
- 	public String getEndDateString() {
-		return hasEndDate() ? dateFormat.format(endDate) : "";
-	}
-	
-	public boolean hasEndDate() {
-		return endDate != null;
 	}
 	
 	public boolean isFinished(Date today) {
@@ -200,7 +289,7 @@ public class EventPeriod {
 	    	(this.interval != that.interval || 
 	    		!TimetableUtils.areEqualOrNulls(this.endDate, that.endDate) || 
 	    		this.numberOfRepeats != that.numberOfRepeats) ||
-	    	this.type == Type.WEEKLY && this.getWeekOccurrences() != that.getWeekOccurrences()) {
+	    	this.type == Type.WEEKLY && this.getWeekOccurrencesInt() != that.getWeekOccurrencesInt()) {
 	    	
 	    	return false; 
 	    }
@@ -210,7 +299,7 @@ public class EventPeriod {
 	@Override 
 	public String toString() {
 		return "Period. Type: " + this.type.toString() + "; Interval: " + Integer.toString(interval) + 
-				"; Week days: " + Integer.toString(getWeekOccurrences()) + "; End date: " 
+				"; Week days: " + Integer.toString(getWeekOccurrencesInt()) + "; End date: " 
 				+ (endDate != null ? endDate.toString() : "null"); 
 	}
 	
@@ -229,9 +318,7 @@ public class EventPeriod {
 	 * Assume, that if period is weekly, it has occurrence on it's startDate
 	 */
 	public Date getNextOccurrence(Date startDate, Date today) {
-		if (DateUtils.compareDates(startDate, today) != DateUtils.BEFORE && 
-			//TODO: move comparison with endDate to new method
-			(endDate == null || endDate != null && DateUtils.compareDates(today, endDate) == DateUtils.BEFORE)){
+		if (DateUtils.compareDates(startDate, today) != DateUtils.BEFORE && !isFinished(today)){
 			return startDate;
 		}
 		
@@ -303,7 +390,7 @@ public class EventPeriod {
 				return null;
 		}
 		
-		if (endDate != null && DateUtils.compareDates(ansCal.getTime(), endDate) != DateUtils.BEFORE) {
+		if (isFinished(ansCal.getTime())) {
 			return null;
 		}
 		return ansCal.getTime();

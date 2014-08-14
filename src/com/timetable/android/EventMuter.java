@@ -15,7 +15,7 @@ import android.os.IBinder;
 import android.os.Vibrator;
 
 /*
- * Service, that mutes device when event is started.
+ * Service, that mutes device when appropriate event is started.
  */
 public class EventMuter extends Service {
 

@@ -10,18 +10,15 @@ import android.os.Bundle;
 import com.timetable.android.Event;
 import com.timetable.android.EventPeriod;
 import com.timetable.android.alarm.EventAlarm;
+import com.timetable.android.utils.DateFormatFactory;
 
 public class EventTestCase extends TestCase {
 	
-	SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+	SimpleDateFormat dateFormat = DateFormatFactory.getDateFormat();
 	
-	SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+	SimpleDateFormat timeFormat = DateFormatFactory.getTimeFormat();
 	
-	SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-	
-	public void setUp() {
-		
-	}
+	SimpleDateFormat dateTimeFormat = DateFormatFactory.getDateTimeFormat();
 	
 	public void testContentValues() throws ParseException {
 		Event event = new Event.Builder()
@@ -352,15 +349,17 @@ public class EventTestCase extends TestCase {
 	}
 	
 	public void testEquals() throws ParseException {
-		Event event1 = new Event();
-		event1.name = "Name";
-		event1.date = dateFormat.parse("30.12.2013");
-		event1.startTime = timeFormat.parse("11:00:00");
-		
-		Event event2 = new Event();
-		event2.name = event1.name;
-		event2.date = event1.date;
-		event2.startTime = event1.startTime;
+		Event event1 = new Event.Builder()
+							.setName("Name")
+							.setDate("30.12.2013")
+							.setStartTime("11:00")
+							.build();
+							
+		Event event2 = new Event.Builder()
+							.setName(event1.name)
+							.setDate(event1.date)
+							.setStartTime(event1.startTime)
+							.build();
 		
 		assertTrue(event1.equals(event2));
 		
@@ -374,12 +373,12 @@ public class EventTestCase extends TestCase {
 		assertFalse(event1.equals(event2));
 		
 		event2.date = event1.date;
-		event2.startTime = timeFormat.parse("11:00:01");
+		event2.startTime = timeFormat.parse("11:01");
 		
 		assertFalse(event1.equals(event2));
 		
 		event2.startTime = event1.startTime;
-		event1.alarm = new EventAlarm();
+		event1.alarm = new EventAlarm(event1);
 		
 		assertFalse(event1.equals(event2));
 		
@@ -388,7 +387,4 @@ public class EventTestCase extends TestCase {
 		assertTrue(event1.equals(event2));
 	}
 	
-	public void tearDown() {
-		
-	}
 }

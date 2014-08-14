@@ -1,6 +1,5 @@
 package com.timetable.android;
 
-
 public class IllegalEventDataException extends Exception{
 
 	/**

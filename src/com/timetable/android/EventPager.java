@@ -16,6 +16,9 @@ import android.widget.ScrollView;
 
 import com.timetable.android.activities.EventDayViewActivity;
 
+/*
+ * Class, that instantiate views of events for each day, and allows user to slide among the days.
+ */
 public class EventPager extends ViewPager {
 
 	private final EventDayViewActivity activity;

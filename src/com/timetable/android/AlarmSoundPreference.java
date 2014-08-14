@@ -11,12 +11,12 @@ import android.media.MediaPlayer;
 import android.preference.ListPreference;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 
+/*
+ * Class, that allows user to choose alarm sound. Contains a list of all available sounds on device's SD card.
+ * When user chooses sound in the list, it is played by MediaPlayer.
+ * Than the preference is stored and used by AlarmDialogActivity, to play choosed sound.
+ */
 public class AlarmSoundPreference extends ListPreference {
 
 	public static final String DEFAULT_ALARM_SOUND = "default_sound";
@@ -137,23 +137,5 @@ public class AlarmSoundPreference extends ListPreference {
             setValue(value);
         }
     }
-	
-    private ListAdapter adapter() {
-        return new ArrayAdapter(getContext(), android.R.layout.select_dialog_singlechoice);
-    }
-
-    private OnItemSelectedListener onSongClickListener = new OnItemSelectedListener() {
-
-    	@Override
-		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-			
-			
-		}
-
-		@Override
-		public void onNothingSelected(AdapterView<?> arg0) {
-			
-		}
-	};
 
 }

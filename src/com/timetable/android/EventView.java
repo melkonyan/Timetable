@@ -11,6 +11,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+/*
+ * Class, that represents event's information. Is used in EventDayViewActivity.
+ */
 public class EventView extends RelativeLayout {
 
 	public static final SimpleDateFormat START_TIME_FORMAT = new SimpleDateFormat("HH:mm");

@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+/*
+ * Class, that can send all main broadcasts.
+ */
 public class EventBroadcastSender {
 	
 	public static void sendEventAddedBroadcast(Context context, Event event) {
@@ -28,7 +31,7 @@ public class EventBroadcastSender {
 	}
 	
 	public static void sendEventEndedBroadcast(Context context, Event event) {
-		
+		sendEventEndedBroadcast(context, event.convert());
 	}
 	
 	public static void sendEventEndedBroadcast(Context context, Bundle eventData) {

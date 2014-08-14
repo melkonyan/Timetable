@@ -1,7 +1,6 @@
 package com.timetable.android.activities;
 
 
-import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -14,8 +13,6 @@ import org.holoeverywhere.widget.TextView;
 import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.view.Menu;
@@ -25,7 +22,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
-import com.timetable.android.AlarmSoundPreference;
 import com.timetable.android.BroadcastActions;
 import com.timetable.android.EventPager;
 import com.timetable.android.R;
@@ -36,8 +32,8 @@ import com.timetable.android.utils.TimetableUtils;
 
 
 /*
- * Activity that displays all events of certain day
- * User can view events of next or previous day by shifting page right or left
+ * Activity that displays all events for certain day.
+ * User can view events for next or previous day by shifting page right or left.
  */
 public class EventDayViewActivity extends Activity {
 	
