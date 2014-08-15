@@ -5,13 +5,13 @@ import java.util.Date;
 import java.util.Vector;
 
 import org.holoeverywhere.LayoutInflater;
-import org.holoeverywhere.widget.LinearLayout;
 import org.holoeverywhere.widget.TextView;
 
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.timetable.android.activities.EventDayViewActivity;
@@ -81,6 +81,7 @@ public class EventPager extends ViewPager {
 	 * Update pages when content has changed.
 	 */
 	public void update() {
+		eventPagerAdapter.update();
 		eventPagerAdapter.notifyDataSetChanged();
 	}
 	
@@ -94,7 +95,17 @@ public class EventPager extends ViewPager {
 		public EventPagerAdapter(Date currentDate) {
 			TimetableLogger.log("EventPagerAdapter created");
 			db = TimetableDatabase.getInstance(activity);
+			loadEvents();
+		}
+		
+		public void update() {
+			loadEvents();
+		}
+		
+		private void loadEvents() {
 			events = db.getAllEvents();
+			TimetableLogger.error("" + events.size());
+			
 		}
 		
 		@Override

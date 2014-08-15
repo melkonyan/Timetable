@@ -190,7 +190,7 @@ public class EventPeriod {
 	}
 	
 	public void setEndDate(long millis) {
-		endDate = new Date(millis);
+		endDate = millis == 0 ? null : new Date(millis);
 	}
 	
 	public int getNumberOfRepeats() {

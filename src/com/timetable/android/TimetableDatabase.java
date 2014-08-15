@@ -100,11 +100,11 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     	TimetableLogger.log("Upgrading database from " + oldVersion + "to " + newVersion + ". All data will be deleted.");
-    	 db.execSQL("DROP TABLE IF EXISTS Events");
-    	 db.execSQL("DROP TABLE IF EXISTS Periods");
-    	 db.execSQL("DROP TABLE IF EXISTS Alarms");
-    	 db.execSQL("DROP TABLE IF EXISTS Exceptions"); 
-         onCreate(db);
+    	db.execSQL("DROP TABLE IF EXISTS Events");
+    	db.execSQL("DROP TABLE IF EXISTS Periods");
+    	db.execSQL("DROP TABLE IF EXISTS Alarms");
+    	db.execSQL("DROP TABLE IF EXISTS Exceptions"); 
+        onCreate(db);
     }
     
 

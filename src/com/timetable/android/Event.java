@@ -209,7 +209,7 @@ public class Event {
 	}
 
 	public void setStartTime(long millis) {
-		startTime = new Date(millis);
+		startTime = millis == 0 ? null : new Date(millis);
 	}
 	
 	public void setStartTime(String startTimeString) throws ParseException {
@@ -237,7 +237,7 @@ public class Event {
 	}
 	
 	public void setEndTime(long millis) {
-		endTime = new Date(millis);
+		endTime = millis == 0 ? null : new Date(millis);
 	}
 	
 	public void setEndTime(String endTimeString) throws ParseException {

@@ -46,7 +46,7 @@ public class AlarmSoundPreference extends ListPreference {
 		super(context, attrs);
 		activity = (Activity) context;
 		Cursor cursor = activity.managedQuery(
-		        MediaStore.Audio.Media.INTERNAL_CONTENT_URI,
+		        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 		        projection,
 		        selection,
 		        null,
