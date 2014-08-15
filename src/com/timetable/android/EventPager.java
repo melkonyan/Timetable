@@ -2,7 +2,7 @@ package com.timetable.android;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
+import java.util.Vector;
 
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.LinearLayout;
@@ -27,7 +27,7 @@ public class EventPager extends ViewPager {
 	
 	private final static int INIT_PAGE_NUMBER = 1000;
 	
-	EventPagerAdapter eventPagerAdapter;
+	private EventPagerAdapter eventPagerAdapter;
 	
 	
 	public EventPager(EventDayViewActivity activity, Date initDate) {
@@ -41,6 +41,7 @@ public class EventPager extends ViewPager {
 		eventPagerAdapter = new EventPagerAdapter(initDate);
 		setAdapter(eventPagerAdapter);
 		setOnPageChangeListener(activity.getEventPagerListener());
+		
 	}
 	
 	/*
@@ -85,8 +86,15 @@ public class EventPager extends ViewPager {
 	
 	private class EventPagerAdapter extends PagerAdapter{
 	
+		//save all events from database into adaptor
+		private Vector<Event> events = new Vector<Event>();
+		
+		private TimetableDatabase db;
+		
 		public EventPagerAdapter(Date currentDate) {
 			TimetableLogger.log("EventPagerAdapter created");
+			db = TimetableDatabase.getInstance(activity);
+			events = db.getAllEvents();
 		}
 		
 		@Override
@@ -104,8 +112,6 @@ public class EventPager extends ViewPager {
 			TimetableLogger.verbose("EventPager: try instantiate page " + Integer.toString(pageNumber));
 			Date currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			
-			TimetableDatabase db = TimetableDatabase.getInstance(EventPager.this.activity);
-		
 			LinearLayout externalLayout = new LinearLayout(activity);
 			externalLayout.setOrientation(LinearLayout.HORIZONTAL);
 			ScrollView scrollView = new ScrollView(activity);
@@ -116,8 +122,10 @@ public class EventPager extends ViewPager {
 			internalLayout.setOrientation(LinearLayout.VERTICAL);
 			internalLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 			
-			List<Event> events = db.searchEventsByDate(currentDate);
 			for (Event event: events) {
+				if (!event.isToday(currentDate)) {
+					continue;
+				}
 				EventView eventView = new EventView(EventPager.this.activity, event);
 				internalLayout.addView(eventView);
 			}
