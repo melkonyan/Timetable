@@ -7,7 +7,6 @@ import java.util.Date;
 import android.os.Bundle;
 
 import com.timetable.android.Event;
-import com.timetable.android.EventPeriod;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
@@ -36,16 +35,8 @@ public class EventAlarm {
 	
 	public Date time;
 
-	
-	//Id if event which has this alarm
-	@Deprecated
-	public int eventId = 0;
-	
 	public Event event;
-	
-	@Deprecated
-	public EventPeriod period;
-	
+
 	public static final SimpleDateFormat timeFormat = DateFormatFactory.getDateTimeFormat();
 	
 	/*
@@ -64,13 +55,10 @@ public class EventAlarm {
 	public EventAlarm(Event event) {
 		this();
 		this.event = event;
-		this.eventId = event.id;
-		this.period = event.period;
 	}
 	
 	@Deprecated
 	public EventAlarm() {
-		period = new EventPeriod();
 	}
 	
 	/*
@@ -119,7 +107,7 @@ public class EventAlarm {
 		if (event == null) {
 			return null;
 		}
-		return new Date(DateUtils.extractDate(alarmOccurrence).getTime() + (event.date.getTime() - DateUtils.extractDate(time).getTime()));
+		return new Date(DateUtils.extractDate(alarmOccurrence).getTime() + (event.getDate().getTime() - DateUtils.extractDate(time).getTime()));
 	}
 	
 	/*
@@ -129,7 +117,7 @@ public class EventAlarm {
 		if (event == null) {
 			return null;
 		}
-		return new Date(DateUtils.extractDate(eventOccurrence).getTime() + (time.getTime() - event.date.getTime()));
+		return new Date(DateUtils.extractDate(eventOccurrence).getTime() + (time.getTime() - event.getDate().getTime()));
 	}
 	
 	
