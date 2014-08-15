@@ -27,10 +27,10 @@ public class EventChecker {
 	}
 	
 	public void checkEvent(Event event) throws IllegalEventEndTimeException, IllegalEventPeriodEndDateException {
-		if (event.hasStartTime() && event.hasEndTime() && event.startTime.compareTo(event.endTime) >= 0) {
+		if (event.hasStartTime() && event.hasEndTime() && event.getStartTime().compareTo(event.getEndTime()) >= 0) {
 			throw new IllegalEventEndTimeException(resources.getString(R.string.event_checker_start_time_before_end_time));
 		}
-		if (event.period.endDate != null && event.date.compareTo(event.period.endDate) >= 0) {
+		if (event.getPeriod().hasEndDate() && event.getDate().compareTo(event.getPeriod().getEndDate()) >= 0) {
 			throw new IllegalEventPeriodEndDateException(resources.getString(R.string.event_checker_end_date_before_start_date));
 		}
 	}
@@ -147,7 +147,7 @@ public class EventChecker {
 		}
 	}
 	
-	class IllegalEventStartTimeException extends IllegalEventDataException {
+	public class IllegalEventStartTimeException extends IllegalEventDataException {
 		
 		/**
 		 * 

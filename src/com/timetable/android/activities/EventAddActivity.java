@@ -36,6 +36,11 @@ import com.timetable.android.Event;
 import com.timetable.android.EventBroadcastSender;
 import com.timetable.android.EventChecker;
 import com.timetable.android.EventChecker.IllegalEventDateException;
+import com.timetable.android.EventChecker.IllegalEventEndTimeException;
+import com.timetable.android.EventChecker.IllegalEventNameException;
+import com.timetable.android.EventChecker.IllegalEventPeriodEndDateException;
+import com.timetable.android.EventChecker.IllegalEventPeriodIntervalException;
+import com.timetable.android.EventChecker.IllegalEventStartTimeException;
 import com.timetable.android.EventPeriod;
 import com.timetable.android.IllegalEventDataException;
 import com.timetable.android.R;
@@ -483,6 +488,10 @@ public class EventAddActivity extends Activity {
 		return true;
 	}
 	
+	public void showException(Exception e) {
+    	Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
@@ -492,9 +501,27 @@ public class EventAddActivity extends Activity {
 	        	try {
 	        		saveEvent();
 	        		finish();
+	        	} catch (IllegalEventNameException e) {
+	        		eventNameVal.requestFocus();
+	        		showException(e);
+	        	} catch (IllegalEventDateException e) {
+	        		eventDateVal.requestFocus();
+	        		showException(e);
+	        	} catch(IllegalEventStartTimeException e) { 
+	        		eventStartTimeVal.requestFocus();
+	        		showException(e);
+	        	} catch (IllegalEventEndTimeException e) {
+	        		eventEndTimeVal.requestFocus();
+	        		showException(e);
+	        	} catch (IllegalEventPeriodIntervalException e) {
+	        		eventPeriodIntervalVal.requestFocus();
+	        		showException(e);
+	        	} catch (IllegalEventPeriodEndDateException e) {
+	        		eventPeriodEndDateVal.requestFocus();
+	        		showException(e);
 	        	} catch (IllegalEventDataException e) {
-	            	Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-	            }
+		        	showException(e);
+	        	}
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -620,13 +647,13 @@ public class EventAddActivity extends Activity {
 	
 	public EventPeriod getEventPeriod() throws IllegalEventDataException {
 		EventPeriod period = new EventPeriod();
-		period.type = getEventPeriodType();
+		period.setType(getEventPeriodType());
 		if (period.isRepeatable()) {
-			period.interval = checker.getPeriodIntervalFromString(eventPeriodIntervalVal.getText().toString());
+			period.setInterval(checker.getPeriodIntervalFromString(eventPeriodIntervalVal.getText().toString()));
 			if (period.isEveryWeek()) {
-				period.weekOccurrences = getEventPeriodWeekOccurrences();
+				period.setWeekOccurrences(getEventPeriodWeekOccurrences());
 			}
-			period.endDate = getEventPeriodEndDate();
+			period.setEndDate(getEventPeriodEndDate());
 		}
 		return period;
 	}
@@ -737,46 +764,41 @@ public class EventAddActivity extends Activity {
 	}
 	
 	public void setEvent(Event event) {
-		eventNameVal.setText(event.name);
-		eventPlaceVal.setText(event.place);
+		eventNameVal.setText(event.getName());
+		eventPlaceVal.setText(event.getPlace());
 		
 		//set date field to be equal current date, not event start date
-		eventDateVal.setText(dateFormat.format(event.date));
-		eventStartTimeVal.setText(timeFormat.format(event.startTime));
-		setEventEndTime(event.endTime);
-		eventMuteDeviceVal.setChecked(event.muteDevice);
-		eventNoteVal.setText(event.note);
-		setEventPeriod(event.period);
+		eventDateVal.setText(dateFormat.format(event.getDate()));
+		eventStartTimeVal.setText(timeFormat.format(event.getStartTime()));
+		setEventEndTime(event.getEndTime());
+		eventMuteDeviceVal.setChecked(event.mutesDevice());
+		eventNoteVal.setText(event.getNote());
+		setEventPeriod(event.getPeriod());
 		if (event.hasAlarm()) {
-			setEventAlarm(event.alarm);
+			setEventAlarm(event.getAlarm());
 		}
 	}
 	
 	public Event getEvent() throws IllegalEventDataException {
 		Event.Builder builder = new Event.Builder();
-		//TODO: set focus on invalid text fields
-		try {
-			builder.setName(checker.getNameFromString(eventNameVal.getText().toString()))
-					.setPlace(checker.getPlaceFromString(eventPlaceVal.getText().toString()))
-					.setDate(checker.getDateFromString(eventDateVal.getText().toString()))
-					.setStartTime(checker.getStartTimeFromString(eventStartTimeVal.getText().toString()))
-					.setEndTime(checker.getEndTimeFromString(eventEndTimeVal.getText().toString()))
-					.setNote(checker.getNoteFromString(eventNoteVal.getText().toString()))
-					.setMuteDevice(eventMuteDeviceVal.isChecked())
-					.setPeriod(getEventPeriod());
-			Event event = builder.build();
-			if (isSetEventAlarm()) {
-				Date alarmTime = checker.getAlarmTimeFromString(eventAlarmTime.getText().toString());
-				alarmTime = DateUtils.setTime(event.date, alarmTime);
-				event.alarm = new EventAlarm(event);
-				event.alarm.time = alarmTime;
-			}
-			checker.checkEvent(event);
-			TimetableLogger.log("EventAddActivity.getEvent:\n" +  event.toString());
-			return event;
-		}  catch (IllegalEventDateException e) {
-			throw e;
+		builder.setName(checker.getNameFromString(eventNameVal.getText().toString()))
+				.setPlace(checker.getPlaceFromString(eventPlaceVal.getText().toString()))
+				.setDate(checker.getDateFromString(eventDateVal.getText().toString()))
+				.setStartTime(checker.getStartTimeFromString(eventStartTimeVal.getText().toString()))
+				.setEndTime(checker.getEndTimeFromString(eventEndTimeVal.getText().toString()))
+				.setNote(checker.getNoteFromString(eventNoteVal.getText().toString()))
+				.setMuteDevice(eventMuteDeviceVal.isChecked())
+				.setPeriod(getEventPeriod());
+		Event event = builder.build();
+		if (isSetEventAlarm()) {
+			Date alarmTime = checker.getAlarmTimeFromString(eventAlarmTime.getText().toString());
+			alarmTime = DateUtils.setTime(event.getDate(), alarmTime);
+			event.setAlarm(new EventAlarm(event));
+			event.getAlarm().time = alarmTime;
 		}
+		checker.checkEvent(event);
+		TimetableLogger.log("EventAddActivity.getEvent:\n" +  event.toString());
+		return event;
 	}
 	
 	

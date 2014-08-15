@@ -71,7 +71,7 @@ public class EventService extends Service {
 	private PendingIntent getPendingIntentFromEvent(Context context, Event event, String action) {
 		Intent intent = new Intent(action);
 		intent.putExtras(event.convert());
-		return PendingIntent.getBroadcast(context, event.id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		return PendingIntent.getBroadcast(context, event.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 	}
 	
 	private void createEventStartedAlarm(Context context, Event event) {
