@@ -173,6 +173,10 @@ public class EventPeriod {
 		return endDate;
 	}
 
+	public long getEndDateMillis() {
+		return hasEndDate() ? endDate.getTime() : 0;
+	}
+	
 	public String getEndDateString() {
 		return hasEndDate() ? dateFormat.format(endDate) : "";
 	}
@@ -183,6 +187,10 @@ public class EventPeriod {
 	
 	public void setEndDate(String endDateString) throws ParseException {
 		endDate = DateUtils.getDateFromString(dateFormat,endDateString);
+	}
+	
+	public void setEndDate(long millis) {
+		endDate = new Date(millis);
 	}
 	
 	public int getNumberOfRepeats() {

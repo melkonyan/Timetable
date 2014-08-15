@@ -172,6 +172,14 @@ public class Event {
 		return date == null ? "" : dateFormat.format(date);
 	}
 	
+	public long getDateMillis() {
+		return date.getTime();
+	}
+	
+	public void setDate(long millis) {
+		date = new Date(millis);
+	}
+	
 	public void setDate(Date date) {
 		this.date = date;
 	}
@@ -187,7 +195,11 @@ public class Event {
 	public Date getStartTime() {
 		return startTime;
 	}
-
+	
+	public long getStartTimeMillis() {
+		return hasStartTime() ? startTime.getTime() : 0;
+	}
+	
 	public String getStartTimeString() {
 		return hasStartTime() ?  timeFormat.format(startTime) : "";
 	}
@@ -196,6 +208,10 @@ public class Event {
 		this.startTime = startTime;
 	}
 
+	public void setStartTime(long millis) {
+		startTime = new Date(millis);
+	}
+	
 	public void setStartTime(String startTimeString) throws ParseException {
 		startTime = DateUtils.getDateFromString(timeFormat, startTimeString, false);
 	}
@@ -208,12 +224,20 @@ public class Event {
 		return endTime;
 	}
 
+	public long getEndTimeMillis() {
+		return hasEndTime() ? endTime.getTime() : 0;
+	}
+	
 	public String getEndTimeString() {
 		return hasEndTime() ? timeFormat.format(endTime) : "";
 	}
 	
 	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
+	}
+	
+	public void setEndTime(long millis) {
+		endTime = new Date(millis);
 	}
 	
 	public void setEndTime(String endTimeString) throws ParseException {
@@ -512,12 +536,28 @@ public class Event {
 			return this;
 		}
 		
+		public Builder setDate(long millis) {
+			event.setDate(millis);
+			return this;
+		}
+	
+		public Builder setStartTime(long millis) {
+			event.setStartTime(millis);
+			return this;
+		}
+		
 		public Builder setStartTime(String startTimeString) throws ParseException {
 			event.setStartTime(startTimeString);
 			return this;
 		}
+		
 		public Builder setStartTime(Date startTime) {
 			event.setStartTime(startTime);
+			return this;
+		}
+		
+		public Builder setEndTime(long millis) {
+			event.setEndTime(millis);
 			return this;
 		}
 		

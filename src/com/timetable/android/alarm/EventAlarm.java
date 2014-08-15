@@ -86,11 +86,19 @@ public class EventAlarm {
 		return time != null;
 	}
 	
+	public long getTimeMillis() {
+		return hasTime() ? time.getTime() : 0;
+	}
+	
 	/*
 	 * Get alarm time, formated to string.
 	 */
 	public String getTimeString() {
 		return hasTime() ? timeFormat.format(time) : "";
+	}
+	
+	public void setTime(long millis) {
+		time = new Date(millis);
 	}
 	
 	/*
@@ -99,6 +107,7 @@ public class EventAlarm {
 	public void setTime(String timeString) throws ParseException {
 		time = DateUtils.getDateFromString(timeFormat, timeString, false);
 	}
+	
 	
 	/*
 	 * If alarm is on given @alarmOccurrence, compute the date of appropriate event, to which this alarm is set.
