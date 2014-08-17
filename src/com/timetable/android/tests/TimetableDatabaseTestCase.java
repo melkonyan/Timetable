@@ -89,7 +89,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 		events = db.searchEventsByDate(searchDate);
 		
 		assertEquals(0, events.size());
-		
+		db.clear();
 		
 	}
 	
@@ -112,6 +112,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 			
 		assertEquals(event, db.searchEventById(event.id));
 		assertTrue(event.isException(exception));
+		db.clear();
 	}
 	
 	public void testUpdateEvent() throws ParseException {
@@ -147,7 +148,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 		newEvent = db.updateEvent(newEvent);
 		
 		assertEquals(newEvent, db.searchEventById(newEvent.id));
-		
+		db.clear();
 	}
 	
 	
@@ -194,6 +195,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 			}
 			assertEquals(true, isFound);
 		}
+		db.clear();
 	}
 	
 	public void tearDown() {

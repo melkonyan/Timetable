@@ -133,14 +133,17 @@ public class EventPager extends ViewPager {
 			internalLayout.setOrientation(LinearLayout.VERTICAL);
 			internalLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 			
+			boolean hasEventsToday = false;
+			
 			for (Event event: events) {
 				if (!event.isToday(currentDate)) {
 					continue;
 				}
 				EventView eventView = new EventView(EventPager.this.activity, event);
-				internalLayout.addView(eventView);
+				internalLayout.addView(eventView);and
+				hasEventsToday = true;
 			}
-			if (events.size() == 0) {
+			if (!hasEventsToday) {
 				TextView textView = new TextView(activity);
 				textView.setPadding(0,60,0,0);
 				textView.setGravity(Gravity.CENTER_HORIZONTAL);
