@@ -8,7 +8,11 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.preference.PreferenceManager;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.timetable.android.AlarmSoundPreference;
 import com.timetable.android.Event;
@@ -37,7 +41,7 @@ public class AlarmDialogActivity extends Activity {
 	
 	private boolean ok = true;
 	
-	
+	private WakeLock screenLock;
 	//handler, that will finish activity after a given amount of time
 	private Handler autoKiller = new Handler();
 	
@@ -54,8 +58,7 @@ public class AlarmDialogActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 	    super.onCreate(savedInstanceState);
-	    TimetableLogger.error("creating activity.");
-	    
+	    TimetableLogger.log("AlarmDialogActivity.onCreate: creating activity.");
 	    eventData = getIntent().getExtras();
 		if (eventData == null) {
 			TimetableLogger.error("EventAlarmDialogActiovity.onCreate: intent with no data received");
@@ -70,7 +73,11 @@ public class AlarmDialogActivity extends Activity {
 			return;
 		}
 		
-	    
+		PowerManager pm = ((PowerManager) getSystemService(POWER_SERVICE));
+		screenLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
+		screenLock.acquire();
+
+		
 		autoKiller.postDelayed(autoKill, TIME_TO_RUN_MILLIS);
 		
 		mediaPlayer = new MediaPlayer();
@@ -100,20 +107,31 @@ public class AlarmDialogActivity extends Activity {
 		});
 	    builder.setTitle(event.name).create().show();
 	}
-	
-	
+	@Override 
+	public void onResume() {
+		super.onResume();
+		Window window = getWindow();
+	    window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+	    window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+	    window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+	    window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	}
 	
 	@Override 
 	public void onStop() {
 		super.onStop();
+		if (!ok) {
+			return;
+		}
+		if(screenLock.isHeld()) {
+		    screenLock.release();
+		}
+		
 		if (mediaPlayer != null && mediaPlayer.isPlaying()) {
 			mediaPlayer.stop();
 			mediaPlayer.release();
 		}
 		
-		if (!ok) {
-			return;
-		}
 		
 		Intent broadcast = new Intent(AlarmService.ACTION_ALARM_UPDATED);
 		broadcast.putExtras(eventData);

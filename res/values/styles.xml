@@ -45,6 +45,9 @@
 	 	<item name="android:layout_weight">1</item>
 		<item name="android:ems">10</item>
     </style>
-    
+	
+	<style name="AlarmAlertActivityStyle" parent="android:Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>    
     
 </resources>

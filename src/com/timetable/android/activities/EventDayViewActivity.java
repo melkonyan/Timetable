@@ -94,13 +94,6 @@ public class EventDayViewActivity extends Activity {
 		
 		setContentView(R.layout.activity_event_day_view);
 		
-		
-		//unlock keyguard and wake up screen, when activity is started. is needed for alarm. 
-		Window window = getWindow();
-	    window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-	    window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-	    window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-	    
 		//TimetableDatabase.getInstance(this).clear();
 		
 		//enable debugging
@@ -186,7 +179,7 @@ public class EventDayViewActivity extends Activity {
 			eventEditIntent.putExtra("date", EventEditActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
 			startActivity(eventEditIntent);
 		} catch (Exception e) {
-			TimetableLogger.error(e.toString());
+			TimetableLogger.error("EventDayVeiwActivity.onEventViewClick: " + e.toString());
 			return;
 		}
 	}

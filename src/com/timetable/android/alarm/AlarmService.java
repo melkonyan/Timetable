@@ -276,23 +276,27 @@ public class AlarmService extends Service {
 				return;
 			}
 			TimetableLogger.log("AlarmService.onReceive: action " + action + " received with event " + event.name + ", id " + Integer.toString(event.id));
-			if (!event.hasAlarm()) {
-				deleteEventAlarm(event);
-				return;
-			}
-			if (action.equals(BroadcastActions.ACTION_EVENT_ADDED)) {
-				createAlarm(event);
-			} else if (action.equals(BroadcastActions.ACTION_EVENT_UPDATED) || action.equals(ACTION_ALARM_UPDATED)) {
-				
-				updateAlarm(event);
-			} else if (action.equals(BroadcastActions.ACTION_EVENT_DELETED)) {
-				deleteAlarm(event);
-			} else if (action.equals(AlarmService.ACTION_ALARM_FIRED)) {
+			
+			if (action.equals(AlarmService.ACTION_ALARM_FIRED)) {
 				Intent alarmDialogIntent = new Intent(context, AlarmDialogActivity.class);
 				alarmDialogIntent.putExtras(eventData);
 				alarmDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
 				context.startActivity(alarmDialogIntent);
+				return;
 			}
+			
+			if (!event.hasAlarm()) {
+				deleteEventAlarm(event);
+				return;
+			}
+			
+			if (action.equals(BroadcastActions.ACTION_EVENT_ADDED)) {
+				createAlarm(event);
+			} else if (action.equals(BroadcastActions.ACTION_EVENT_UPDATED) || action.equals(ACTION_ALARM_UPDATED)) {
+				updateAlarm(event);
+			} else if (action.equals(BroadcastActions.ACTION_EVENT_DELETED)) {
+				deleteAlarm(event);
+			}  
 		}
 	}
 }
