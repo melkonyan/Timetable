@@ -8,11 +8,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.preference.PreferenceManager;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.timetable.android.AlarmSoundPreference;
 import com.timetable.android.Event;
@@ -23,8 +19,8 @@ import com.timetable.android.activities.SettingsActivity;
 import com.timetable.android.utils.TimetableUtils;
 
 /*
- * Activity, that is created when event alarm is fired. Contains the single button, that allows user to disable alarm.
- * When alarm is disabled, it is recreated on it's next occurrence of deleted.
+ * Activity, that is created when alarm is fired. Contains the single button, that allows user to disable alarm.
+ * When alarm is disabled, it is recreated on it's next occurrence or deleted.
  */
 public class AlarmDialogActivity extends Activity {
 	
@@ -41,7 +37,6 @@ public class AlarmDialogActivity extends Activity {
 	
 	private boolean ok = true;
 	
-	private WakeLock screenLock;
 	//handler, that will finish activity after a given amount of time
 	private Handler autoKiller = new Handler();
 	
@@ -73,11 +68,6 @@ public class AlarmDialogActivity extends Activity {
 			return;
 		}
 		
-		PowerManager pm = ((PowerManager) getSystemService(POWER_SERVICE));
-		screenLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
-		screenLock.acquire();
-
-		
 		autoKiller.postDelayed(autoKill, TIME_TO_RUN_MILLIS);
 		
 		mediaPlayer = new MediaPlayer();
@@ -105,26 +95,15 @@ public class AlarmDialogActivity extends Activity {
 				
 			}
 		});
-	    builder.setTitle(event.name).create().show();
+	    builder.setTitle(event.getName()).create().show();
 	}
-	@Override 
-	public void onResume() {
-		super.onResume();
-		Window window = getWindow();
-	    window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-	    window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-	    window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-	    window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-	}
+
 	
 	@Override 
 	public void onStop() {
 		super.onStop();
 		if (!ok) {
 			return;
-		}
-		if(screenLock.isHeld()) {
-		    screenLock.release();
 		}
 		
 		if (mediaPlayer != null && mediaPlayer.isPlaying()) {
@@ -139,9 +118,8 @@ public class AlarmDialogActivity extends Activity {
 	
 		Intent intent = new Intent(AlarmDialogActivity.this, EventDayViewActivity.class);
 		intent.putExtra(EventDayViewActivity.EXTRAS_DATE, 
-						EventDayViewActivity.EXTRAS_DATE_FORMAT.format(event.alarm.getEventOccurrence(TimetableUtils.getCurrentTime())));
+						EventDayViewActivity.EXTRAS_DATE_FORMAT.format(event.getAlarm().getEventOccurrence(TimetableUtils.getCurrentTime())));
 		AlarmDialogActivity.this.startActivity(intent);
-		finish();
 	}
 	
 }

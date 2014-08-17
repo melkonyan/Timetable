@@ -79,7 +79,7 @@ public class EventEditActivity extends EventAddActivity {
 						for (int i = EventPeriod.SUNDAY; i <= EventPeriod.SATURDAY; i++) {
 							if (!eventPeriodWeekDayCheckBoxes[i].isEnabled()) {
 								eventPeriodWeekDayCheckBoxes[i].setEnabled(true);
-								eventPeriodWeekDayCheckBoxes[i].setChecked(event.period.isWeekOccurrence(i));
+								eventPeriodWeekDayCheckBoxes[i].setChecked(event.getPeriod().isWeekOccurrence(i));
 							}
 						eventPeriodWeekDayCheckBoxes[weekDay].setEnabled(false);
 						eventPeriodWeekDayCheckBoxes[weekDay].setChecked(true);
@@ -131,10 +131,10 @@ public class EventEditActivity extends EventAddActivity {
 	@Override 
 	public void saveEvent() throws IllegalEventDataException {
 		editedEvent = getEvent();
-		editedEvent.id = event.id;
-		editedEvent.period.id = event.period.id;
+		editedEvent.setId(event.getId());
+		editedEvent.getPeriod().setId(event.getPeriod().getId());
 		if (editedEvent.hasAlarm() && event.hasAlarm()) {
-			editedEvent.alarm.id = 	event.alarm.id;	
+			editedEvent.getAlarm().id = event.getAlarm().id;	
 		}
 		// If event hasn't changed, we do not to save it
 		if (event.equals(editedEvent)) {

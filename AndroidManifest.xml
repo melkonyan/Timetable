@@ -16,9 +16,6 @@
 	<uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
    	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission android:name="android.permission.VIBRATE"/>
-   	<uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
-   	<uses-permission android:name="android.permission.FLAG_SHOW_WHEN_LOCKED" />
-   	<uses-permission android:name="android.permission.WAKE_LOCK"/>
    	
     <application
        	android:name="TimetableApp"
@@ -52,8 +49,7 @@
         <activity 
             android:name="com.timetable.android.alarm.AlarmDialogActivity"
             android:launchMode="singleTask"
-            android:theme="@style/AlarmAlertActivityStyle"> 
-              
+    		android:theme="@android:style/Theme.Dialog">          
         </activity>
     	
     	<receiver android:name="com.timetable.android.ServiceStarter" android:enabled="true" android:exported="false">
