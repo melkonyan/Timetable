@@ -193,6 +193,10 @@ public class EventPeriod {
 		endDate = millis == 0 ? null : new Date(millis);
 	}
 	
+	public void deleteEndDate() {
+		endDate = null;
+	}
+	
 	public int getNumberOfRepeats() {
 		return numberOfRepeats;
 	}

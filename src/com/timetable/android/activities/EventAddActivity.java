@@ -61,7 +61,7 @@ public class EventAddActivity extends Activity {
 	
 	public static final SimpleDateFormat INIT_DATE_FORMAT = DateFormatFactory.getDateTimeFormat();
 	
-	public static final String INTENT_EXTRA_DATE = "date";
+	public static final String EXTRA_DATE = "date";
 	
 	private static final EventPeriod.Type EVENT_PERIOD_TYPE_IDS [] = 
 			new EventPeriod.Type[] {
@@ -423,7 +423,7 @@ public class EventAddActivity extends Activity {
 		}
 		try {
 			initEventDate = Calendar.getInstance();
-			initEventDate.setTime(INIT_DATE_FORMAT.parse(extras.getString(EventAddActivity.INTENT_EXTRA_DATE)));
+			initEventDate.setTime(INIT_DATE_FORMAT.parse(extras.getString(EventAddActivity.EXTRA_DATE)));
 			setEventDate(getInitDate());
 			setEventStartTime(getInitStartTime());
 			setEventEndTime(getInitEndTime());

@@ -8,7 +8,6 @@ import junit.framework.TestCase;
 
 import com.timetable.android.Event;
 import com.timetable.android.EventPeriod;
-import com.timetable.android.EventPeriod.Type;
 import com.timetable.android.alarm.EventAlarm;
 
 public class EventAlarmTestCase extends TestCase {
@@ -35,10 +34,10 @@ public class EventAlarmTestCase extends TestCase {
 						.build();
 		
 		Date today = dateTimeFormat.parse("01.08.2014 13:18"); 
-		EventAlarm alarm = event.alarm;
+		EventAlarm alarm = event.getAlarm();
 		
 		assertEquals(alarm.time, alarm.getNextOccurrence(today));
-		assertEquals(event.date, alarm.getNextEventOccurrence(today));
+		assertEquals(event.getDate(), alarm.getNextEventOccurrence(today));
 		
 		today = dateTimeFormat.parse("01.08.2014 15:00");
 		
@@ -48,8 +47,8 @@ public class EventAlarmTestCase extends TestCase {
 		
 		assertNull(alarm.getNextOccurrence(today));
 		
-		event.period.type = EventPeriod.Type.DAILY;
-		event.period.interval = 1;
+		event.getPeriod().setType(EventPeriod.DAILY);
+		event.getPeriod().setInterval(1);
 		
 		assertEquals(dateTimeFormat.parse("02.08.2014 14:00"), alarm.getNextOccurrence(today));
 		
@@ -63,18 +62,18 @@ public class EventAlarmTestCase extends TestCase {
 		
 		assertEquals(dateTimeFormat.parse("02.08.2014 14:00"), alarm.getNextOccurrence(today));
 		
-		event.period.endDate = dateFormat.parse("04.08.2014");
+		event.getPeriod().setEndDate("04.08.2014");
 		
 		assertNull(alarm.getNextOccurrence(today));
 		
-		event.period.endDate = dateFormat.parse("05.08.2014");
+		event.getPeriod().setEndDate("05.08.2014");
 		
 		assertEquals(dateTimeFormat.parse("02.08.2014 14:00"), alarm.getNextOccurrence(today));
 		
-		event.period.endDate = null;
+		event.getPeriod().deleteEndDate();
 		
 		alarm.setTime("10.08.2014 21:15");
-		event.period.type = Type.NONE;
+		event.getPeriod().setType(EventPeriod.NONE);
 		event.setDate("10.08.2014");
 		today = dateTimeFormat.parse("11.08.2014 00:15");
 		alarm.getNextOccurrence(today);
@@ -86,7 +85,7 @@ public class EventAlarmTestCase extends TestCase {
 					.setDate(dateFormat.parse("10.07.2014"))
 					.setAlarmTime(EventAlarm.timeFormat.parse("06.07.2014 15:47"))
 					.build();
-		EventAlarm alarm = event.alarm;
+		EventAlarm alarm = event.getAlarm();
 		assertEquals(dateFormat.parse("10.07.2014"), alarm.getEventOccurrence(alarm.time));
 		
 		event.setDate("10.08.2014");
@@ -102,7 +101,7 @@ public class EventAlarmTestCase extends TestCase {
 						.build();
 		Date today = dateTimeFormat.parse("11.08.2014 11:51");
 		
-		assertEquals(event.alarm.time, event.alarm.getAlarmOccurrence(today));
+		assertEquals(event.getAlarm().time, event.getAlarm().getAlarmOccurrence(today));
 	}
 	
 	public void testIsOk() {

@@ -104,13 +104,13 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 		
 		event = db.insertEvent(event);
 		
-		assertEquals(event, db.searchEventById(event.id));
+		assertEquals(event, db.searchEventById(event.getId()));
 		Date exception =  dateFormat.parse("02.08.2014");
 		
 		db.insertException(event, exception);
-		event.exceptions.add(exception);
+		event.addException(exception);
 			
-		assertEquals(event, db.searchEventById(event.id));
+		assertEquals(event, db.searchEventById(event.getId()));
 		assertTrue(event.isException(exception));
 		db.clear();
 	}
@@ -128,26 +128,26 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 		
 		Event newEvent = oldEvent;
 		
-		newEvent.name = "new name";
-		newEvent.period.interval = 3;
-		newEvent.alarm = new EventAlarm(newEvent);
-		newEvent.alarm.setTime("25.04.2014 21:46");
+		newEvent.setName("new name");
+		newEvent.getPeriod().setInterval(3);
+		newEvent.setAlarm(new EventAlarm(newEvent));
+		newEvent.getAlarm().setTime("25.04.2014 21:46");
 		newEvent = db.updateEvent(newEvent);
 		
-		Event foundEvent = db.searchEventById(newEvent.id);
+		Event foundEvent = db.searchEventById(newEvent.getId());
 		
 		assertTrue(foundEvent.hasAlarm());
 		assertTrue(newEvent.equals(foundEvent));
 		
-		newEvent.alarm.setTime("25.04.2014 20:46");
+		newEvent.getAlarm().setTime("25.04.2014 20:46");
 		newEvent = db.updateEvent(newEvent);
 		
-		assertEquals(newEvent, db.searchEventById(newEvent.id));
+		assertEquals(newEvent, db.searchEventById(newEvent.getId()));
 		
-		newEvent.alarm = null;
+		newEvent.deleteAlarm();
 		newEvent = db.updateEvent(newEvent);
 		
-		assertEquals(newEvent, db.searchEventById(newEvent.id));
+		assertEquals(newEvent, db.searchEventById(newEvent.getId()));
 		db.clear();
 	}
 	
@@ -161,13 +161,13 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 							.build();
 		
 		event1 = db.insertEvent(event1);
-		assertNotSame(-1, event1.alarm.id);
-		assertEquals(true, event1.alarm.equals(db.getEventAlarm(event1)));
+		assertNotSame(-1, event1.getAlarm().id);
+		assertEquals(event1.getAlarm(), db.getEventAlarm(event1));
 		
 		
-		event1.alarm.time = EventAlarm.timeFormat.parse("01.05.2014 15:22");
+		event1.getAlarm().setTime("01.05.2014 15:22");
 		event1 = db.updateEvent(event1);
-		assertEquals(true, event1.alarm.equals(db.getEventAlarm(event1)));
+		assertEquals(event1.getAlarm(), db.getEventAlarm(event1));
 		
 		Event event2 = new Event.Builder()
 						.setDate("14.08.2014")
@@ -176,7 +176,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 						.build();
 		
 		event2 = db.insertEvent(event2);
-		assertNotSame(-1, event2.alarm.id);
+		assertNotSame(-1, event2.getAlarm().id);
 		
 		Vector<Event> eventsWithAlarm = new Vector<Event>();
 		eventsWithAlarm.add(event1);

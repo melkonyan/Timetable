@@ -23,38 +23,48 @@ import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 
 /*
- * Activity provides user interface to edit event
- * Should be started with extra field 'event_id' that contains id of event,
- * that should be edited and field 'date', that contains date, when event was edited.
+ * Activity provides user interface to edit oldEvent
+ * Should be started with extra field 'event_id' that contains id of oldEvent,
+ * that should be edited and field 'date', that contains editDate, when oldEvent was edited.
  */
 public class EventEditActivity extends EventAddActivity {
 
-	//event that should be edited
-	private Event event;
+	public static final String EXTRA_EVENT_ID = "event_id";
+	
+	//oldEvent that should be edited
+	private Event oldEvent;
 	
 	//new data
 	private Event editedEvent;
 	
-	//date when event is edited
-	private Date date;
+	//editDate when oldEvent is edited
+	private Date editDate;
+	
+	private TimetableDatabase db; 
 	
 	@Override 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		try {
 			Bundle extras = getIntent().getExtras();
-			int eventId = extras.getInt("event_id");
-			TimetableDatabase db = TimetableDatabase.getInstance(this);
-			event = db.searchEventById(eventId);
-			if (event == null) {
-				TimetableLogger.error("EventEditActivity: event not found. " + Integer.toString(eventId));
+			int eventId = extras.getInt(EXTRA_EVENT_ID);
+			db = TimetableDatabase.getInstance(this);
+			oldEvent = db.searchEventById(eventId);
+			if (oldEvent == null) {
+				TimetableLogger.error("EventEditActivity.onCreate: oldEvent not found. " + Integer.toString(eventId));
 				finish();
+				return;
 			}
 			getSupportActionBar().setTitle(getResources().getString(R.string.actionbar_edit_event));
 			
-			date = INIT_DATE_FORMAT.parse(extras.getString("date"));
+			try {
+				editDate = INIT_DATE_FORMAT.parse(extras.getString(EXTRA_DATE));
+			} catch(ParseException e) {
+				TimetableLogger.error("EventEditActivity.onCreate: could not parse date of editing. " + e.getMessage());
+				finish();
+				return;
+			}
 			
-			setEvent(event);
+			setEvent(oldEvent);
 			showEventPeriod();
 			showEventAlarm();
 			eventDateVal.removeTextChangedListener(eventAddTextWatcher);
@@ -79,7 +89,7 @@ public class EventEditActivity extends EventAddActivity {
 						for (int i = EventPeriod.SUNDAY; i <= EventPeriod.SATURDAY; i++) {
 							if (!eventPeriodWeekDayCheckBoxes[i].isEnabled()) {
 								eventPeriodWeekDayCheckBoxes[i].setEnabled(true);
-								eventPeriodWeekDayCheckBoxes[i].setChecked(event.getPeriod().isWeekOccurrence(i));
+								eventPeriodWeekDayCheckBoxes[i].setChecked(oldEvent.getPeriod().isWeekOccurrence(i));
 							}
 						eventPeriodWeekDayCheckBoxes[weekDay].setEnabled(false);
 						eventPeriodWeekDayCheckBoxes[weekDay].setChecked(true);
@@ -90,12 +100,8 @@ public class EventEditActivity extends EventAddActivity {
 				}
 			});
 			
-			eventDateVal.setText(dateFormat.format(date));
+			eventDateVal.setText(dateFormat.format(editDate));
 			
-		} catch(Exception e) {
-			TimetableLogger.error("EventEditActivity received illegal data.");
-			finish();
-		}
 		TimetableLogger.log("EventEditActivity successfully created.");
 	}
 	
@@ -112,7 +118,7 @@ public class EventEditActivity extends EventAddActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	        case R.id.action_save_event:
-	        	TimetableLogger.log("EventEditActivity: try to save event.");
+	        	TimetableLogger.log("EventEditActivity: try to save oldEvent.");
 	        	try {
 	        		saveEvent();
 	        	} catch (IllegalEventDataException e) {
@@ -120,7 +126,7 @@ public class EventEditActivity extends EventAddActivity {
 	            }
 	        	return true;
 	        case R.id.action_delete_event:
-	        	TimetableLogger.log("EventEditActivity: try to delete event.");
+	        	TimetableLogger.log("EventEditActivity: try to delete oldEvent.");
 	        	deleteEvent();
 	        	return true;
 	        default:
@@ -131,18 +137,18 @@ public class EventEditActivity extends EventAddActivity {
 	@Override 
 	public void saveEvent() throws IllegalEventDataException {
 		editedEvent = getEvent();
-		editedEvent.setId(event.getId());
-		editedEvent.getPeriod().setId(event.getPeriod().getId());
-		if (editedEvent.hasAlarm() && event.hasAlarm()) {
-			editedEvent.getAlarm().id = event.getAlarm().id;	
+		editedEvent.setId(oldEvent.getId());
+		editedEvent.getPeriod().setId(oldEvent.getPeriod().getId());
+		if (editedEvent.hasAlarm() && oldEvent.hasAlarm()) {
+			editedEvent.getAlarm().id = oldEvent.getAlarm().id;	
 		}
-		// If event hasn't changed, we do not to save it
-		if (event.equals(editedEvent)) {
+		// If oldEvent hasn't changed, we do not to save it
+		if (oldEvent.equals(editedEvent)) {
 			finish();
 			return;
 		}
 		
-		if (event.isRepeatable()) {
+		if (oldEvent.isRepeatable()) {
 			new SaveDialog(this); 
 			return;
 		}
@@ -154,37 +160,52 @@ public class EventEditActivity extends EventAddActivity {
 		finish();
 	}
 	
+	/*
+	 * When repeatable oldEvent is updated or deleted and option "Override future events" is selected by user, 
+	 * new version of the oldEvent is inserted into the database, and the end editDate of old version is updated,
+	 * so that old oldEvent is already finished on the editDate of editing.
+	 */
+	private void updateOldEventEndDate() {
+		//TODO: collide this function an addOldEventException into one function updateOldEvent
+		// change updateEvent method in the database, so that all oldEvent's exception would be updated.
+		oldEvent.getPeriod().setEndDate(editDate);
+		if (oldEvent.getPeriod().isFinished(oldEvent.getDate())) {
+			db.deleteEvent(oldEvent);
+			EventBroadcastSender.sendEventDeletedBroadcast(this, oldEvent);
+		} else {
+			db.updateEvent(oldEvent);
+			EventBroadcastSender.sendEventUpdatedBroadcast(this, oldEvent);
+			
+		}
+		
+	}
+	
+	/*
+	 * When repeatable oldEvent is updated or deleted and option "Change only this oldEvent" is selected by user,
+	 * new version of the oldEvent is inserted into the database, and editDate of editing is added to exceptions of old oldEvent.
+	 */
+	private void addOldEventException() {
+		oldEvent.addException(editDate);
+		db.insertException(oldEvent, editDate);
+		EventBroadcastSender.sendEventUpdatedBroadcast(this, oldEvent);	
+	}
+	
 	private void saveRepeatableEvent(boolean overrideFutureEvents) {
-		TimetableDatabase db = TimetableDatabase.getInstance(this);
 		if (overrideFutureEvents) {
-			//from today on this event ends
-			TimetableLogger.log("EventEditActivity.saveRepetableEvent: saving event" + editedEvent.toString());
-			long day = 1000*60*60*24;
-			event.period.endDate = new Date();
-			event.period.endDate.setTime(date.getTime() - day);
-			if (event.period.isFinished(event.date)) {
-				db.deleteEvent(event);
-				EventBroadcastSender.sendEventDeletedBroadcast(this, event);
-				
-			} else {
-				db.updateEvent(event);
-				EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
-				
-			}
+			//from today on this oldEvent ends
+			updateOldEventEndDate();
 			
 			editedEvent = db.insertEvent(editedEvent);
-			//copy exception to new event
-			for (Date exception: event.exceptions) {
+			//copy exceptions to new oldEvent
+			for (Date exception: oldEvent.getExceptions()) {
 				db.insertException(editedEvent, exception);
 			}
 		
 		} else {
-			//today there is no session of this event
-			event.addException(date);
-			db.insertException(event, date);
-			editedEvent.period.type = EventPeriod.Type.NONE;
+			//today there is no session of this oldEvent
+			addOldEventException();
+			editedEvent.getPeriod().setType(EventPeriod.NONE);
 			editedEvent = db.insertEvent(editedEvent);
-			EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
 			
 		}
 		
@@ -192,36 +213,23 @@ public class EventEditActivity extends EventAddActivity {
 	}
 	
 	public void deleteEvent() {
-		if (event.isRepeatable()) {
+		if (oldEvent.isRepeatable()) {
 			new DeleteDialog(this);
 			return;
 		}
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
-		db.deleteEvent(event);
-		EventBroadcastSender.sendEventDeletedBroadcast(this, event);
+		db.deleteEvent(oldEvent);
+		EventBroadcastSender.sendEventDeletedBroadcast(this, oldEvent);
 		finish();
 	}
 	
 	private void deleteRepeatableEvent(boolean deleteFutureEvents) {
-		TimetableDatabase db = TimetableDatabase.getInstance(this);
 		if (deleteFutureEvents) {
-			//from today on this event ends
-			long day = 1000*60*60*24;
-			event.period.endDate = new Date();
-			event.period.endDate.setTime(date.getTime() - day);
-			if (event.period.isFinished(event.date)) {
-				db.deleteEvent(event);
-				EventBroadcastSender.sendEventDeletedBroadcast(this, event);
-			} else {
-				db.updateEvent(event);
-				EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
-			}
-			
+			//from today on this oldEvent ends
+			updateOldEventEndDate();
 		} else {
-			//today there is no session of this event
-			event.addException(date);
-			db.insertException(event, date);
-			EventBroadcastSender.sendEventUpdatedBroadcast(this, event);
+			//today there is no session of this oldEvent
+			addOldEventException();
 		}
 	}
 	

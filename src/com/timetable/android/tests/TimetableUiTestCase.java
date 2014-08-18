@@ -7,8 +7,10 @@ import java.util.Date;
 import org.holoeverywhere.widget.EditText;
 import org.holoeverywhere.widget.Spinner;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.RenamingDelegatingContext;
 import android.view.View;
 
 import com.robotium.solo.Solo;
@@ -71,6 +73,8 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 	
 	public void setUp() throws ParseException {
 		currentDate = DATE_FORMAT.parse("7.07.2014");
+		//Context mContext = new RenamingDelegatingContext(getActivity(), "TimetableDatabaseTestCase_");
+		
 		TimetableUtils.setTimeProvider(new FakeTimeProvider(currentDate));
 		
 		solo = new Solo(getInstrumentation(), getActivity());
@@ -105,18 +109,14 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 	
 	public void testEventAdd() throws ParseException {
 		
-		Event event = new Event();
+		Event event = new Event.Builder()
+						.setName("event1")
+						.setDate("07.07.2014")
+						.setStartTime("20:07")
+						.setPeriodType(EventPeriod.DAILY)
+						.setAlarmTime("10.08.2044 14:00")
+						.build();
 		
-		
-		event.name = "event1";
-		event.date = DATE_FORMAT.parse("07.07.2014");
-		event.startTime = TIME_FORMAT.parse("20:07");
-		
-		event.period = new EventPeriod();
-		event.period.type = EventPeriod.Type.DAILY;
-		
-		event.alarm = new EventAlarm();
-		event.alarm.time = EventAlarm.timeFormat.parse("10.08.2044 14:00");
 		
 		View eventAddButton = solo.getView(R.id.action_add_event);
 		solo.assertCurrentActivity("Wrong Activity", EventDayViewActivity.class);
@@ -134,20 +134,21 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		
 		//Create event with alarm, daily period, no end time,  no period end time
 		solo.sleep(1000);//wait for toast to gone.
-		solo.enterText((EditText) solo.getView(R.id.event_add_name_val), event.name);
-		setEditText(R.id.event_add_date_val, DATE_FORMAT.format(event.date));
-		setEditText(R.id.event_add_start_time_val, TIME_FORMAT.format(event.startTime));
+		solo.enterText((EditText) solo.getView(R.id.event_add_name_val), event.getName());
+		setEditText(R.id.event_add_date_val, DATE_FORMAT.format(event.getDate()));
+		setEditText(R.id.event_add_start_time_val, TIME_FORMAT.format(event.getStartTime()));
 		setEditText(R.id.event_add_end_time_val, "");
-		solo.clickOnView(alarmAddButton);
-		setEditText(R.id.event_alarm_time_val, EventAlarm.timeFormat.format(event.alarm.time));
-		selectSpinnerItem(0, event.period.type.ordinal() + 1);
+		//solo.clickOnView(alarmAddButton);
+		//setEditText(R.id.event_alarm_time_val, EventAlarm.timeFormat.format(event.getAlarm().time));
+		//TODO: remove ordinal
+		selectSpinnerItem(0, event.getPeriod().getType().ordinal() + 1);
 		solo.clickOnView(eventSaveButton);
 		
 		assertTrue(solo.waitForActivity(EventDayViewActivity.class, DEFAULT_TIMEOUT));
-		assertTrue(solo.searchText(event.name));
-		assertTrue(solo.searchText(EventView.START_TIME_FORMAT.format(event.startTime)));
+		assertTrue(solo.searchText(event.getName()));
+		assertTrue(solo.searchText(EventView.START_TIME_FORMAT.format(event.getStartTime())));
 		assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_repeat).getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_alarm).getVisibility());
+		//assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_alarm).getVisibility());
 		
 		clickOnView(R.id.event_layout);
 		
@@ -155,7 +156,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		
 		//update event: delete event period and alarm
 		View alarmDeleteButton = solo.getView(R.id.event_delete_alarm);
-		solo.clickOnView(alarmDeleteButton);
+		//solo.clickOnView(alarmDeleteButton);
 		selectSpinnerItem(0, 1);
 		View eventUpdateButton = solo.getView(R.id.action_save_event);
 		solo.clickOnView(eventUpdateButton);
@@ -171,14 +172,15 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		assertTrue(solo.waitForActivity(EventEditActivity.class, DEFAULT_TIMEOUT));
 		
 		//update event: add alarm and period
-		solo.clickOnView(alarmAddButton);
-		setEditText(R.id.event_alarm_time_val, EventAlarm.timeFormat.format(event.alarm.time));
-		selectSpinnerItem(0, event.period.type.ordinal() + 1);
+		//solo.clickOnView(alarmAddButton);
+		//setEditText(R.id.event_alarm_time_val, EventAlarm.timeFormat.format(event.getAlarm().time));
+		//TODO: remove ordinal
+		selectSpinnerItem(0, event.getPeriod().getType().ordinal() + 1);
 		solo.clickOnView(eventUpdateButton);
 		
 		assertTrue(solo.waitForActivity(EventDayViewActivity.class, DEFAULT_TIMEOUT));
 		assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_repeat).getVisibility());
-		assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_alarm).getVisibility());
+		//assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_alarm).getVisibility());
 		
 		clickOnView(R.id.event_layout);
 		
@@ -191,7 +193,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		solo.clickOnButton(mResources.getText(R.string.dialog_button_delete).toString());
 		
 		assertTrue(solo.waitForActivity(EventDayViewActivity.class, DEFAULT_TIMEOUT));
-		assertFalse(solo.searchText(event.name));
+		assertFalse(solo.searchText(event.getName()));
 		
 	}
 	

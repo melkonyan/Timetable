@@ -62,7 +62,7 @@
     	<service android:name="com.timetable.android.alarm.AlarmService" android:exported="false" android:enabled="true">
     	</service>
 		
-		<service android:name="com.timetable.android.EventMuter" android:exported="false" android:enabled="true">
+		<service android:name="com.timetable.android.DeviceMuteService" android:exported="false" android:enabled="true">
     	</service>
 		
 		<service android:name="com.timetable.android.EventService" android:exported="false" android:enabled="true">

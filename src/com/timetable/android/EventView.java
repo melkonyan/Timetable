@@ -36,13 +36,13 @@ public class EventView extends RelativeLayout {
 		ImageView imageAlarm = (ImageView) findViewById(R.id.layout_event_image_alarm);
 		ImageView imageMuteDevice = (ImageView) findViewById(R.id.layout_event_image_mute_device);
 		
-		textViewEventId.setText(Integer.toString(event.id));
-		textViewEventName.setText(event.name);
-		textViewEventPlace.setText(event.place);
-		textViewEventNote.setText(event.note);
-		textViewEventStartTime.setText(START_TIME_FORMAT.format(event.startTime));
-		if (event.endTime != null) {
-			textViewEventEndTime.setText("- " + START_TIME_FORMAT.format(event.endTime));
+		textViewEventId.setText(Integer.toString(event.getId()));
+		textViewEventName.setText(event.getName());
+		textViewEventPlace.setText(event.getPlace());
+		textViewEventNote.setText(event.getNote());
+		textViewEventStartTime.setText(START_TIME_FORMAT.format(event.getStartTime()));
+		if (event.hasEndTime()) {
+			textViewEventEndTime.setText("- " + START_TIME_FORMAT.format(event.getEndTime()));
 		}
 		else {
 			textViewEventEndTime.setText("");
@@ -50,7 +50,7 @@ public class EventView extends RelativeLayout {
 		
 		imageRepeat.setVisibility(event.isRepeatable() ? View.VISIBLE : View.INVISIBLE);
 		imageAlarm.setVisibility(event.hasAlarm() ? View.VISIBLE : View.INVISIBLE);
-		imageMuteDevice.setVisibility(event.muteDevice ? View.VISIBLE : View.INVISIBLE);
+		imageMuteDevice.setVisibility(event.mutesDevice() ? View.VISIBLE : View.INVISIBLE);
 		
 		TimetableLogger.verbose("event " + event.getName() + " successfully drawed");
 		

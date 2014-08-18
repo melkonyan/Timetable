@@ -42,7 +42,7 @@ public class EventAddActivityTestCase extends ActivityInstrumentationTestCase2<E
 		}
 		
 		Intent i = new Intent();
-		i.putExtra(EventAddActivity.INTENT_EXTRA_DATE, EventAddActivity.INIT_DATE_FORMAT.format(initDate.getTime()));
+		i.putExtra(EventAddActivity.EXTRA_DATE, EventAddActivity.INIT_DATE_FORMAT.format(initDate.getTime()));
 		setActivityIntent(i);
 		
 		mContext = new RenamingDelegatingContext(getActivity(), "test_");

@@ -106,14 +106,14 @@ public class AlarmService extends Service {
 	}
 	
 	private PendingIntent getPendingIntentFromEvent(Event event) {
-		return PendingIntent.getBroadcast(this, event.id, getIntentFromEvent(event), PendingIntent.FLAG_UPDATE_CURRENT);
+		return PendingIntent.getBroadcast(this, event.getId(), getIntentFromEvent(event), PendingIntent.FLAG_UPDATE_CURRENT);
 	}
 	
 	/*
 	 * Create alarm with pending intent, that will be broadcasted to this class, when alarm should run.
 	 */
 	public void createAlarm(Event event) {
-		Date nextOccurrence = event.alarm.getNextOccurrence();
+		Date nextOccurrence = event.getAlarm().getNextOccurrence();
 		if (nextOccurrence == null) {
 			return;
 		}
@@ -126,12 +126,12 @@ public class AlarmService extends Service {
 		alarmManager.set(AlarmManager.RTC_WAKEUP, nextOccurrence.getTime(), getPendingIntentFromEvent(event));
 		Iterator<EventAlarm> iterator = alarmQueue.iterator();
 		while(iterator.hasNext()) {
-			if (iterator.next().id == event.alarm.id) {
+			if (iterator.next().id == event.getAlarm().id) {
 				iterator.remove();
 				break;
 			}
 		}
-		alarmQueue.offer(event.alarm);
+		alarmQueue.offer(event.getAlarm());
 		updateNotification();
 		TimetableLogger.log("AlarmService.createAlarm: creating alarm on date: " + nextOccurrence.toString());
 		
@@ -144,18 +144,18 @@ public class AlarmService extends Service {
 	 */
 	public void deleteAlarm(Event event) {
 		TimetableLogger.log("AlarmService.updateAlarm: deleting alarm");
-		if (!alarmQueue.contains(event.alarm)) {
+		if (!alarmQueue.contains(event.getAlarm())) {
 			return;
 		}
 		PendingIntent mIntent = getPendingIntentFromEvent(event);
 		alarmManager.cancel(mIntent);
 		mIntent.cancel();
-		alarmQueue.remove(event.alarm);
+		alarmQueue.remove(event.getAlarm());
 		updateNotification();
 	}
 	
 	public void updateAlarm(Event event) {
-		if (event.alarm.getNextOccurrence() != null) {
+		if (event.getAlarm().getNextOccurrence() != null) {
 			createAlarm(event);
 		} else {
 			deleteAlarm(event);
@@ -170,7 +170,7 @@ public class AlarmService extends Service {
 		Iterator<EventAlarm> iterator = alarmQueue.iterator();
 		while(iterator.hasNext()) {
 			EventAlarm nextAlarm = iterator.next();
-			if (nextAlarm.event.id == event.id) {
+			if (nextAlarm.event.getId() == event.getId()) {
 				iterator.remove();
 				PendingIntent mIntent = getPendingIntentFromEvent(event);
 				alarmManager.cancel(mIntent);
@@ -181,7 +181,7 @@ public class AlarmService extends Service {
 	}
 	
 	public boolean existAlarm(Event event) {
-		return PendingIntent.getBroadcast(this, event.id, getIntentFromEvent(event), PendingIntent.FLAG_NO_CREATE) != null;
+		return PendingIntent.getBroadcast(this, event.getId(), getIntentFromEvent(event), PendingIntent.FLAG_NO_CREATE) != null;
 	}
 	
 	public EventAlarm getNextAlarm() {
@@ -194,7 +194,7 @@ public class AlarmService extends Service {
 		Vector<Event> events = db.searchEventsWithAlarm();
 		Date today = TimetableUtils.getCurrentTime();
 		for (Event event : events) {
-			EventAlarm alarm = event.alarm;
+			EventAlarm alarm = event.getAlarm();
 			if (alarm.getNextOccurrence(today) != null) {
 				TimetableLogger.error("Creating alarm.");
 				createAlarm(event);
@@ -275,7 +275,7 @@ public class AlarmService extends Service {
 				TimetableLogger.error("AlarmService.onReceive: unable to create event from received data. " + e.getMessage());
 				return;
 			}
-			TimetableLogger.log("AlarmService.onReceive: action " + action + " received with event " + event.name + ", id " + Integer.toString(event.id));
+			TimetableLogger.log("AlarmService.onReceive: action " + action + " received with event " + event.getName() + ", id " + Integer.toString(event.getId()));
 			
 			if (action.equals(AlarmService.ACTION_ALARM_FIRED)) {
 				Intent alarmDialogIntent = new Intent(context, AlarmDialogActivity.class);

@@ -152,7 +152,7 @@ public class EventDayViewActivity extends Activity {
 	    switch (item.getItemId()) {
 	        case R.id.action_add_event:
 	            Intent eventAddIntent = new Intent(this, EventAddActivity.class);
-	            eventAddIntent.putExtra(EventAddActivity.INTENT_EXTRA_DATE, EventAddActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
+	            eventAddIntent.putExtra(EventAddActivity.EXTRA_DATE, EventAddActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
 	            startActivity(eventAddIntent);
 	        	return true;
 	        case R.id.action_view_today:
@@ -173,8 +173,9 @@ public class EventDayViewActivity extends Activity {
 		try {
 			String idString = ((TextView) (((RelativeLayout) v).getChildAt(0))).getText().toString();
 			Intent eventEditIntent = new Intent(this, EventEditActivity.class);
-			eventEditIntent.putExtra("event_id", Integer.parseInt(idString));
-			eventEditIntent.putExtra("date", EventEditActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
+			eventEditIntent.putExtra(EventEditActivity.EXTRA_EVENT_ID, Integer.parseInt(idString));
+			//TODO: put date's millis into extra, instead of formatting and then parsing date string 
+			eventEditIntent.putExtra(EventEditActivity.EXTRA_DATE, EventEditActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
 			startActivity(eventEditIntent);
 		} catch (Exception e) {
 			TimetableLogger.error("EventDayVeiwActivity.onEventViewClick: " + e.toString());

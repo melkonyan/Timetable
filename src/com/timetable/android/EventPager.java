@@ -131,7 +131,7 @@ public class EventPager extends ViewPager {
 			
 			LinearLayout internalLayout = new LinearLayout(activity); 
 			internalLayout.setOrientation(LinearLayout.VERTICAL);
-			internalLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+			internalLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 			
 			boolean hasEventsToday = false;
 			
@@ -140,7 +140,7 @@ public class EventPager extends ViewPager {
 					continue;
 				}
 				EventView eventView = new EventView(EventPager.this.activity, event);
-				internalLayout.addView(eventView);and
+				internalLayout.addView(eventView);
 				hasEventsToday = true;
 			}
 			if (!hasEventsToday) {

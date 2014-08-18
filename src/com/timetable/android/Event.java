@@ -244,6 +244,10 @@ public class Event {
 		endTime = DateUtils.getDateFromString(timeFormat, endTimeString);
 	}
 	
+	public void deleteEndTime() {
+		endTime = null;
+	}
+	
 	/*
 	 * Return true, if device should be muted during event.
 	 */
@@ -270,6 +274,10 @@ public class Event {
 		}
 	}
 
+	public void deleteAlarm() {
+		alarm = null;
+	}
+	
 	public EventPeriod getPeriod() {
 		return period;
 	}

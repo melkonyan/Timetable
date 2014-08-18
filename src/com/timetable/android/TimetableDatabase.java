@@ -24,10 +24,6 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 	
 	private static final SimpleDateFormat dateFormat = DateFormatFactory.getFormat("yyyy-MM-dd");
 	
-	private static final SimpleDateFormat timeFormat = DateFormatFactory.getLongTimeFormat();
-	
-	private static final SimpleDateFormat dateTimeFormat = DateFormatFactory.getFormat("yyyy-MM-dd HH:mm:ss");
-	
 	private SQLiteDatabase dbRead;
 	
 	private SQLiteDatabase dbWrite;

@@ -17,7 +17,7 @@ import android.os.Vibrator;
 /*
  * Service, that mutes device when appropriate event is started.
  */
-public class EventMuter extends Service {
+public class DeviceMuteService extends Service {
 
 	
 	private static final long VIBRATE_DURATION_MILLIS = 500;
@@ -32,7 +32,7 @@ public class EventMuter extends Service {
 
 		@Override
 		public int compare(Event lhs, Event rhs) {
-			return lhs.id - rhs.id;
+			return lhs.getId() - rhs.getId();
 		}
 	});
 	
@@ -45,7 +45,7 @@ public class EventMuter extends Service {
 	@Override 
 	public void onCreate() {
 		super.onCreate();
-		TimetableLogger.log("EventMuter: service is created.");
+		TimetableLogger.log("DeviceMuteService: service is created.");
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		mReceiver = new TaskReceiver();
@@ -59,14 +59,14 @@ public class EventMuter extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-		TimetableLogger.log("EventMuter: service is started.");
+		TimetableLogger.log("DeviceMuteService: service is started.");
 		return Service.START_STICKY; 
 	}
 	
 	@Override
 	public void onDestroy () {
 		super.onDestroy();
-		TimetableLogger.log("EventMuter.onDestroy: service is destroyed.");
+		TimetableLogger.log("DeviceMuteService.onDestroy: service is destroyed.");
 		unregisterReceiver(mReceiver);
 	}
 	
@@ -75,13 +75,13 @@ public class EventMuter extends Service {
 	}
 	
 	private void muteDevice() {
-		TimetableLogger.log("EventMuter.muteDevice: try to mute device.");
+		TimetableLogger.log("DeviceMuteService.muteDevice: try to mute device.");
 		audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 		vibrate();
 	}
 	
 	private void unmuteDevice() {
-		TimetableLogger.log("EventMuter.unmuteDevice: try to unmute device.");
+		TimetableLogger.log("DeviceMuteService.unmuteDevice: try to unmute device.");
 		audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 		vibrate();
 	}
@@ -98,7 +98,7 @@ public class EventMuter extends Service {
 			
 			Bundle extras = intent.getExtras();
 			if (extras == null) {
-				TimetableLogger.error("EventMuter.TaskReceiver.onReceive: intent with no data is received");
+				TimetableLogger.error("DeviceMuteService.TaskReceiver.onReceive: intent with no data is received");
 				return;
 			}
 			
@@ -108,19 +108,19 @@ public class EventMuter extends Service {
 			try {
 				event = new Event(eventData);
 			} catch (Exception e) {
-				TimetableLogger.error("EventMuter.TaskReceiver.onReceive: unable to parse event. " + e.getMessage());
+				TimetableLogger.error("DeviceMuteService.TaskReceiver.onReceive: unable to parse event. " + e.getMessage());
 				return;
 			}
-			TimetableLogger.log("EventMuter.TaskReceiver: action " + action + " received with event " + event.name + ", id " + Integer.toString(event.id));
+			TimetableLogger.log("DeviceMuteService.TaskReceiver: action " + action + " received with event " + event.getName() + ", id " + Integer.toString(event.getId()));
 			
-			if (action.equals(BroadcastActions.ACTION_EVENT_STARTED) && event.muteDevice && !currentEvents.contains(event)) {
+			if (action.equals(BroadcastActions.ACTION_EVENT_STARTED) && event.mutesDevice() && !currentEvents.contains(event)) {
 				if (currentEvents.isEmpty()) {
 					muteDevice();
 				}
 				currentEvents.add(event);
-			} else if (action.equals(BroadcastActions.ACTION_EVENT_ENDED) && event.muteDevice && currentEvents.contains(event)
+			} else if (action.equals(BroadcastActions.ACTION_EVENT_ENDED) && event.mutesDevice() && currentEvents.contains(event)
 						//event is updated
-						|| action.equals(BroadcastActions.ACTION_EVENT_STARTED) && currentEvents.contains(event) && !event.muteDevice) {
+						|| action.equals(BroadcastActions.ACTION_EVENT_STARTED) && currentEvents.contains(event) && !event.mutesDevice()) {
 				currentEvents.remove(event);
 				if (currentEvents.isEmpty()) {
 					unmuteDevice();
