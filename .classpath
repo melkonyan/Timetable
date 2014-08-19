@@ -7,5 +7,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry exported="true" kind="lib" path="acra-4.5.0.jar"/>
+	<classpathentry kind="lib" path="/HoloEverywhere Addon Preferences/bin/holoeverywhere addon preferences.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

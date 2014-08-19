@@ -94,12 +94,6 @@ public class EventDayViewActivity extends Activity {
 		
 		//TimetableDatabase.getInstance(this).clear();
 		
-		//enable debugging
-		TimetableLogger.debugging = true;
-		
-		//send broadcast, that application is started.
-		sendBroadcast(new Intent(BroadcastActions.ACTION_APP_STARTED));
-		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
 		setEventPager(new EventPager(this, TimetableUtils.getCurrentTime()));
 		DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {

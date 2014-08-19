@@ -1,9 +1,13 @@
 package com.timetable.android;
 
+import org.acra.*;
+import org.acra.annotation.ReportsCrashes;
 import org.holoeverywhere.app.Application;
 
+import android.content.Intent;
 
-/*@ReportsCrashes(
+
+@ReportsCrashes(
         formKey = "", // This is required for backward compatibility but not used
         mode = ReportingInteractionMode.SILENT,
         resToastText = R.string.event_add_date,
@@ -11,16 +15,25 @@ import org.holoeverywhere.app.Application;
         reportType = org.acra.sender.HttpSender.Type.JSON,
         formUri = "http://timetable.iriscouch.com/acra-logs/_design/acra-storage/_update/report",
         formUriBasicAuthLogin = "acro_reporter",
-        formUriBasicAuthPassword = "Melkonyan"
-    )
-*/
+        formUriBasicAuthPassword = "Melkonyan",
+        logcatArguments = { "-t", "100", "-v", "time", "-s", "Timetable"}
+		)
+
 public class TimetableApp  extends Application {
 	
 	@Override
 	public void onCreate() {
 		 super.onCreate();
-		 //ACRA.init(this);
-		 TimetableLogger.log("TimetableApp.onCreate: Application is created. ACRA is initialized");
+		//enable debugging
+		TimetableLogger.debugging = true;
+			
+		//send broadcast, that application is started.
+		sendBroadcast(new Intent(BroadcastActions.ACTION_APP_STARTED));
+			
+		//initialize acra
+		ACRA.init(this);
+		TimetableLogger.log("TimetableApp.onCreate: Application is created. ACRA is initialized");
 	}
+
 
 }

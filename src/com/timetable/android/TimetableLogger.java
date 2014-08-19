@@ -1,5 +1,7 @@
 package com.timetable.android;
 
+import org.acra.ACRA;
+
 import android.util.Log;
 
 /*
@@ -25,6 +27,9 @@ public class TimetableLogger {
 	public static void error(String message) {
 		if (debugging && message != null) {
 			Log.e(logTag, message);
+			log("TimetableLogger: error deteced. Sending report.");
+			ACRA.getErrorReporter().handleException(null);
+			
 		}
 	}
 }
