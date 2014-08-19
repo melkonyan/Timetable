@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.TextView;
 
+import com.timetable.android.utils.DateFormatFactory;
+
 import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,7 +18,7 @@ import android.widget.RelativeLayout;
  */
 public class EventView extends RelativeLayout {
 
-	public static final SimpleDateFormat START_TIME_FORMAT = new SimpleDateFormat("HH:mm");
+	public static final SimpleDateFormat START_TIME_FORMAT = DateFormatFactory.getFormat("HH:mm");
 	
 	
 	public Event event;

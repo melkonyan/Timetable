@@ -3,15 +3,12 @@ package com.timetable.android.uitests;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Vector;
 
 import org.holoeverywhere.widget.EditText;
 import org.holoeverywhere.widget.Spinner;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.RenamingDelegatingContext;
 import android.view.View;
 
 import com.robotium.solo.Solo;
@@ -19,12 +16,9 @@ import com.timetable.android.Event;
 import com.timetable.android.EventPeriod;
 import com.timetable.android.EventView;
 import com.timetable.android.R;
-import com.timetable.android.TimetableDatabase;
 import com.timetable.android.activities.EventAddActivity;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.activities.EventEditActivity;
-import com.timetable.android.utils.FakeTimeProvider;
-import com.timetable.android.utils.TimetableUtils;
 
 public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventDayViewActivity> {
 
@@ -32,7 +26,6 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 	
 	private Solo solo;
 	
-	private Date currentDate;
 	
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
 
@@ -73,8 +66,6 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 	}
 	
 	public void setUp() throws ParseException {
-		currentDate = DATE_FORMAT.parse("7.07.2044");
-		
 		solo = new Solo(getInstrumentation());
 		mResources = getActivity().getResources();
 		
@@ -109,10 +100,11 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		
 		Event event = new Event.Builder()
 						.setName("event1")
-						.setDate("07.07.2044")
+						.setDate("07.07.2024")
 						.setStartTime("20:07")
+						.setEndTime("21:07")
 						.setPeriodType(EventPeriod.DAILY)
-						.setAlarmTime("10.08.2044 14:00")
+						.setAlarmTime("10.08.2024 14:00")
 						.build();
 		
 		View eventAddButton = solo.getView(R.id.action_add_event);
@@ -134,7 +126,8 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		solo.enterText((EditText) solo.getView(R.id.event_add_name_val), event.getName());
 		setEditText(R.id.event_add_date_val, DATE_FORMAT.format(event.getDate()));
 		setEditText(R.id.event_add_start_time_val, TIME_FORMAT.format(event.getStartTime()));
-		setEditText(R.id.event_add_end_time_val, "");
+		setEditText(R.id.event_add_end_time_val, TIME_FORMAT.format(event.getEndTime()));
+		
 		//solo.clickOnView(alarmAddButton);
 		//setEditText(R.id.event_alarm_time_val, EventAlarm.timeFormat.format(event.getAlarm().time));
 		//TODO: remove ordinal

@@ -52,6 +52,12 @@ public class EventTestCase extends TestCase {
 		assertEquals(event, new Event(eventData));
 	}
 	
+	public void testSetStartTime() {
+		Event event = new Event();
+		event.setStartTime(0);
+		assertEquals("00:00", event.getStartTimeString());
+	}
+	
 	public void testIsException() throws ParseException {
 		Event event = new Event.Builder().build();
 		Date exception = dateFormat.parse("31.07.2014");

@@ -423,7 +423,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
      * Return all events, that have not finished. 
      */
     public Vector<Event> getAllEvents() {
-    	Cursor cursor = dbRead.rawQuery("SELECT * FROM Events", new String [] {});
+    	Cursor cursor = dbRead.rawQuery("SELECT * FROM Events order by evt_start_time ASC", new String [] {});
     	Vector<Event> events = new Vector<Event>(); 
     	if (cursor.getCount() == 0) {
     		cursor.close();

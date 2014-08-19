@@ -40,6 +40,8 @@ public class EventDayViewActivity extends Activity {
 	
 	public static final SimpleDateFormat EXTRAS_DATE_FORMAT = DateFormatFactory.getDateFormat();
 	
+	public static final int EVENT_ADD_ACTIVITY_REQUEST_CODE = 10001;
+	
 	private LinearLayout eventLayout;
 	
 	private EventPager eventPager;
@@ -133,6 +135,19 @@ public class EventDayViewActivity extends Activity {
 	}
 	
 	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == EVENT_ADD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+			long dateMillis = data.getLongExtra(EXTRAS_DATE, -1);
+			if (dateMillis == -1) {
+				TimetableLogger.error("EventDayViewActivity.onActivityResult: Invalid date returned.");
+				return;
+			}
+			Date date = new Date(dateMillis);
+			setEventPager(new EventPager(this, date));
+		}
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_event_view, menu);
@@ -146,7 +161,7 @@ public class EventDayViewActivity extends Activity {
 	        case R.id.action_add_event:
 	            Intent eventAddIntent = new Intent(this, EventAddActivity.class);
 	            eventAddIntent.putExtra(EventAddActivity.EXTRA_DATE, EventAddActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
-	            startActivity(eventAddIntent);
+	            startActivityForResult(eventAddIntent, EVENT_ADD_ACTIVITY_REQUEST_CODE);
 	        	return true;
 	        case R.id.action_view_today:
 	        	setEventPager(new EventPager(this, TimetableUtils.getCurrentTime()));

@@ -21,6 +21,7 @@ import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 import org.holoeverywhere.widget.datetimepicker.time.RadialPickerLayout;
 import org.holoeverywhere.widget.datetimepicker.time.TimePickerDialog;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -56,6 +57,7 @@ import com.timetable.android.utils.DateUtils;
  * Activity that provides user interface to add event.
  * If Intent has extra field 'date',that contains date in format 'dd.MM.yyyy HH:mm',
  * this values will be set to appropriate fields.
+ * When user successfully saves event, activity finishes and returns event's date.
  */
 public class EventAddActivity extends Activity {
 	
@@ -74,6 +76,9 @@ public class EventAddActivity extends Activity {
 	
 	private String eventPeriodWeekDayNames [];
 
+	//event, that is been added.
+	private Event event;
+	
 	private boolean isSetEventAlarm = false;
 	
 	//Initial event date and time
@@ -500,6 +505,9 @@ public class EventAddActivity extends Activity {
 	        	TimetableLogger.log("Try to save event.");
 	        	try {
 	        		saveEvent();
+	        		Intent resultData = new Intent();
+	        		resultData.putExtra(EventDayViewActivity.EXTRAS_DATE, event.getDateMillis());
+	        		setResult(RESULT_OK, resultData);
 	        		finish();
 	        	} catch (IllegalEventNameException e) {
 	        		eventNameVal.requestFocus();
@@ -806,7 +814,7 @@ public class EventAddActivity extends Activity {
 	  *  save event to database
 	  */
 	public void saveEvent() throws IllegalEventDataException {
-		Event event = getEvent();
+		event = getEvent();
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
 		event = db.insertEvent(event);
 		if (event == null) {

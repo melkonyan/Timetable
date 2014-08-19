@@ -47,6 +47,9 @@ public class Event {
 	
 	public static final String BUNDLE_EVENT_EXCEPTIONS = "evt_exceptions";
 	
+	//number of milliseconds, that matches null time;
+	public static final long NULL_TIME_MILLIS = -1;
+	
 	public static final SimpleDateFormat dateFormat = DateFormatFactory.getDateFormat();
 	
 	public static final SimpleDateFormat timeFormat = DateFormatFactory.getTimeFormat();
@@ -197,7 +200,7 @@ public class Event {
 	}
 	
 	public long getStartTimeMillis() {
-		return hasStartTime() ? startTime.getTime() : 0;
+		return hasStartTime() ? startTime.getTime() : NULL_TIME_MILLIS;
 	}
 	
 	public String getStartTimeString() {
@@ -209,7 +212,7 @@ public class Event {
 	}
 
 	public void setStartTime(long millis) {
-		startTime = millis == 0 ? null : new Date(millis);
+		startTime = millis == NULL_TIME_MILLIS ? null : new Date(millis);
 	}
 	
 	public void setStartTime(String startTimeString) throws ParseException {
@@ -225,7 +228,7 @@ public class Event {
 	}
 
 	public long getEndTimeMillis() {
-		return hasEndTime() ? endTime.getTime() : 0;
+		return hasEndTime() ? endTime.getTime() : NULL_TIME_MILLIS;
 	}
 	
 	public String getEndTimeString() {
@@ -237,7 +240,7 @@ public class Event {
 	}
 	
 	public void setEndTime(long millis) {
-		endTime = millis == 0 ? null : new Date(millis);
+		endTime = millis == NULL_TIME_MILLIS ? null : new Date(millis);
 	}
 	
 	public void setEndTime(String endTimeString) throws ParseException {
