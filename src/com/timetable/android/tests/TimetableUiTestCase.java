@@ -7,10 +7,8 @@ import java.util.Date;
 import org.holoeverywhere.widget.EditText;
 import org.holoeverywhere.widget.Spinner;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.RenamingDelegatingContext;
 import android.view.View;
 
 import com.robotium.solo.Solo;
@@ -22,7 +20,6 @@ import com.timetable.android.TimetableDatabase;
 import com.timetable.android.activities.EventAddActivity;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.activities.EventEditActivity;
-import com.timetable.android.alarm.EventAlarm;
 import com.timetable.android.utils.FakeTimeProvider;
 import com.timetable.android.utils.TimetableUtils;
 
