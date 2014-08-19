@@ -129,9 +129,15 @@ public class EventDayViewActivity extends Activity {
 
 	@Override
 	public void onRestart() {
-		TimetableLogger.log("EventDayViewAcwativity was restarted.");
 		super.onRestart();
+		TimetableLogger.log("EventDayViewAcwativity was restarted.");
 		getEventPager().update();
+	}
+	
+	@Override 
+	public void onDestroy() {
+		super.onDestroy();
+		TimetableLogger.sendReport();
 	}
 	
 	@Override
@@ -146,6 +152,7 @@ public class EventDayViewActivity extends Activity {
 			setEventPager(new EventPager(this, date));
 		}
 	}
+	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

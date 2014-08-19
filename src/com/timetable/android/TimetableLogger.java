@@ -10,9 +10,14 @@ import android.util.Log;
 public class TimetableLogger {
 	
 	public static final String logTag = "Timetable";
+	
+	//If set to false, logger will not write anything to logcat.
 	public static boolean debugging = false;
 	
-	public static void verbose(String message) {
+	//If set to true, logger habe logged error messages.
+	private static boolean errorFound = false;
+	
+			public static void verbose(String message) {
 		if (debugging && message != null) {
 			Log.v(logTag, message);
 		}
@@ -27,9 +32,13 @@ public class TimetableLogger {
 	public static void error(String message) {
 		if (debugging && message != null) {
 			Log.e(logTag, message);
-			log("TimetableLogger: error deteced. Sending report.");
+			errorFound = true;
+		}
+	}
+	
+	public static void sendReport() {
+		if (debugging && errorFound) {
 			ACRA.getErrorReporter().handleException(null);
-			
 		}
 	}
 }
