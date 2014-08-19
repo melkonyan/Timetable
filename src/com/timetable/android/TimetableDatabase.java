@@ -31,13 +31,20 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 	private static TimetableDatabase mInstance;
 	
 	public static TimetableDatabase getInstance(Context context) {
-		if (mInstance == null) {
+		return getInstance(context, false);
+	}
+	
+	/*
+	 * Is needed for testing.
+	 */
+	public static TimetableDatabase getInstance(Context context, boolean updateCurrent) {
+		if (updateCurrent || mInstance == null) {
 			mInstance = new TimetableDatabase(context);
+			TimetableLogger.log("TimetableDatabase.getInstance: creating new instance.");
 		}
-		
 		return mInstance;
 	}
-
+	
 	private TimetableDatabase(Context context) {
 		super(context, DB_NAME, null, 3);
 		dbRead = this.getReadableDatabase();

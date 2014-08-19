@@ -1,4 +1,4 @@
-package com.timetable.android.tests;
+package com.timetable.android.uitests;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

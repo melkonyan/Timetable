@@ -130,7 +130,6 @@ public class EventService extends Service {
 			TimetableLogger.log("EventService.onReceive: received action " + action);
 			alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 			Bundle eventData = intent.getExtras();
-			TimetableLogger.error(eventData.toString());
 			Event event;
 			try {
 				event = new Event(eventData);

@@ -1,5 +1,7 @@
 package com.timetable.android.tests;
 
+import com.timetable.android.uitests.EventAddActivityTestCase;
+
 import junit.framework.TestSuite;
 import android.test.InstrumentationTestRunner;
 import android.test.InstrumentationTestSuite;

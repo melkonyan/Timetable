@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import com.timetable.android.BroadcastActions;
 import com.timetable.android.EventPager;
 import com.timetable.android.R;
 import com.timetable.android.TimetableLogger;
@@ -114,7 +113,7 @@ public class EventDayViewActivity extends Activity {
 		
 		Date startDate = getExtraDate();
 		if (startDate != null) {
-			TimetableLogger.error("Start EventDayViewActivity with extra date: " + startDate.toString());
+			TimetableLogger.log("Start EventDayViewActivity with extra date: " + startDate.toString());
 			setEventPager(new EventPager(this,startDate));
 			//eventPager.goToDate(startDate);
 		}

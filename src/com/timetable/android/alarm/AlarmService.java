@@ -196,7 +196,6 @@ public class AlarmService extends Service {
 		for (Event event : events) {
 			EventAlarm alarm = event.getAlarm();
 			if (alarm.getNextOccurrence(today) != null) {
-				TimetableLogger.error("Creating alarm.");
 				createAlarm(event);
 			}
 		}

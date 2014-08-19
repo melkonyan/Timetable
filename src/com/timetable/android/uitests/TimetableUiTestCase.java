@@ -1,14 +1,17 @@
-package com.timetable.android.tests;
+package com.timetable.android.uitests;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Vector;
 
 import org.holoeverywhere.widget.EditText;
 import org.holoeverywhere.widget.Spinner;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.RenamingDelegatingContext;
 import android.view.View;
 
 import com.robotium.solo.Solo;
@@ -37,6 +40,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 	
 	private Resources mResources;
 		
+
 	
 	public TimetableUiTestCase() {
 		super(EventDayViewActivity.class);
@@ -69,12 +73,9 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 	}
 	
 	public void setUp() throws ParseException {
-		currentDate = DATE_FORMAT.parse("7.07.2014");
-		//Context mContext = new RenamingDelegatingContext(getActivity(), "TimetableDatabaseTestCase_");
+		currentDate = DATE_FORMAT.parse("7.07.2044");
 		
-		TimetableUtils.setTimeProvider(new FakeTimeProvider(currentDate));
-		
-		solo = new Solo(getInstrumentation(), getActivity());
+		solo = new Solo(getInstrumentation());
 		mResources = getActivity().getResources();
 		
 	}
@@ -108,12 +109,11 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		
 		Event event = new Event.Builder()
 						.setName("event1")
-						.setDate("07.07.2014")
+						.setDate("07.07.2044")
 						.setStartTime("20:07")
 						.setPeriodType(EventPeriod.DAILY)
 						.setAlarmTime("10.08.2044 14:00")
 						.build();
-		
 		
 		View eventAddButton = solo.getView(R.id.action_add_event);
 		solo.assertCurrentActivity("Wrong Activity", EventDayViewActivity.class);
@@ -196,6 +196,5 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 	
 	
 	public void tearDown() {
-		TimetableDatabase.getInstance(getActivity()).clear();
 	}
 }

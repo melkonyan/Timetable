@@ -104,8 +104,6 @@ public class EventPager extends ViewPager {
 		
 		private void loadEvents() {
 			events = db.getAllEvents();
-			TimetableLogger.error("" + events.size());
-			
 		}
 		
 		@Override
