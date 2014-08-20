@@ -14,7 +14,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import com.timetable.android.utils.TimetableUtils;
+import com.timetable.android.utils.Utils;
 
 /*
  * Class, that receives such actions as ACTION_EVENT_ADDED, ACTION_EVENT_UPDATED, ACTION_EVENT_DELETED 
@@ -76,7 +76,7 @@ public class EventService extends Service {
 	
 	private void createEventStartedAlarm(Context context, Event event) {
 		Date nextStartTime;
-		Date currentTime = TimetableUtils.getCurrentTime();
+		Date currentTime = Utils.getCurrDateTime();
 		if (event.isCurrent(currentTime)) {
 			nextStartTime = currentTime;
 		}
@@ -96,7 +96,7 @@ public class EventService extends Service {
 	}
 	
 	private void createEventEndedAlarm(Context context, Event event) {
-		Date nextEndTime = event.getNextEndTime(TimetableUtils.getCurrentTime());
+		Date nextEndTime = event.getNextEndTime(Utils.getCurrDateTime());
 		if (nextEndTime == null) {
 			TimetableLogger.log("EventService.createEventEndedAlarm: event already finished.");
 			return;
@@ -108,7 +108,7 @@ public class EventService extends Service {
 	}
 	
 	private void updateAlarm(Context context, Event event) {
-		if (event.getNextStartTime(TimetableUtils.getCurrentTime()) != null || event.isCurrent(TimetableUtils.getCurrentTime())) {
+		if (event.getNextStartTime(Utils.getCurrDateTime()) != null || event.isCurrent(Utils.getCurrDateTime())) {
 			createEventStartedAlarm(context, event);
 			createEventEndedAlarm(context, event);
 		} else {
@@ -143,12 +143,12 @@ public class EventService extends Service {
 				createEventEndedAlarm(context, event);
 			} else if (BroadcastActions.ACTION_EVENT_UPDATED.equals(action)) {
 				updateAlarm(context, event);
-				if (!event.isCurrent(TimetableUtils.getCurrentTime())) {
+				if (!event.isCurrent(Utils.getCurrDateTime())) {
 					EventBroadcastSender.sendEventEndedBroadcast(context, eventData);
 				}
 			} else if (BroadcastActions.ACTION_EVENT_DELETED.equals(action)) {
 				deleteAlarm(context, event);
-				if (event.isCurrent(TimetableUtils.getCurrentTime())) {
+				if (event.isCurrent(Utils.getCurrDateTime())) {
 					EventBroadcastSender.sendEventEndedBroadcast(context, eventData);
 				}
 			}

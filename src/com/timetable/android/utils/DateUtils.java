@@ -7,9 +7,9 @@ import java.util.Date;
 
 public class DateUtils {
 	
-	public static final long DAY_LONG = 1000*60*60*24;
+	public static final long DAY_MILLIS = 1000*60*60*24;
 	
-	public static final long WEEK_LONG = 1000*60*60*24*7;
+	public static final long WEEK_MILLIS = 1000*60*60*24*7;
 	
 	public static final int BEFORE = -1;
 	
@@ -34,12 +34,18 @@ public class DateUtils {
 		return format.parse(dateString);
 	}
 	
+	public static Calendar extractDate(Calendar dateTime) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(extractDate(dateTime.getTime()));
+		return cal;
+	}
+	
 	/*
 	 * Return new date with hours, minutes and second set to zero.
 	 */
-	public static Date extractDate(Date date) {
+	public static Date extractDate(Date dateTime) {
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
+		cal.setTime(dateTime);
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
@@ -47,12 +53,18 @@ public class DateUtils {
 		return cal.getTime();
 	}
 	
+	public static Calendar extractTime(Calendar dateTime) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(extractTime(dateTime.getTime()));
+		return cal;
+	}
+	
 	/*
 	 * Return new date with date set to zero.
 	 */
-	public static Date extractTime(Date date) {
+	public static Date extractTime(Date dateTime) {
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
+		cal.setTime(dateTime);
 		cal.set(Calendar.YEAR, 1970);
 		cal.set(Calendar.DAY_OF_YEAR, 1);
 		return cal.getTime();

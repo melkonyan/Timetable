@@ -6,7 +6,7 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import com.timetable.android.utils.DateUtils;
-import com.timetable.android.utils.TimetableUtils;
+import com.timetable.android.utils.Utils;
 
 public class TimetableUtilsTestCase extends TestCase {
 	
@@ -17,17 +17,17 @@ public class TimetableUtilsTestCase extends TestCase {
 		String t1 = "String1";
 		String t2 = t1;
 		
-		assertEquals(true, TimetableUtils.areEqualOrNulls(null, null));
+		assertEquals(true, Utils.areEqualOrNulls(null, null));
 
-		assertEquals(false, TimetableUtils.areEqualOrNulls(null, t1));
+		assertEquals(false, Utils.areEqualOrNulls(null, t1));
 		
-		assertEquals(false, TimetableUtils.areEqualOrNulls(t1, null));
+		assertEquals(false, Utils.areEqualOrNulls(t1, null));
 	
-		assertEquals(true, TimetableUtils.areEqualOrNulls(t1, t2));
+		assertEquals(true, Utils.areEqualOrNulls(t1, t2));
 	
 		t2 = "String2";
 		
-		assertEquals(false, TimetableUtils.areEqualOrNulls(t1, t2));
+		assertEquals(false, Utils.areEqualOrNulls(t1, t2));
 	}
 	
 	public void testAreSameDates() {

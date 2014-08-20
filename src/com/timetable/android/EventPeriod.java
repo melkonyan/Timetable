@@ -9,7 +9,7 @@ import android.os.Bundle;
 
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
-import com.timetable.android.utils.TimetableUtils;
+import com.timetable.android.utils.Utils;
 
 /*
  * Class, that contains information about event period and methods to work with it.
@@ -299,7 +299,7 @@ public class EventPeriod {
 	    if (this.type != that.type || this.id != that.id ||
 	    	this.type != Type.NONE && 
 	    	(this.interval != that.interval || 
-	    		!TimetableUtils.areEqualOrNulls(this.endDate, that.endDate) || 
+	    		!Utils.areEqualOrNulls(this.endDate, that.endDate) || 
 	    		this.numberOfRepeats != that.numberOfRepeats) ||
 	    	this.type == Type.WEEKLY && this.getWeekOccurrencesInt() != that.getWeekOccurrencesInt()) {
 	    	

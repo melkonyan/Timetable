@@ -12,7 +12,7 @@ import android.os.Bundle;
 import com.timetable.android.alarm.EventAlarm;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
-import com.timetable.android.utils.TimetableUtils;
+import com.timetable.android.utils.Utils;
 
 /*
  * Class, that contains all information about event and methods to work with it.
@@ -376,14 +376,14 @@ public class Event {
 	 * Return true, if event has period on current date.
 	 */
 	public boolean isToday() {
-		return isToday(TimetableUtils.getCurrentTime());
+		return isToday(Utils.getCurrDateTime());
 	}
 	
 	/*
 	 * Return true, if event is taking place right now.
 	 */
 	public boolean isCurrent() {
-		return isCurrent(TimetableUtils.getCurrentTime());
+		return isCurrent(Utils.getCurrDateTime());
 	}
 	
 	/* 
@@ -399,7 +399,7 @@ public class Event {
 	 * Return nearest event's occurrence, that is later than current date.
 	 */
 	public Date getNextOccurrence() {
-		return getNextOccurrence(TimetableUtils.getCurrentTime());
+		return getNextOccurrence(Utils.getCurrDateTime());
 	}
 	
 	/*
@@ -425,7 +425,7 @@ public class Event {
 	 * Return nearest event's start time, that is later than current time.
 	 */
 	public Date getNextStartTime() {
-		return getNextStartTime(TimetableUtils.getCurrentTime());
+		return getNextStartTime(Utils.getCurrDateTime());
 	}
 	
 	/*
@@ -448,7 +448,7 @@ public class Event {
 	}
 	
 	public Date getNexEndTime() {
-		return getNextEndTime(TimetableUtils.getCurrentTime());
+		return getNextEndTime(Utils.getCurrDateTime());
 	}
 	
 	/*
@@ -496,15 +496,15 @@ public class Event {
 	    Event that = (Event) other;
 	    return this.getId() == that.getId()
 	    	&& this.mutesDevice() == that.mutesDevice()
-	    	&& TimetableUtils.areEqualOrNulls(this.getName(), that.getName())
-	        && TimetableUtils.areEqualOrNulls(this.getPlace(), that.getPlace())
-	        && TimetableUtils.areEqualOrNulls(this.getDate(), that.getDate())
-	        && TimetableUtils.areEqualOrNulls(this.getStartTime(), that.getStartTime())
-	        && TimetableUtils.areEqualOrNulls(this.getEndTime(), that.getEndTime())
-	        && TimetableUtils.areEqualOrNulls(this.getNote(), that.getNote())
-	        && TimetableUtils.areEqualOrNulls(this.getPeriod(), that.getPeriod())
-	        && TimetableUtils.areEqualOrNulls(this.getAlarm(), that.getAlarm())
-	    	&& TimetableUtils.areEqualOrNulls(this.getExceptions(), that.getExceptions());
+	    	&& Utils.areEqualOrNulls(this.getName(), that.getName())
+	        && Utils.areEqualOrNulls(this.getPlace(), that.getPlace())
+	        && Utils.areEqualOrNulls(this.getDate(), that.getDate())
+	        && Utils.areEqualOrNulls(this.getStartTime(), that.getStartTime())
+	        && Utils.areEqualOrNulls(this.getEndTime(), that.getEndTime())
+	        && Utils.areEqualOrNulls(this.getNote(), that.getNote())
+	        && Utils.areEqualOrNulls(this.getPeriod(), that.getPeriod())
+	        && Utils.areEqualOrNulls(this.getAlarm(), that.getAlarm())
+	    	&& Utils.areEqualOrNulls(this.getExceptions(), that.getExceptions());
 	    	
 	}
 	

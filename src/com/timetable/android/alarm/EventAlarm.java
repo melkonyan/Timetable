@@ -10,7 +10,7 @@ import com.timetable.android.Event;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
-import com.timetable.android.utils.TimetableUtils;
+import com.timetable.android.utils.Utils;
 
 /*
  * Class, that contains all alarm's data, and has method's to work with this data.
@@ -142,7 +142,7 @@ public class EventAlarm {
 	 * Get next occurrence of alarm for current date.
 	 */
 	public Date getNextOccurrence() {
-		return getNextOccurrence(TimetableUtils.getCurrentTime());
+		return getNextOccurrence(Utils.getCurrDateTime());
 	}
 	
 	/*
@@ -191,6 +191,6 @@ public class EventAlarm {
 	        return false;
 	    }
 	    EventAlarm that = (EventAlarm) other;
-	    return TimetableUtils.areEqualOrNulls(this.time, that.time) && this.type == that.type && this.id == that.id;
+	    return Utils.areEqualOrNulls(this.time, that.time) && this.type == that.type && this.id == that.id;
 	}
 }

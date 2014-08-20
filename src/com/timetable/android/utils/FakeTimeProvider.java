@@ -1,22 +1,31 @@
 package com.timetable.android.utils;
 
+import java.util.Calendar;
 import java.util.Date;
 
-public class FakeTimeProvider implements TimeProvider {
+public class FakeTimeProvider extends TimeProvider {
 
-		private Date fakeTime;
+		private Calendar fakeTime = Calendar.getInstance();
 		
 		public FakeTimeProvider(Date fakeTime) {
 			setTime(fakeTime);
 		}
 		
+		public FakeTimeProvider(Calendar fakeTime) {
+			setTime(fakeTime);
+		}
+		
 		@Override
-		public Date getCurrentTime() {
+		public Calendar getCurrDateTimeCal() {
 			return fakeTime;
 		}
 		
 		public void setTime(Date fakeTime) {
-			this.fakeTime = fakeTime;
+			this.fakeTime.setTime(fakeTime);
+		}
+		
+		public void setTime(Calendar fakeTime) {
+			this.fakeTime.setTime(fakeTime.getTime());
 		}
 	
 }

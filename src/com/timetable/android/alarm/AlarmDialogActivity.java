@@ -19,7 +19,7 @@ import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.activities.SettingsActivity;
-import com.timetable.android.utils.TimetableUtils;
+import com.timetable.android.utils.Utils;
 
 /*
  * Activity, that is created when alarm is fired. Contains the single button, that allows user to disable alarm.
@@ -129,7 +129,7 @@ public class AlarmDialogActivity extends Activity {
 	
 		Intent intent = new Intent(AlarmDialogActivity.this, EventDayViewActivity.class);
 		intent.putExtra(EventDayViewActivity.EXTRAS_DATE, 
-						EventDayViewActivity.EXTRAS_DATE_FORMAT.format(event.getAlarm().getEventOccurrence(TimetableUtils.getCurrentTime())));
+						EventDayViewActivity.EXTRAS_DATE_FORMAT.format(event.getAlarm().getEventOccurrence(Utils.getCurrDateTime())));
 		AlarmDialogActivity.this.startActivity(intent);
 	}
 	

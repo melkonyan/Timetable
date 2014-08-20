@@ -27,7 +27,7 @@ import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
-import com.timetable.android.utils.TimetableUtils;
+import com.timetable.android.utils.Utils;
 
 /*
  * Service, that creates alarm, that would be fired later.
@@ -60,7 +60,7 @@ public class AlarmService extends Service {
 
 		@Override
 		public int compare(EventAlarm alarm1, EventAlarm alarm2) {
-			Date today = TimetableUtils.getCurrentTime();
+			Date today = Utils.getCurrDateTime();
 			return alarm1.getNextOccurrence(today).compareTo(alarm2.getNextOccurrence(today));
 		}
 	}
@@ -117,9 +117,9 @@ public class AlarmService extends Service {
 		if (nextOccurrence == null) {
 			return;
 		}
-		if (nextOccurrence.compareTo(TimetableUtils.getCurrentTime()) <= 0) {
+		if (nextOccurrence.compareTo(Utils.getCurrDateTime()) <= 0) {
 			TimetableLogger.error("AlarmService.createAlarm: next alarm occurrence is before current time. \n Next alarm: " 
-									+ nextOccurrence.toString() + "\n current time: " + TimetableUtils.getCurrentTime().toString() 
+									+ nextOccurrence.toString() + "\n current time: " + Utils.getCurrDateTime().toString() 
 									+ "Event information: \n" + event.toString());
 			return;
 		}
@@ -192,7 +192,7 @@ public class AlarmService extends Service {
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
 		
 		Vector<Event> events = db.searchEventsWithAlarm();
-		Date today = TimetableUtils.getCurrentTime();
+		Date today = Utils.getCurrDateTime();
 		for (Event event : events) {
 			EventAlarm alarm = event.getAlarm();
 			if (alarm.getNextOccurrence(today) != null) {
@@ -204,7 +204,7 @@ public class AlarmService extends Service {
 	public Intent getNotificationIntent() {
 		Intent notificationIntent = new Intent(this, EventDayViewActivity.class);
 		if (getNextAlarm() != null) {
-			Date nextAlarmEventDate = getNextAlarm().getNextEventOccurrence(TimetableUtils.getCurrentTime());
+			Date nextAlarmEventDate = getNextAlarm().getNextEventOccurrence(Utils.getCurrDateTime());
 			notificationIntent.putExtra(EventDayViewActivity.EXTRAS_DATE, EventDayViewActivity.EXTRAS_DATE_FORMAT.format(nextAlarmEventDate));
 		}
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -223,7 +223,7 @@ public class AlarmService extends Service {
 		PendingIntent mIntent = getNotificationPendingIntent(); 
 		String nextAlarmString = "No alarms are set.";
 		if (getNextAlarm() != null ) {
-			Date nextAlarm = getNextAlarm().getNextOccurrence(TimetableUtils.getCurrentTime());
+			Date nextAlarm = getNextAlarm().getNextOccurrence(Utils.getCurrDateTime());
 			if (nextAlarm != null) {
 				nextAlarmString = NEXT_ALARM_NOTIFICATION_PREFIX + alarmTimeFormat.format(nextAlarm); 
 			}

@@ -51,6 +51,7 @@ import com.timetable.android.alarm.AlarmService;
 import com.timetable.android.alarm.EventAlarm;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
+import com.timetable.android.utils.Utils;
 
 
 /*
@@ -451,25 +452,24 @@ public class EventAddActivity extends Activity {
 	 * returns event's start time, that was set by default 
 	 */
 	public Calendar getInitStartTime() {
-		initEventStartTime = Calendar.getInstance();
-		initEventStartTime.setTime(initEventDate.getTime());
+		initEventStartTime = Utils.getCurrTimeCal();
 		initEventStartTime.add(Calendar.HOUR, 1);
 		initEventStartTime.set(Calendar.MINUTE, 0);
 		return initEventStartTime;
 	}
 	
 	public Calendar getInitEndTime() {
-		initEventEndTime = Calendar.getInstance();
-		initEventEndTime.setTime(getInitStartTime().getTime());
-		initEventEndTime.add(Calendar.HOUR, 1);
+		initEventEndTime = Utils.getCurrTimeCal();
+		initEventEndTime.set(Calendar.MINUTE, 0);
+		initEventEndTime.add(Calendar.HOUR, 2);
 		return initEventEndTime;
 	}
 	
 	
 	public Calendar getInitAlarmTime() {
-		Calendar initAlarmTime = Calendar.getInstance();
-		initAlarmTime.setTime(initEventDate.getTime());
+		Calendar initAlarmTime = Utils.getCurrDateTimeCal();
 		initAlarmTime.add(Calendar.HOUR, -1);
+		initAlarmTime.set(Calendar.MINUTE, 0);
 		return initAlarmTime;
 	}
 	

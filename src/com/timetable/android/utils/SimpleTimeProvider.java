@@ -1,11 +1,11 @@
 package com.timetable.android.utils;
 
-import java.util.Date;
+import java.util.Calendar;
 
-public class SimpleTimeProvider implements TimeProvider {
+public class SimpleTimeProvider extends TimeProvider {
 
-	public Date getCurrentTime() {
-		return new Date();
+	public Calendar getCurrDateTimeCal() {
+		return Calendar.getInstance();
 	}
-	
+
 }

@@ -25,7 +25,7 @@ import com.timetable.android.R;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
-import com.timetable.android.utils.TimetableUtils;
+import com.timetable.android.utils.Utils;
 
 
 /*
@@ -96,7 +96,7 @@ public class EventDayViewActivity extends Activity {
 		//TimetableDatabase.getInstance(this).clear();
 		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
-		setEventPager(new EventPager(this, TimetableUtils.getCurrentTime()));
+		setEventPager(new EventPager(this, Utils.getCurrDateTime()));
 		DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
 			@Override
@@ -171,8 +171,8 @@ public class EventDayViewActivity extends Activity {
 	            startActivityForResult(eventAddIntent, EVENT_ADD_ACTIVITY_REQUEST_CODE);
 	        	return true;
 	        case R.id.action_view_today:
-	        	setEventPager(new EventPager(this, TimetableUtils.getCurrentTime()));
-	        	//eventPager.goToDate(TimetableUtils.getCurrentTime());
+	        	setEventPager(new EventPager(this, Utils.getCurrDateTime()));
+	        	//eventPager.goToDate(Utils.getCurrentTime());
 	        	return true;
 	        case R.id.action_go_to_date:
 	        	datePickerDialog.show(getSupportFragmentManager());
@@ -214,7 +214,7 @@ public class EventDayViewActivity extends Activity {
 			
 			//update action bar
 			String dateString = ACTION_BAR_DATE_FORMAT.format(currentDate);
-			if (DateUtils.areSameDates(currentDate, TimetableUtils.getCurrentTime())) {
+			if (DateUtils.areSameDates(currentDate, Utils.getCurrDateTime())) {
 				dateString = getResources().getString(R.string.actionbar_date_today);
 			}
 			getSupportActionBar().setTitle(dateString);
