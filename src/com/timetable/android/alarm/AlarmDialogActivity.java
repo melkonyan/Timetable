@@ -1,5 +1,7 @@
 package com.timetable.android.alarm;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -13,6 +15,7 @@ import android.preference.PreferenceManager;
 import com.timetable.android.AlarmSoundPreference;
 import com.timetable.android.Event;
 import com.timetable.android.R;
+import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.activities.SettingsActivity;
@@ -68,13 +71,21 @@ public class AlarmDialogActivity extends Activity {
 			return;
 		}
 		
+		TimetableDatabase db = TimetableDatabase.getInstance(this);
+		
+		if (!db.existsEvent(event)) {
+			TimetableLogger.error("AlarmDialogActivity.onReceive: event, that is not in the database received.");
+			ok = false;
+			return;
+		}
+		
 		autoKiller.postDelayed(autoKill, TIME_TO_RUN_MILLIS);
 		
 		mediaPlayer = new MediaPlayer();
 		try {
 			String songFileString = PreferenceManager.getDefaultSharedPreferences(this).getString(SettingsActivity.ALARM_SOUND_KEY, AlarmSoundPreference.DEFAULT_ALARM_SOUND);
-			TimetableLogger.error(songFileString);
-			if (songFileString.equals(AlarmSoundPreference.DEFAULT_ALARM_SOUND)) {
+			
+			if (songFileString.equals(AlarmSoundPreference.DEFAULT_ALARM_SOUND) || !(new File(songFileString).exists())) {
 				mediaPlayer = AlarmSoundPreference.getDefaulPlayer(this);
 			} else {
 				mediaPlayer.setDataSource(songFileString);

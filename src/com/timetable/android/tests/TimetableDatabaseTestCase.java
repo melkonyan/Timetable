@@ -60,6 +60,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 	public void testTimetableDatabase() {
 		for(int i = 0; i < foundEvents.size(); i++) {
 			foundEvents.setElementAt(db.insertEvent(foundEvents.get(i)), i);
+			assertTrue(db.existsEvent(foundEvents.get(i)));
 		}
 		
 		Vector<Event> events = db.searchEventsByDate(searchDate);
@@ -91,6 +92,17 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 		assertEquals(0, events.size());
 		db.clear();
 		
+	}
+	
+	
+	public void testExistsEvent() {
+		Event event = new Event();
+		
+		assertFalse(db.existsEvent(event));
+		
+		event.setId(-100);
+		
+		assertFalse(db.existsEvent(event));
 	}
 	
 	public void testSearchEventById() throws ParseException {

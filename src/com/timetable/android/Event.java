@@ -27,6 +27,8 @@ public class Event {
 	
 	public static final int MAX_NOTE_LENGTH = 200;
 	
+	public static final int INIT_EVENT_ID = -1;
+	
 	public static final int MAX_PERIOD_INTERVAL_LENGTH = 2;
 
 	public static final String BUNDLE_EVENT_ID = "evt_id";
@@ -119,7 +121,7 @@ public class Event {
 	}
 	
 	public Event() {
-		this(-1);
+		this(INIT_EVENT_ID);
 	}
 	
 	/*
@@ -141,6 +143,13 @@ public class Event {
 			bundle.putAll(alarm.convert());
 		}
 		return bundle;
+	}
+	
+	/*
+	 * Return true, if event is not inserted into database yet.
+	 */
+	public boolean isNew() {
+		return id == INIT_EVENT_ID;
 	}
 	
 	public int getId() {

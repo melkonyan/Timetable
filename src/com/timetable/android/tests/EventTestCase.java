@@ -52,10 +52,22 @@ public class EventTestCase extends TestCase {
 		assertEquals(event, new Event(eventData));
 	}
 	
+	public void testIsNew() {
+		Event event = new Event();
+		
+		assertEquals(Event.INIT_EVENT_ID, event.getId());
+		
+		assertTrue(event.isNew());
+		
+		event.setId(10);
+		
+		assertFalse(event.isNew());
+	}
+	
 	public void testSetStartTime() {
 		Event event = new Event();
 		event.setStartTime(0);
-		assertEquals("00:00", event.getStartTimeString());
+		assertEquals("01:00", event.getStartTimeString());
 	}
 	
 	public void testIsException() throws ParseException {

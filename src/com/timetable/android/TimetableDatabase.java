@@ -316,6 +316,18 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     }
     
     /*
+     * Return true, if event with given id is contained in database.
+     */
+    public boolean existsEvent(Event event) {
+    	if (event.isNew()) {
+    		return false;
+    	}
+    	String query = "SELECT EXISTS(SELECT 1 FROM Events WHERE evt_id = ? LIMIT 1)";
+    	Cursor cursor = dbRead.rawQuery(query, new String [] { Integer.toString(event.getId()) } );
+    	cursor.moveToFirst();
+    	return cursor.getInt(0) == 1;
+    }
+    /*
      * Insert given event into database.
      * Return given event with appropriate values set to fields event.id, event.period.id, event.alarm.id.
      */
