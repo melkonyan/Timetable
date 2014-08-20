@@ -28,6 +28,9 @@ public class DeviceMuteService extends Service {
 
 	private TaskReceiver mReceiver;
 	
+	//indicates, weather device was muted by the user, before event, that mutes device, has started.  
+	private boolean deviceWasMuted = false;
+	
 	private Set<Event> currentEvents = new TreeSet<Event>(new Comparator<Event>() {
 
 		@Override
@@ -68,6 +71,11 @@ public class DeviceMuteService extends Service {
 		super.onDestroy();
 		TimetableLogger.log("DeviceMuteService.onDestroy: service is destroyed.");
 		unregisterReceiver(mReceiver);
+	}
+	
+	private boolean isMuted() {
+		int state = audioManager.getRingerMode();
+		return state == AudioManager.RINGER_MODE_SILENT || state == AudioManager.RINGER_MODE_VIBRATE;
 	}
 	
 	private void vibrate() {
@@ -114,8 +122,14 @@ public class DeviceMuteService extends Service {
 			TimetableLogger.log("DeviceMuteService.TaskReceiver: action " + action + " received with event " + event.getName() + ", id " + Integer.toString(event.getId()));
 			
 			if (action.equals(BroadcastActions.ACTION_EVENT_STARTED) && event.mutesDevice() && !currentEvents.contains(event)) {
-				if (currentEvents.isEmpty()) {
-					muteDevice();
+				boolean deviceIsMuted = isMuted();
+				if (currentEvents.isEmpty() || !deviceIsMuted) {
+					if (deviceIsMuted) {
+						deviceWasMuted = true; 
+					} else {
+						deviceWasMuted = false;
+						muteDevice();
+					}
 				}
 				currentEvents.add(event);
 			} else if (action.equals(BroadcastActions.ACTION_EVENT_ENDED) && event.mutesDevice() && currentEvents.contains(event)
@@ -123,7 +137,9 @@ public class DeviceMuteService extends Service {
 						|| action.equals(BroadcastActions.ACTION_EVENT_STARTED) && currentEvents.contains(event) && !event.mutesDevice()) {
 				currentEvents.remove(event);
 				if (currentEvents.isEmpty()) {
-					unmuteDevice();
+					if (!deviceWasMuted) {
+						unmuteDevice();
+					}
 				}
 			}
 		}
