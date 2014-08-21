@@ -61,6 +61,7 @@ public class AlarmService extends Service {
 		@Override
 		public int compare(EventAlarm alarm1, EventAlarm alarm2) {
 			Date today = Utils.getCurrDateTime();
+			//TODO: next occurrence can not be null, but it happens.
 			return alarm1.getNextOccurrence(today).compareTo(alarm2.getNextOccurrence(today));
 		}
 	}
