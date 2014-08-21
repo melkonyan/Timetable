@@ -47,6 +47,7 @@ public class AlarmDialogActivity extends Activity {
 		
 		@Override
 		public void run() {
+			TimetableLogger.log("AlarmDialogActivity.autoKill: user has not dissmised alarm. Stopping alarm self.");
 			AlarmDialogActivity.this.finish();
 		}
 	};
@@ -112,6 +113,7 @@ public class AlarmDialogActivity extends Activity {
 	
 	@Override 
 	public void onStop() {
+		TimetableLogger.log("AlarmDialogActivity.onStop: stopping activity.");
 		super.onStop();
 		if (!ok) {
 			return;
