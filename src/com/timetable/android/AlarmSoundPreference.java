@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.preference.ListPreference;
@@ -35,6 +36,8 @@ public class AlarmSoundPreference extends ListPreference {
 	        MediaStore.Audio.Media.DATA
 	};
 	
+	private Resources mResources;
+	
 	private int mClickedDialogEntryIndex;
 	
 	MediaPlayer mPlayer = new MediaPlayer();
@@ -45,6 +48,7 @@ public class AlarmSoundPreference extends ListPreference {
 	public AlarmSoundPreference(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		activity = (Activity) context;
+		mResources = activity.getResources();
 		Cursor cursor = activity.managedQuery(
 		        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 		        projection,
@@ -93,8 +97,7 @@ public class AlarmSoundPreference extends ListPreference {
 	                		if (mPlayer.isPlaying()) {
 	                			mPlayer.reset();
 	                		}	
-	                		TimetableLogger.error("AlarmSoundPreference.onItemtSelected");
-		                 	try {
+	                		try {
 		                 		mPlayer = new MediaPlayer();
 		             	        String filename = songFiles.get(which);
 		             	        if (filename == null || filename.equals(DEFAULT_ALARM_SOUND)) {
@@ -111,7 +114,7 @@ public class AlarmSoundPreference extends ListPreference {
 		                 	}
 	                	}
 	         });
-	    builder.setPositiveButton("Okey", new DialogInterface.OnClickListener() {
+	    builder.setPositiveButton(mResources.getString(R.string.alarm_sound_preference_dialog_button_positive), new DialogInterface.OnClickListener() {
 			
 			public void onClick(DialogInterface dialog, int which) {
 				AlarmSoundPreference.this.onClick(dialog, DialogInterface.BUTTON_POSITIVE);
@@ -119,6 +122,8 @@ public class AlarmSoundPreference extends ListPreference {
 			}
 		
 	    });	
+	    
+	    builder.setNegativeButton(mResources.getString(R.string.alarm_sound_preference_dialog_button_negative), null);
 	}
 	
 	private int getValueIndex() {
