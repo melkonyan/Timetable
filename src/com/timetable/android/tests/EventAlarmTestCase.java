@@ -9,11 +9,14 @@ import junit.framework.TestCase;
 import com.timetable.android.Event;
 import com.timetable.android.EventPeriod;
 import com.timetable.android.alarm.EventAlarm;
+import com.timetable.android.utils.DateFormatFactory;
 
 public class EventAlarmTestCase extends TestCase {
 	
-	private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+	private SimpleDateFormat dateTimeFormat = DateFormatFactory.getDateTimeFormat();
+	
+	private SimpleDateFormat dateFormat = DateFormatFactory.getDateFormat();
+	
 	private Date alarmTime;
 	
 	@Override

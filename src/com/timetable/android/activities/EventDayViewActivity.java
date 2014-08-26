@@ -6,10 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.widget.LinearLayout;
-import org.holoeverywhere.widget.TextView;
 import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 
 import android.content.Intent;
@@ -17,8 +17,6 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.RelativeLayout;
 
 import com.timetable.android.EventPager;
 import com.timetable.android.R;
@@ -102,7 +100,7 @@ public class EventDayViewActivity extends Activity {
 			@Override
 			public void onDateSet(DatePickerDialog dialog, int year,
 					int monthOfYear, int dayOfMonth) {
-				Calendar cal = Calendar.getInstance();
+				Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 				cal.set(Calendar.YEAR, year);
 				cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 				cal.set(Calendar.MONTH, monthOfYear);
@@ -119,7 +117,7 @@ public class EventDayViewActivity extends Activity {
 			setEventPager(new EventPager(this,startDate));
 			//eventPager.goToDate(startDate);
 		}
-		Calendar cal = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		cal.setTime(getEventPager().getDisplayedDate());
 		datePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 
 				cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
@@ -183,21 +181,6 @@ public class EventDayViewActivity extends Activity {
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
-	
-	public void onEventViewClick(View v) {
-		try {
-			String idString = ((TextView) (((RelativeLayout) v).getChildAt(0))).getText().toString();
-			Intent eventEditIntent = new Intent(this, EventEditActivity.class);
-			eventEditIntent.putExtra(EventEditActivity.EXTRA_EVENT_ID, Integer.parseInt(idString));
-			//TODO: put date's millis into extra, instead of formatting and then parsing date string 
-			eventEditIntent.putExtra(EventEditActivity.EXTRA_DATE, EventEditActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
-			startActivity(eventEditIntent);
-		} catch (Exception e) {
-			TimetableLogger.error("EventDayVeiwActivity.onEventViewClick: " + e.toString());
-			return;
-		}
-	}
-
 	
 	private class EventPagerListener extends SimpleOnPageChangeListener {
 		

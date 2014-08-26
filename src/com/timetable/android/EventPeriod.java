@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import android.os.Bundle;
 
@@ -334,11 +335,11 @@ public class EventPeriod {
 			return startDate;
 		}
 		
-		Calendar todayCal = Calendar.getInstance();
+		Calendar todayCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		todayCal.setTime(today);
-		Calendar dateCal = Calendar.getInstance();
+		Calendar dateCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		dateCal.setTime(startDate);
-		Calendar ansCal = Calendar.getInstance();
+		Calendar ansCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		
 		long dateLong = startDate.getTime(), todayLong = todayCal.getTime().getTime(); 
 		long day = 1000*60*60*24, week = 1000*60*60*24*7;

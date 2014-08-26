@@ -3,6 +3,7 @@ package com.timetable.android.activities;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -83,7 +84,7 @@ public class EventEditActivity extends EventAddActivity {
 				public void afterTextChanged(Editable s) {
 					try {
 						String dateString = s.toString();
-						Calendar date = Calendar.getInstance();
+						Calendar date = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 						date.setTime(dateFormat.parse(dateString));
 						int weekDay = date.get(Calendar.DAY_OF_WEEK) - 1;
 						for (int i = EventPeriod.SUNDAY; i <= EventPeriod.SATURDAY; i++) {

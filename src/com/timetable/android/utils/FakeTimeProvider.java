@@ -2,10 +2,11 @@ package com.timetable.android.utils;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class FakeTimeProvider extends TimeProvider {
 
-		private Calendar fakeTime = Calendar.getInstance();
+		private Calendar fakeTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		
 		public FakeTimeProvider(Date fakeTime) {
 			setTime(fakeTime);

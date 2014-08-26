@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class DateUtils {
 	
@@ -35,7 +36,7 @@ public class DateUtils {
 	}
 	
 	public static Calendar extractDate(Calendar dateTime) {
-		Calendar cal = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		cal.setTime(extractDate(dateTime.getTime()));
 		return cal;
 	}
@@ -44,7 +45,7 @@ public class DateUtils {
 	 * Return new date with hours, minutes and second set to zero.
 	 */
 	public static Date extractDate(Date dateTime) {
-		Calendar cal = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		cal.setTime(dateTime);
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
@@ -54,7 +55,7 @@ public class DateUtils {
 	}
 	
 	public static Calendar extractTime(Calendar dateTime) {
-		Calendar cal = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		cal.setTime(extractTime(dateTime.getTime()));
 		return cal;
 	}
@@ -63,7 +64,7 @@ public class DateUtils {
 	 * Return new date with date set to zero.
 	 */
 	public static Date extractTime(Date dateTime) {
-		Calendar cal = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		cal.setTime(dateTime);
 		cal.set(Calendar.YEAR, 1970);
 		cal.set(Calendar.DAY_OF_YEAR, 1);
@@ -71,8 +72,8 @@ public class DateUtils {
 	}
 	
 	public static Date setTime(Date date, Date time) {
-		Calendar ans1 = Calendar.getInstance();
-		Calendar ans2 = Calendar.getInstance();
+		Calendar ans1 = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar ans2 = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		ans1.setTime(date);
 		ans2.setTime(time);
 		ans1.set(Calendar.HOUR_OF_DAY, ans2.get(Calendar.HOUR_OF_DAY));
@@ -83,7 +84,7 @@ public class DateUtils {
 	}
 	
 	public static Date addDay(Date date, int days) {
-		Calendar cal = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		cal.setTime(date);
 		cal.add(Calendar.DATE, days);
 		return cal.getTime();

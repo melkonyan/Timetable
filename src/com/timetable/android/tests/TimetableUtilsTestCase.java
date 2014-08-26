@@ -5,12 +5,13 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
+import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
 
 public class TimetableUtilsTestCase extends TestCase {
 	
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	private SimpleDateFormat dateFormat = DateFormatFactory.getLongDateTimeFormat();
 	
 	
 	public void testAreEqualOrNulls() {

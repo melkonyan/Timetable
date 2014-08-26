@@ -137,7 +137,7 @@ public class EventPager extends ViewPager {
 				if (!event.isToday(currentDate)) {
 					continue;
 				}
-				EventView eventView = new EventView(EventPager.this.activity, event);
+				EventView eventView = new EventView(EventPager.this.activity, event, currentDate);
 				internalLayout.addView(eventView);
 				hasEventsToday = true;
 			}

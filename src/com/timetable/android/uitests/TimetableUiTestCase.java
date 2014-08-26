@@ -140,7 +140,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_repeat).getVisibility());
 		//assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_alarm).getVisibility());
 		
-		clickOnView(R.id.event_layout);
+		clickOnView(R.id.layout_event_container);
 		
 		assertEquals(true, solo.waitForActivity(EventEditActivity.class, DEFAULT_TIMEOUT));
 		
@@ -157,7 +157,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		assertEquals(View.INVISIBLE, getActivity().findViewById(R.id.layout_event_image_repeat).getVisibility());
 		assertEquals(View.INVISIBLE, getActivity().findViewById(R.id.layout_event_image_alarm).getVisibility());
 		
-		clickOnView(R.id.event_layout);
+		clickOnView(R.id.layout_event_container);
 		
 		assertTrue(solo.waitForActivity(EventEditActivity.class, DEFAULT_TIMEOUT));
 		
@@ -172,7 +172,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_repeat).getVisibility());
 		//assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_alarm).getVisibility());
 		
-		clickOnView(R.id.event_layout);
+		clickOnView(R.id.layout_event_container);
 		
 		assertTrue(solo.waitForActivity(EventEditActivity.class, DEFAULT_TIMEOUT));
 		

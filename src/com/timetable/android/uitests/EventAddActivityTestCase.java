@@ -3,6 +3,7 @@ package com.timetable.android.uitests;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import org.holoeverywhere.widget.EditText;
 
@@ -34,7 +35,7 @@ public class EventAddActivityTestCase extends ActivityInstrumentationTestCase2<E
 
 	@Override
 	public void setUp() {
-		initDate = Calendar.getInstance();
+		initDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		try {
 			initDate.setTime(dateTimeFormat.parse("14.02.2014 23:27"));
 		} catch (ParseException e) {
