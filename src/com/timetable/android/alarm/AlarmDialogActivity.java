@@ -40,7 +40,10 @@ public class AlarmDialogActivity extends Activity {
 	
 	private boolean ok = true;
 	
-	//handler, that will finish activity after a given amount of time
+	//flag, that indicates weather alarm is dismissed by user.
+	private boolean isDismissed = false;
+	
+	//handler, that will finish activity after a given amount of time.
 	private Handler autoKiller = new Handler();
 	
 	private Runnable autoKill = new Runnable() {
@@ -48,16 +51,20 @@ public class AlarmDialogActivity extends Activity {
 		@Override
 		public void run() {
 			TimetableLogger.log("AlarmDialogActivity.autoKill: user has not dissmised alarm. Stopping alarm self.");
+			dismiss();
 			AlarmDialogActivity.this.finish();
 		}
 	};
-	
 	
 	@Override 
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 	    super.onCreate(savedInstanceState);
 	    TimetableLogger.log("AlarmDialogActivity.onCreate: creating activity.");
+	    
+	    
+        
+        TimetableLogger.log("AlarmDialogActivity.onCreate: wake lock is acquired.");
 	    eventData = getIntent().getExtras();
 		if (eventData == null) {
 			TimetableLogger.error("EventAlarmDialogActiovity.onCreate: intent with no data received");
@@ -79,6 +86,7 @@ public class AlarmDialogActivity extends Activity {
 			ok = false;
 			return;
 		}
+		
 		
 		autoKiller.postDelayed(autoKill, TIME_TO_RUN_MILLIS);
 		
@@ -103,27 +111,47 @@ public class AlarmDialogActivity extends Activity {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				dismiss();
 				AlarmDialogActivity.this.finish();
 				
 			}
 		});
 	    builder.setTitle(event.getName()).create().show();
 	}
-
+	
+	@Override
+	public void onUserLeaveHint() {
+		super.onUserLeaveHint();
+		dismiss();
+		finish();
+	}
 	
 	@Override 
-	public void onStop() {
-		TimetableLogger.log("AlarmDialogActivity.onStop: stopping activity.");
-		super.onStop();
-		if (!ok) {
-			return;
+	public void onRestart() {
+		super.onRestart();
+		TimetableLogger.log("AlarmDialogActivity.onRestart: restarting activity.");
+	}
+	
+	@Override 
+	public void onDestroy() {
+		super.onDestroy();
+		if (!isDismissed && ok) {
+			dismiss();
 		}
+	}
+	
+	/*
+	 * Dismiss alarm.
+	 */
+	private void dismiss() {
+		TimetableLogger.log("AlarmDialogActivity.dismiss: dismissing alarm.");
 		
 		if (mediaPlayer != null && mediaPlayer.isPlaying()) {
 			mediaPlayer.stop();
 			mediaPlayer.release();
 		}
 		
+		isDismissed = true;
 		
 		Intent broadcast = new Intent(AlarmService.ACTION_ALARM_UPDATED);
 		broadcast.putExtras(eventData);
@@ -132,7 +160,10 @@ public class AlarmDialogActivity extends Activity {
 		Intent intent = new Intent(AlarmDialogActivity.this, EventDayViewActivity.class);
 		intent.putExtra(EventDayViewActivity.EXTRAS_DATE, 
 						EventDayViewActivity.EXTRAS_DATE_FORMAT.format(event.getAlarm().getEventOccurrence(Utils.getCurrDateTime())));
+		
 		AlarmDialogActivity.this.startActivity(intent);
+		
 	}
+	
 	
 }
