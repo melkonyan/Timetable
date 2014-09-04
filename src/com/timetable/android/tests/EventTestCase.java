@@ -176,6 +176,7 @@ public class EventTestCase extends TestCase {
 	
 	public void testIsTodayPeriodWeekly() throws ParseException {
 		Date searchDate = dateFormat.parse("04.01.2014"); //Saturday
+		
 		Event event = new Event.Builder()
 						.setPeriodType(EventPeriod.Type.WEEKLY)
 						.setPeriodInterval(1)
@@ -216,7 +217,7 @@ public class EventTestCase extends TestCase {
 		searchDate = dateFormat.parse("14.07.2014");
 		
 		assertTrue(event.isToday(searchDate));
-		
+	
 	}
 	
 	public void testIsTodayPeriodMonthly() throws ParseException {
@@ -284,7 +285,26 @@ public class EventTestCase extends TestCase {
 		
 	}
 	
-	
+	public void testGetNextOccurrencePeriodWeekly() throws ParseException {
+		Event event = new Event.Builder()
+						.setDate("4.9.2014")
+						.setPeriodType(EventPeriod.WEEKLY)
+						.setPeriodInterval(1)
+						.build();
+		
+		Date searchDate = dateFormat.parse("5.9.2014");
+		
+		event.getPeriod().addWeekOccurrence(EventPeriod.THURSDAY);
+		event.getPeriod().addWeekOccurrence(EventPeriod.FRIDAY);
+		event.getPeriod().addWeekOccurrence(EventPeriod.WEDNESDAY);
+		event.getPeriod().addWeekOccurrence(EventPeriod.TUESDAY);
+		
+		assertEquals(dateFormat.parse("5.9.2014"), event.getNextOccurrence(searchDate));
+		
+		event.addException("5.9.2014");
+		event.getNextOccurrence(searchDate);
+		assertEquals(dateFormat.parse("9.9.2014"), event.getNextOccurrence(searchDate));
+	}
 	public void testIsOk() throws ParseException {
 		
 		Event event = new Event();

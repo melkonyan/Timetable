@@ -380,6 +380,7 @@ public class EventPeriod {
 				}
 					
 				ansCal.add(Calendar.WEEK_OF_YEAR, interval);
+				//TODO: fix error.
 				ansCal.add(Calendar.DATE, dateCal.get(Calendar.DAY_OF_WEEK) - todayCal.get(Calendar.DAY_OF_WEEK));
 				break;
 			case MONTHLY:
