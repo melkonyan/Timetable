@@ -24,9 +24,12 @@ public class TimetableApp  extends Application {
 	@Override
 	public void onCreate() {
 		 super.onCreate();
+		
 		//enable debugging
 		TimetableLogger.debugging = true;
 			
+		TimetableLogger.sendReport = false;
+		
 		//send broadcast, that application is started.
 		sendBroadcast(new Intent(BroadcastActions.ACTION_APP_STARTED));
 			

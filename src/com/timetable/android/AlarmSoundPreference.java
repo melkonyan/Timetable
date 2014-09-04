@@ -2,21 +2,22 @@ package com.timetable.android;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
-import android.app.AlertDialog.Builder;
+import org.holoeverywhere.app.Activity;
+import org.holoeverywhere.app.AlertDialog.Builder;
+import org.holoeverywhere.preference.ListPreference;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.media.MediaPlayer;
-import android.preference.ListPreference;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 
 /*
  * Class, that allows user to choose alarm sound. Contains a list of all available sounds on device's SD card.
  * When user chooses sound in the list, it is played by MediaPlayer.
- * Than the preference is stored and used by AlarmDialogActivity, to play choosed sound.
+ * Than the preference is stored and used by AlarmDialogActivity, to play chosen sound.
  */
 public class AlarmSoundPreference extends ListPreference {
 
@@ -27,7 +28,7 @@ public class AlarmSoundPreference extends ListPreference {
 	}
 	
 	//Activity, that has started preference.
-	private Activity activity;
+	private Context mContext;
 	
 	private String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 
@@ -47,9 +48,9 @@ public class AlarmSoundPreference extends ListPreference {
 
 	public AlarmSoundPreference(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		activity = (Activity) context;
-		mResources = activity.getResources();
-		Cursor cursor = activity.managedQuery(
+		mContext = context;
+		mResources = mContext.getResources();
+		Cursor cursor = mContext.getContentResolver().query(
 		        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 		        projection,
 		        selection,
@@ -102,7 +103,7 @@ public class AlarmSoundPreference extends ListPreference {
 		             	        String filename = songFiles.get(which);
 		             	        if (filename == null || filename.equals(DEFAULT_ALARM_SOUND)) {
 		             	        	mPlayer.release();
-		             	        	mPlayer = getDefaulPlayer(activity);
+		             	        	mPlayer = getDefaulPlayer(mContext);
 		             	        } else {
 		             	        	mPlayer.setDataSource(filename);
 			                 		mPlayer.prepare();
@@ -136,7 +137,10 @@ public class AlarmSoundPreference extends ListPreference {
         TimetableLogger.error("Dialog is closed. PositiveResult: " + Boolean.toString(positiveResult));
         mPlayer.stop();
         if (positiveResult) {
-            String value = songFiles.get(mClickedDialogEntryIndex);
+            if (mClickedDialogEntryIndex < 0) {
+            	return;
+            }
+        	String value = songFiles.get(mClickedDialogEntryIndex);
             callChangeListener(value);
             TimetableLogger.error("Update alarm sound preference");
             setValue(value);

@@ -14,10 +14,14 @@ public class TimetableLogger {
 	//If set to false, logger will not write anything to logcat.
 	public static boolean debugging = false;
 	
+	//If set to true, report will be send to server, when error is found.
+	public static boolean sendReport = true;
+	
 	//If set to true, logger habe logged error messages.
 	private static boolean errorFound = false;
 	
-			public static void verbose(String message) {
+	
+	public static void verbose(String message) {
 		if (debugging && message != null) {
 			Log.v(logTag, message);
 		}
@@ -37,7 +41,7 @@ public class TimetableLogger {
 	}
 	
 	public static void sendReport() {
-		if (debugging && errorFound) {
+		if (debugging && errorFound && sendReport) {
 			ACRA.getErrorReporter().handleException(null);
 		}
 	}

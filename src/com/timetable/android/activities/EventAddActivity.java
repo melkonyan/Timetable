@@ -164,7 +164,7 @@ public class EventAddActivity extends Activity {
 			public void afterTextChanged(Editable s) {
 				try {
 					String dateString = s.toString();
-					Calendar date = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+					Calendar date = Calendar.getInstance();
 					date.setTime(dateFormat.parse(dateString));
 					int weekDay = date.get(Calendar.DAY_OF_WEEK) - 1;
 					for (int i = 0; i < 7; i++) {
@@ -215,7 +215,7 @@ public class EventAddActivity extends Activity {
 					@Override
 					public void onTimeSet(RadialPickerLayout view,
 							int hourOfDay, int minute) {
-						Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+						Calendar cal = Calendar.getInstance();
 						cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
 						cal.set(Calendar.MINUTE, minute);
 						setEventAlarmTime(cal);
@@ -274,7 +274,7 @@ public class EventAddActivity extends Activity {
 					@Override
 					public void onDateSet(DatePickerDialog dialog, int year,
 							int monthOfYear, int dayOfMonth) {
-						Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+						Calendar cal = Calendar.getInstance();
 						cal.set(Calendar.YEAR, year);
 						cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 						cal.set(Calendar.MONTH, monthOfYear);
@@ -306,7 +306,7 @@ public class EventAddActivity extends Activity {
 					public void onTimeSet(RadialPickerLayout view,
 							int hourOfDay, int minute) {
 						
-						Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+						Calendar cal = Calendar.getInstance();
 						cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
 						cal.set(Calendar.MINUTE, minute);
 						eventStartTimeVal.setText(timeFormat.format(cal.getTime()));
@@ -330,7 +330,7 @@ public class EventAddActivity extends Activity {
 					@Override
 					public void onTimeSet(RadialPickerLayout view,
 							int hourOfDay, int minute) {
-						Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+						Calendar cal = Calendar.getInstance();
 						cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
 						cal.set(Calendar.MINUTE, minute);
 						eventEndTimeVal.setText(timeFormat.format(cal.getTime()));
@@ -354,7 +354,7 @@ public class EventAddActivity extends Activity {
 					@Override
 					public void onDateSet(DatePickerDialog dialog, int year,
 							int monthOfYear, int dayOfMonth) {
-						Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+						Calendar cal = Calendar.getInstance();
 						cal.set(Calendar.YEAR, year);
 						cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 						cal.set(Calendar.MONTH, monthOfYear);
@@ -429,7 +429,7 @@ public class EventAddActivity extends Activity {
 			return;
 		}
 		try {
-			initEventDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+			initEventDate = Calendar.getInstance();
 			initEventDate.setTime(INIT_DATE_FORMAT.parse(extras.getString(EventAddActivity.EXTRA_DATE)));
 			setEventDate(getInitDate());
 			setEventStartTime(getInitStartTime());
@@ -475,7 +475,7 @@ public class EventAddActivity extends Activity {
 	}
 	
 	public Calendar getInitPeriodEndDate() {
-		initPeriodEndDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		initPeriodEndDate = Calendar.getInstance();
 		initPeriodEndDate.setTime(getEventDate().getTime());
 		return initPeriodEndDate;
 	}
@@ -544,7 +544,7 @@ public class EventAddActivity extends Activity {
 		eventDateVal.setText(dateFormat.format(date.getTime()));	
 	}
 	public Calendar getEventDate() {
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar cal = Calendar.getInstance();
 		try {
 			cal.setTime(dateFormat.parse(eventDateVal.getText().toString()));
 		} catch (ParseException e) {
@@ -558,7 +558,7 @@ public class EventAddActivity extends Activity {
 	}
 	
 	public Calendar getEventStartTime() {
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar cal = Calendar.getInstance();
 		try {
 			cal.setTime(timeFormat.parse(eventStartTimeVal.getText().toString()));
 		} catch (ParseException e) {
@@ -572,7 +572,7 @@ public class EventAddActivity extends Activity {
 	}
 	
 	public Calendar getEventEndTime() {
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar cal = Calendar.getInstance();
 		try {
 			cal.setTime(timeFormat.parse(eventEndTimeVal.getText().toString()));
 		} catch (ParseException e) {
@@ -586,7 +586,7 @@ public class EventAddActivity extends Activity {
 	}
 	
 	public Calendar getPeriodEndDate() {
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar cal = Calendar.getInstance();
 		try {
 			cal.setTime(dateFormat.parse(eventPeriodEndDateVal.getText().toString()));
 		} catch (ParseException e) {
@@ -600,7 +600,7 @@ public class EventAddActivity extends Activity {
 	
 	
 	public Calendar getEventAlarmTime() {
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar cal = Calendar.getInstance();
 		try {
 			cal.setTime(timeFormat.parse(eventAlarmTime.getText().toString()));
 		} catch (ParseException e) {

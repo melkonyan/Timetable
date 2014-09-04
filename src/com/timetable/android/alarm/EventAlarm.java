@@ -143,6 +143,7 @@ public class EventAlarm {
 	 */
 	public Date getNextOccurrence() {
 		return getNextOccurrence(Utils.getCurrDateTime());
+	
 	}
 	
 	/*
@@ -153,6 +154,7 @@ public class EventAlarm {
 			TimetableLogger.error("EventAlarm.getNextOccurrence: Alarm has no reference to event;");
 			return null;
 		}
+		
 		Date todayDate = today;
 		if (DateUtils.compareTimes(time, today) != DateUtils.AFTER) {
 			todayDate = DateUtils.addDay(todayDate, 1);

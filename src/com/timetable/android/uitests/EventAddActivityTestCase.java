@@ -35,7 +35,7 @@ public class EventAddActivityTestCase extends ActivityInstrumentationTestCase2<E
 
 	@Override
 	public void setUp() {
-		initDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		initDate = Calendar.getInstance();
 		try {
 			initDate.setTime(dateTimeFormat.parse("14.02.2014 23:27"));
 		} catch (ParseException e) {

@@ -84,7 +84,7 @@ public class EventEditActivity extends EventAddActivity {
 				public void afterTextChanged(Editable s) {
 					try {
 						String dateString = s.toString();
-						Calendar date = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+						Calendar date = Calendar.getInstance();
 						date.setTime(dateFormat.parse(dateString));
 						int weekDay = date.get(Calendar.DAY_OF_WEEK) - 1;
 						for (int i = EventPeriod.SUNDAY; i <= EventPeriod.SATURDAY; i++) {

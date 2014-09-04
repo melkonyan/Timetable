@@ -335,11 +335,11 @@ public class EventPeriod {
 			return startDate;
 		}
 		
-		Calendar todayCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar todayCal = Calendar.getInstance();
 		todayCal.setTime(today);
-		Calendar dateCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar dateCal = Calendar.getInstance();
 		dateCal.setTime(startDate);
-		Calendar ansCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar ansCal = Calendar.getInstance();
 		
 		long dateLong = startDate.getTime(), todayLong = todayCal.getTime().getTime(); 
 		long day = 1000*60*60*24, week = 1000*60*60*24*7;

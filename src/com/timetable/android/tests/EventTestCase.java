@@ -67,7 +67,7 @@ public class EventTestCase extends TestCase {
 	public void testSetStartTime() {
 		Event event = new Event();
 		event.setStartTime(0);
-		assertEquals("00:00", event.getStartTimeString());
+		assertEquals("02:00", event.getStartTimeString());
 	}
 	
 	public void testIsException() throws ParseException {

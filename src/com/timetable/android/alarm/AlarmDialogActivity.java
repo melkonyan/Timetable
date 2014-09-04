@@ -122,8 +122,10 @@ public class AlarmDialogActivity extends Activity {
 	@Override
 	public void onUserLeaveHint() {
 		super.onUserLeaveHint();
-		dismiss();
-		finish();
+		if (!isDismissed) {
+			dismiss();
+			finish();
+		}
 	}
 	
 	@Override 
@@ -146,9 +148,11 @@ public class AlarmDialogActivity extends Activity {
 	private void dismiss() {
 		TimetableLogger.log("AlarmDialogActivity.dismiss: dismissing alarm.");
 		
-		if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+		try {
 			mediaPlayer.stop();
 			mediaPlayer.release();
+		} catch (Exception e) {
+			//ignore.
 		}
 		
 		isDismissed = true;

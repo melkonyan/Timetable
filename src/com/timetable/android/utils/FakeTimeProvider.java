@@ -6,7 +6,7 @@ import java.util.TimeZone;
 
 public class FakeTimeProvider extends TimeProvider {
 
-		private Calendar fakeTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		private Calendar fakeTime = Calendar.getInstance();
 		
 		public FakeTimeProvider(Date fakeTime) {
 			setTime(fakeTime);

@@ -1,10 +1,12 @@
 
 package com.timetable.android.activities;
 
-import com.timetable.android.R;
+import org.holoeverywhere.preference.PreferenceActivity;
 
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
+
+import com.timetable.android.R;
+
 
 /*
  * Activity, that provides interface for changing application settings.

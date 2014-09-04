@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
 
 /*
@@ -91,7 +92,7 @@ public class EventService extends Service {
 		
 		TimetableLogger.log("EventService.createEventStartedAlarm: creating alarm at " + nextStartTime.toString());
 		alarmManager.set(AlarmManager.RTC_WAKEUP, 
-							nextStartTime.getTime(), 
+							DateUtils.getLocalTime(nextStartTime), 
 							getPendingIntentFromEvent(context, event, BroadcastActions.ACTION_EVENT_STARTED));
 	}
 	
@@ -101,9 +102,9 @@ public class EventService extends Service {
 			TimetableLogger.log("EventService.createEventEndedAlarm: event already finished.");
 			return;
 		}
-		TimetableLogger.log("EventService.createEventEndedAlarm: creating alarm at " + nextEndTime.toString());
+		TimetableLogger.log("EventService.createEventEndedAlarm: creating alarm at " + new Date(DateUtils.getLocalTime(nextEndTime)).toString());
 		alarmManager.set(AlarmManager.RTC_WAKEUP, 
-							nextEndTime.getTime(), 
+							DateUtils.getLocalTime(nextEndTime), 
 							getPendingIntentFromEvent(context, event, BroadcastActions.ACTION_EVENT_ENDED));
 	}
 	
@@ -142,6 +143,9 @@ public class EventService extends Service {
 				createEventStartedAlarm(context, event);
 				createEventEndedAlarm(context, event);
 			} else if (BroadcastActions.ACTION_EVENT_UPDATED.equals(action)) {
+				
+				
+				
 				updateAlarm(context, event);
 				if (!event.isCurrent(Utils.getCurrDateTime())) {
 					EventBroadcastSender.sendEventEndedBroadcast(context, eventData);

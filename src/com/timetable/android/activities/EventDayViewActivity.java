@@ -91,7 +91,7 @@ public class EventDayViewActivity extends Activity {
 		
 		setContentView(R.layout.activity_event_day_view);
 		
-		//TimetableDatabase.getInstance(this).clear();
+		TimetableLogger.error(Long.toString(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis()));
 		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
 		setEventPager(new EventPager(this, Utils.getCurrDateTime()));
@@ -100,7 +100,7 @@ public class EventDayViewActivity extends Activity {
 			@Override
 			public void onDateSet(DatePickerDialog dialog, int year,
 					int monthOfYear, int dayOfMonth) {
-				Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+				Calendar cal = Calendar.getInstance();
 				cal.set(Calendar.YEAR, year);
 				cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 				cal.set(Calendar.MONTH, monthOfYear);
@@ -117,7 +117,7 @@ public class EventDayViewActivity extends Activity {
 			setEventPager(new EventPager(this,startDate));
 			//eventPager.goToDate(startDate);
 		}
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar cal = Calendar.getInstance();
 		cal.setTime(getEventPager().getDisplayedDate());
 		datePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 
 				cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
