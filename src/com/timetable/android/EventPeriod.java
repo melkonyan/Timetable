@@ -217,6 +217,18 @@ public class EventPeriod {
 		return weekOccurrences[day];
 	}
 	
+	/*
+	 * Return the first day of the week, on which weekly event has occurrence.
+	 */
+	public int getFirstWeekOccurrence() {
+		for (int i = 0; i < 7; i++) {
+			if (isWeekOccurrence(i)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	public int getWeekOccurrencesInt() {
 		if (type != WEEKLY) {
 			return 0;
@@ -358,6 +370,9 @@ public class EventPeriod {
 				System.out.println(diff);
 				break;
 			case WEEKLY:
+				if (getFirstWeekOccurrence() == -1) {
+					return null;
+				}
 				diff = interval - (int) ((todayLong - dateLong) / week) % interval;
 				if (diff == interval) diff = 0;
 				
@@ -381,7 +396,7 @@ public class EventPeriod {
 					
 				ansCal.add(Calendar.WEEK_OF_YEAR, interval);
 				//TODO: fix error.
-				ansCal.add(Calendar.DATE, dateCal.get(Calendar.DAY_OF_WEEK) - todayCal.get(Calendar.DAY_OF_WEEK));
+				ansCal.add(Calendar.DATE, getFirstWeekOccurrence() + 1 - todayCal.get(Calendar.DAY_OF_WEEK));
 				break;
 			case MONTHLY:
 				diff = this.interval - ((todayCal.get(Calendar.YEAR)- dateCal.get(Calendar.YEAR))*12 
