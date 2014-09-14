@@ -217,7 +217,8 @@ public class EventTestCase extends TestCase {
 		searchDate = dateFormat.parse("14.07.2014");
 		
 		assertTrue(event.isToday(searchDate));
-	
+		
+		
 	}
 	
 	public void testIsTodayPeriodMonthly() throws ParseException {
@@ -304,7 +305,16 @@ public class EventTestCase extends TestCase {
 		event.addException("5.9.2014");
 		event.getNextOccurrence(searchDate);
 		assertEquals(dateFormat.parse("9.9.2014"), event.getNextOccurrence(searchDate));
+	
+		event.getPeriod().setInterval(2);
+		
+		assertEquals(dateFormat.parse("16.9.2014"), event.getNextOccurrence(searchDate));
+		
+		event.addException("16.9.2014");
+		event.getNextOccurrence(searchDate);
+		assertEquals(dateFormat.parse("17.9.2014"), event.getNextOccurrence(searchDate));
 	}
+	
 	public void testIsOk() throws ParseException {
 		
 		Event event = new Event();
