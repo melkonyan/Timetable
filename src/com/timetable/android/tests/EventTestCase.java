@@ -67,7 +67,7 @@ public class EventTestCase extends TestCase {
 	public void testSetStartTime() {
 		Event event = new Event();
 		event.setStartTime(0);
-		assertEquals("02:00", event.getStartTimeString());
+		assertEquals("01:00", event.getStartTimeString());
 	}
 	
 	public void testIsException() throws ParseException {
@@ -308,11 +308,21 @@ public class EventTestCase extends TestCase {
 	
 		event.getPeriod().setInterval(2);
 		
-		assertEquals(dateFormat.parse("16.9.2014"), event.getNextOccurrence(searchDate));
-		
-		event.addException("16.9.2014");
 		event.getNextOccurrence(searchDate);
-		assertEquals(dateFormat.parse("17.9.2014"), event.getNextOccurrence(searchDate));
+		assertEquals(dateFormat.parse("9.9.2014"), event.getNextOccurrence(searchDate));
+		
+		event.addException("9.9.2014");
+		event.getNextOccurrence(searchDate);
+		assertEquals(dateFormat.parse("10.9.2014"), event.getNextOccurrence(searchDate));
+		event.addException("10.9.2014");
+		assertEquals(dateFormat.parse("18.9.2014"), event.getNextOccurrence(searchDate));
+		
+		event.getPeriod().setInterval(3);
+		assertEquals(dateFormat.parse("25.9.2014"), event.getNextOccurrence(searchDate));
+		event.addException("25.9.2014");
+		event.addException("26.9.2014");
+		assertEquals(dateFormat.parse("30.9.2014"), event.getNextOccurrence(searchDate));
+		
 	}
 	
 	public void testIsOk() throws ParseException {

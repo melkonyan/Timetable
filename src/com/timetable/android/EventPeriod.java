@@ -375,27 +375,31 @@ public class EventPeriod {
 				
 				diff = interval - (int) ((todayLong - dateLong) / week) % interval;
 				if (diff == interval) diff = 0;
-				
 				ansCal.setTime(todayCal.getTime());
-				ansCal.add(Calendar.WEEK_OF_YEAR, diff);
 				
-				boolean isFound = false;
-				int count = 0;
-				for (int i = todayCal.get(Calendar.DAY_OF_WEEK); i < todayCal.get(Calendar.DAY_OF_WEEK) + 7; i++) {
-					if (isWeekOccurrence((i - 1) % 7)) {
-						ansCal.add(Calendar.DATE, count);	
-						isFound = true;
+				if (diff == 0) {
+					
+					boolean isFound = false;
+					int count = 0;
+					for (int i = todayCal.get(Calendar.DAY_OF_WEEK); i < dateCal.get(Calendar.DAY_OF_WEEK) + 
+												(todayCal.get(Calendar.DAY_OF_WEEK) >= dateCal.get(Calendar.DAY_OF_WEEK) ? 7 : 0); i++) {
+						if (isWeekOccurrence((i - 1) % 7)) {
+							ansCal.add(Calendar.DATE, count);	
+							isFound = true;
+							break;
+						} else {
+							count ++;
+						}
+					}
+					if (isFound) {
 						break;
 					} else {
-						count ++;
+						diff = interval;
 					}
-				}
-				if (isFound) {
-					break;
-				}
-					
-				ansCal.add(Calendar.WEEK_OF_YEAR, interval);
-				ansCal.add(Calendar.DATE, dateCal.get(Calendar.DAY_OF_WEEK) - todayCal.get(Calendar.DAY_OF_WEEK));
+				}	
+				ansCal.add(Calendar.WEEK_OF_YEAR, diff);
+				ansCal.add(Calendar.DATE, -(todayCal.get(Calendar.DAY_OF_WEEK) - dateCal.get(Calendar.DAY_OF_WEEK)
+						 						+ (todayCal.get(Calendar.DAY_OF_WEEK) < dateCal.get(Calendar.DAY_OF_WEEK ) ? 7 : 0)));
 				break;
 			case MONTHLY:
 				diff = this.interval - ((todayCal.get(Calendar.YEAR)- dateCal.get(Calendar.YEAR))*12 
