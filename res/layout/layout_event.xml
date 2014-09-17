@@ -31,8 +31,9 @@
 	    android:layout_alignLeft="@+id/layout_event_place"
 	    android:layout_alignParentTop="true"
 	    android:layout_marginTop="16dp"
+	    android:layout_marginRight="100dp"
 	    android:text="name"
-	    android:textAppearance="?android:attr/textAppearanceMedium"  />
+	    android:textAppearance="?android:attr/textAppearanceMedium" />
 
 	<TextView
 	    android:id="@+id/layout_event_note"
