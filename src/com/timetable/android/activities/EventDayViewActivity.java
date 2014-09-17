@@ -40,6 +40,8 @@ public class EventDayViewActivity extends Activity {
 	
 	public static final int EVENT_ADD_ACTIVITY_REQUEST_CODE = 10001;
 	
+	private Date displayedDate;
+	
 	private LinearLayout eventLayout;
 	
 	private EventPager eventPager;
@@ -173,6 +175,9 @@ public class EventDayViewActivity extends Activity {
 	        	//eventPager.goToDate(Utils.getCurrentTime());
 	        	return true;
 	        case R.id.action_go_to_date:
+	        	Calendar currDate = Calendar.getInstance();
+	        	currDate.setTime(displayedDate);
+	        	datePickerDialog.setDate(currDate.get(Calendar.YEAR), currDate.get(Calendar.MONTH), currDate.get(Calendar.DAY_OF_MONTH));
 	        	datePickerDialog.show(getSupportFragmentManager());
 	        	return true;
 	        case R.id.action_settings:
@@ -193,11 +198,11 @@ public class EventDayViewActivity extends Activity {
 		@Override
 		public void  onPageSelected(int pageNumber) {
 			TimetableLogger.log("EventPagerListener detected page # " + pageNumber + " selection.");
-			Date currentDate = getEventPager().getDateByPageNumber(pageNumber);
+			displayedDate = getEventPager().getDateByPageNumber(pageNumber);
 			
 			//update action bar
-			String dateString = ACTION_BAR_DATE_FORMAT.format(currentDate);
-			if (DateUtils.areSameDates(currentDate, Utils.getCurrDateTime())) {
+			String dateString = ACTION_BAR_DATE_FORMAT.format(displayedDate);
+			if (DateUtils.areSameDates(displayedDate, Utils.getCurrDateTime())) {
 				dateString = getResources().getString(R.string.actionbar_date_today);
 			}
 			getSupportActionBar().setTitle(dateString);
