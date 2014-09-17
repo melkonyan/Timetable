@@ -133,6 +133,7 @@ public class EventPeriodTestCase extends TestCase {
 		searchDate = dateFormat.parse("01.03.1900"); 
 		
 		assertFalse(period.hasOccurrenceOnDate(startDate, searchDate));
+		
 	}
 	
 	/*
@@ -293,7 +294,7 @@ public class EventPeriodTestCase extends TestCase {
 		assertNull(period.getNextOccurrence(startDate, today));
 	}
 	/*
-	 * Test function getNextOccurrence for weekly period, assuming, that period should not have occurrence on it's startDate
+	 * Test function getNextOccurrence for weekly period, assuming, that period should have occurrence on it's startDate
 	 */
 	public void testGetNextOccurrenceTypeWeekly() throws ParseException {
 		EventPeriod period = new EventPeriod();
@@ -304,7 +305,6 @@ public class EventPeriodTestCase extends TestCase {
 		Date startDate = dateFormat.parse("22.07.2014");
 		Date today = dateFormat.parse("31.07.2014");
 		
-		period.getNextOccurrence(startDate, today);
 		assertEquals(dateFormat.parse("05.08.2014"), period.getNextOccurrence(startDate, today));
 		
 		period.addWeekOccurrence(EventPeriod.FRIDAY);
@@ -312,6 +312,7 @@ public class EventPeriodTestCase extends TestCase {
 		assertEquals(dateFormat.parse("01.08.2014"), period.getNextOccurrence(startDate, today));
 		
 		startDate = dateFormat.parse("29.07.2014");
+		
 		period.setInterval(2);
 		
 		assertEquals(dateFormat.parse("01.08.2014"), period.getNextOccurrence(startDate, today));
@@ -323,6 +324,32 @@ public class EventPeriodTestCase extends TestCase {
 		period.setEndDate("12.08.2014");
 		
 		assertNull(period.getNextOccurrence(startDate, today));
+		
+		startDate = dateFormat.parse("17.09.2014");
+		today = dateFormat.parse("17.09.2014");
+		period.deleteEndDate();
+		period.setWeekOccurrences(0);
+		period.addWeekOccurrence(EventPeriod.WEDNESDAY);
+		period.addWeekOccurrence(EventPeriod.SUNDAY);
+		
+		assertEquals(dateFormat.parse("17.09.2014"), period.getNextOccurrence(startDate, today));
+		
+		today = dateFormat.parse("19.09.2014");
+		
+		assertEquals(dateFormat.parse("21.09.2014"), period.getNextOccurrence(startDate, today));
+		
+		today = dateFormat.parse("22.09.2014");
+		
+		assertEquals(dateFormat.parse("1.10.2014"), period.getNextOccurrence(startDate, today));
+		
+		startDate = dateFormat.parse("30.06.2014");
+		today = dateFormat.parse("14.07.2014");
+		period.setInterval(2);
+		period.setWeekOccurrences(0);
+		period.addWeekOccurrence(EventPeriod.MONDAY);
+		
+		period.getNextOccurrence(startDate, today);
+		assertEquals(dateFormat.parse("14.07.2014"), period.getNextOccurrence(startDate, today));
 		
 	}
 	
