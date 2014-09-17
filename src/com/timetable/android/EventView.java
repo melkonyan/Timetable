@@ -3,14 +3,13 @@ package com.timetable.android;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.holoeverywhere.LayoutInflater;
-import org.holoeverywhere.widget.TextView;
-
 import android.content.Context;
 import android.content.Intent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.timetable.android.activities.EventEditActivity;
 import com.timetable.android.utils.DateFormatFactory;
