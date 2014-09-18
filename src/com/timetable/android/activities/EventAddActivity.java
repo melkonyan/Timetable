@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.widget.AdapterView;
