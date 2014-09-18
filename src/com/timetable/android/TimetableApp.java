@@ -34,7 +34,7 @@ public class TimetableApp  extends Application {
 		sendBroadcast(new Intent(BroadcastActions.ACTION_APP_STARTED));
 			
 		//initialize acra
-		ACRA.init(this);
+		//ACRA.init(this);
 		TimetableLogger.log("TimetableApp.onCreate: Application is created. ACRA is initialized");
 	}
 

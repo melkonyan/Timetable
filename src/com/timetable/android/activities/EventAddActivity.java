@@ -34,7 +34,6 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TableRow;
 
 import com.timetable.android.Event;
-import com.timetable.android.EventBroadcastSender;
 import com.timetable.android.EventChecker;
 import com.timetable.android.EventChecker.IllegalEventDateException;
 import com.timetable.android.EventChecker.IllegalEventEndTimeException;
@@ -42,10 +41,11 @@ import com.timetable.android.EventChecker.IllegalEventNameException;
 import com.timetable.android.EventChecker.IllegalEventPeriodEndDateException;
 import com.timetable.android.EventChecker.IllegalEventPeriodIntervalException;
 import com.timetable.android.EventChecker.IllegalEventStartTimeException;
+import com.timetable.android.EventController;
+import com.timetable.android.EventController.OnEventSavedListener;
 import com.timetable.android.EventPeriod;
 import com.timetable.android.IllegalEventDataException;
 import com.timetable.android.R;
-import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.alarm.AlarmService;
 import com.timetable.android.alarm.EventAlarm;
@@ -60,7 +60,7 @@ import com.timetable.android.utils.Utils;
  * this values will be set to appropriate fields.
  * When user successfully saves event, activity finishes and returns event's date.
  */
-public class EventAddActivity extends Activity {
+public class EventAddActivity extends Activity implements OnEventSavedListener {
 	
 	public static final SimpleDateFormat INIT_DATE_FORMAT = DateFormatFactory.getDateTimeFormat();
 	
@@ -503,33 +503,8 @@ public class EventAddActivity extends Activity {
 	    switch (item.getItemId()) {
 	        case R.id.action_save_event:
 	        	TimetableLogger.log("Try to save event.");
-	        	try {
 	        		saveEvent();
-	        		Intent resultData = new Intent();
-	        		resultData.putExtra(EventDayViewActivity.EXTRAS_DATE, event.getDateMillis());
-	        		setResult(RESULT_OK, resultData);
-	        		finish();
-	        	} catch (IllegalEventNameException e) {
-	        		eventNameVal.requestFocus();
-	        		showException(e);
-	        	} catch (IllegalEventDateException e) {
-	        		eventDateVal.requestFocus();
-	        		showException(e);
-	        	} catch(IllegalEventStartTimeException e) { 
-	        		eventStartTimeVal.requestFocus();
-	        		showException(e);
-	        	} catch (IllegalEventEndTimeException e) {
-	        		eventEndTimeVal.requestFocus();
-	        		showException(e);
-	        	} catch (IllegalEventPeriodIntervalException e) {
-	        		eventPeriodIntervalVal.requestFocus();
-	        		showException(e);
-	        	} catch (IllegalEventPeriodEndDateException e) {
-	        		eventPeriodEndDateVal.requestFocus();
-	        		showException(e);
-	        	} catch (IllegalEventDataException e) {
-		        	showException(e);
-	        	}
+	        		return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
@@ -787,41 +762,69 @@ public class EventAddActivity extends Activity {
 		}
 	}
 	
-	public Event getEvent() throws IllegalEventDataException {
-		Event.Builder builder = new Event.Builder();
-		builder.setName(checker.getNameFromString(eventNameVal.getText().toString()))
-				.setPlace(checker.getPlaceFromString(eventPlaceVal.getText().toString()))
-				.setDate(checker.getDateFromString(eventDateVal.getText().toString()))
-				.setStartTime(checker.getStartTimeFromString(eventStartTimeVal.getText().toString()))
-				.setEndTime(checker.getEndTimeFromString(eventEndTimeVal.getText().toString()))
-				.setNote(checker.getNoteFromString(eventNoteVal.getText().toString()))
-				.setMuteDevice(eventMuteDeviceVal.isChecked())
-				.setPeriod(getEventPeriod());
-		Event event = builder.build();
-		if (isSetEventAlarm()) {
-			Date alarmTime = checker.getAlarmTimeFromString(eventAlarmTime.getText().toString());
-			alarmTime = DateUtils.setTime(event.getDate(), alarmTime);
-			event.setAlarm(new EventAlarm(event));
-			event.getAlarm().time = alarmTime;
-		}
-		checker.checkEvent(event);
-		TimetableLogger.log("EventAddActivity.getEvent:\n" +  event.toString());
-		return event;
+	/*
+	 * Try to extract event information from text fields. If some data is invalid show appropriate toast message and return null.
+	 * If data is correct, return extracted event.
+	 */
+	public Event getEvent() {
+		try {
+			Event.Builder builder = new Event.Builder();
+			builder.setName(checker.getNameFromString(eventNameVal.getText().toString()))
+					.setPlace(checker.getPlaceFromString(eventPlaceVal.getText().toString()))
+					.setDate(checker.getDateFromString(eventDateVal.getText().toString()))
+					.setStartTime(checker.getStartTimeFromString(eventStartTimeVal.getText().toString()))
+					.setEndTime(checker.getEndTimeFromString(eventEndTimeVal.getText().toString()))
+					.setNote(checker.getNoteFromString(eventNoteVal.getText().toString()))
+					.setMuteDevice(eventMuteDeviceVal.isChecked())
+					.setPeriod(getEventPeriod());
+			Event event = builder.build();
+			if (isSetEventAlarm()) {
+				Date alarmTime = checker.getAlarmTimeFromString(eventAlarmTime.getText().toString());
+				alarmTime = DateUtils.setTime(event.getDate(), alarmTime);
+				event.setAlarm(new EventAlarm(event));
+				event.getAlarm().time = alarmTime;
+			}
+			checker.checkEvent(event);
+			TimetableLogger.log("EventAddActivity.getEvent:\n" +  event.toString());
+			return event;
+		} catch (IllegalEventNameException e) {
+    		eventNameVal.requestFocus();
+    		showException(e);
+    	} catch (IllegalEventDateException e) {
+    		eventDateVal.requestFocus();
+    		showException(e);
+    	} catch(IllegalEventStartTimeException e) { 
+    		eventStartTimeVal.requestFocus();
+    		showException(e);
+    	} catch (IllegalEventEndTimeException e) {
+    		eventEndTimeVal.requestFocus();
+    		showException(e);
+    	} catch (IllegalEventPeriodIntervalException e) {
+    		eventPeriodIntervalVal.requestFocus();
+    		showException(e);
+    	} catch (IllegalEventPeriodEndDateException e) {
+    		eventPeriodEndDateVal.requestFocus();
+    	} catch (IllegalEventDataException e) {
+        	showException(e);
+    	} 
+		
+		//this code will be executed only if exception is thrown. Otherwise event will be returned in try block.
+		return null;
 	}
 	
 	
-	 /*
-	  *  save event to database
-	  */
-	public void saveEvent() throws IllegalEventDataException {
+	/*
+	 *  Save event to database.
+	 */
+	public boolean saveEvent() {
 		event = getEvent();
-		TimetableDatabase db = TimetableDatabase.getInstance(this);
-		event = db.insertEvent(event);
 		if (event == null) {
-			Toast.makeText(this, "Error occured while saving event.", Toast.LENGTH_SHORT).show();
-			return;
+			return false;
 		}
-		EventBroadcastSender.sendEventAddedBroadcast(this, event);
+		EventController controller = new EventController(this);
+		controller.setOnEventSavedListener(this);
+		controller.saveEvent(event);
+		return true;
 	}
 	
 	private void resizeLayout() {
@@ -867,6 +870,19 @@ public class EventAddActivity extends Activity {
 			
 		}
 		
+	}
+
+	@Override
+	public void onEventSaved(Event savedEvent) {
+		if (event == null) {
+			Toast.makeText(this, "Error occured while saving event.", Toast.LENGTH_SHORT).show();
+		}
+		else { 
+			Intent resultData = new Intent();
+			resultData.putExtra(EventDayViewActivity.EXTRAS_DATE, savedEvent.getDateMillis());
+			setResult(RESULT_OK, resultData);
+		}
+		finish();
 	}
 
 

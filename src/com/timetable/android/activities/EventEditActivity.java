@@ -3,22 +3,18 @@ package com.timetable.android.activities;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.timetable.android.Event;
-import com.timetable.android.EventBroadcastSender;
+import com.timetable.android.EventController;
+import com.timetable.android.EventController.OnEventDeletedListener;
+import com.timetable.android.EventController.OnEventUpdatedListener;
 import com.timetable.android.EventPeriod;
-import com.timetable.android.IllegalEventDataException;
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
@@ -28,7 +24,7 @@ import com.timetable.android.TimetableLogger;
  * Should be started with extra field 'event_id' that contains id of oldEvent,
  * that should be edited and field 'date', that contains editDate, when oldEvent was edited.
  */
-public class EventEditActivity extends EventAddActivity {
+public class EventEditActivity extends EventAddActivity implements OnEventUpdatedListener, OnEventDeletedListener {
 
 	public static final String EXTRA_EVENT_ID = "event_id";
 	
@@ -120,11 +116,7 @@ public class EventEditActivity extends EventAddActivity {
 	    switch (item.getItemId()) {
 	        case R.id.action_save_event:
 	        	TimetableLogger.log("EventEditActivity: try to save oldEvent.");
-	        	try {
-	        		saveEvent();
-	        	} catch (IllegalEventDataException e) {
-	            	Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-	            }
+	        	saveEvent();
 	        	return true;
 	        case R.id.action_delete_event:
 	        	TimetableLogger.log("EventEditActivity: try to delete oldEvent.");
@@ -136,158 +128,33 @@ public class EventEditActivity extends EventAddActivity {
 	}
 
 	@Override 
-	public void saveEvent() throws IllegalEventDataException {
+	public boolean saveEvent()  {
 		editedEvent = getEvent();
-		editedEvent.setId(oldEvent.getId());
-		editedEvent.getPeriod().setId(oldEvent.getPeriod().getId());
-		if (editedEvent.hasAlarm() && oldEvent.hasAlarm()) {
-			editedEvent.getAlarm().id = oldEvent.getAlarm().id;	
-		}
-		// If oldEvent hasn't changed, we do not to save it
-		if (oldEvent.equals(editedEvent)) {
-			finish();
-			return;
+		if (editedEvent == null) {
+			return false;
 		}
 		
-		if (oldEvent.isRepeatable()) {
-			new SaveDialog(this); 
-			return;
-		}
-		
-		TimetableDatabase db = TimetableDatabase.getInstance(this);
-		editedEvent = db.updateEvent(editedEvent);
-		EventBroadcastSender.sendEventUpdatedBroadcast(this, editedEvent);
-		
-		finish();
-	}
-	
-	/*
-	 * When repeatable oldEvent is updated or deleted and option "Override future events" is selected by user, 
-	 * new version of the oldEvent is inserted into the database, and the end editDate of old version is updated,
-	 * so that old oldEvent is already finished on the editDate of editing.
-	 */
-	private void updateOldEventEndDate() {
-		//TODO: collide this function an addOldEventException into one function updateOldEvent
-		// change updateEvent method in the database, so that all oldEvent's exception would be updated.
-		oldEvent.getPeriod().setEndDate(editDate);
-		if (oldEvent.getPeriod().isFinished(oldEvent.getDate())) {
-			db.deleteEvent(oldEvent);
-			EventBroadcastSender.sendEventDeletedBroadcast(this, oldEvent);
-		} else {
-			db.updateEvent(oldEvent);
-			EventBroadcastSender.sendEventUpdatedBroadcast(this, oldEvent);
-			
-		}
-		
-	}
-	
-	/*
-	 * When repeatable oldEvent is updated or deleted and option "Change only this oldEvent" is selected by user,
-	 * new version of the oldEvent is inserted into the database, and editDate of editing is added to exceptions of old oldEvent.
-	 */
-	private void addOldEventException() {
-		oldEvent.addException(editDate);
-		db.insertException(oldEvent, editDate);
-		EventBroadcastSender.sendEventUpdatedBroadcast(this, oldEvent);	
-	}
-	
-	private void saveRepeatableEvent(boolean overrideFutureEvents) {
-		if (overrideFutureEvents) {
-			//from today on this oldEvent ends
-			updateOldEventEndDate();
-			
-			editedEvent = db.insertEvent(editedEvent);
-			//copy exceptions to new oldEvent
-			for (Date exception: oldEvent.getExceptions()) {
-				db.insertException(editedEvent, exception);
-			}
-		
-		} else {
-			//today there is no session of this oldEvent
-			addOldEventException();
-			editedEvent.getPeriod().setType(EventPeriod.NONE);
-			editedEvent = db.insertEvent(editedEvent);
-			
-		}
-		
-		EventBroadcastSender.sendEventAddedBroadcast(this, editedEvent);
+		EventController eventController = new EventController(this);
+		eventController.setOnEventUpdatedListener(this);
+		eventController.updateEvent(editedEvent, oldEvent, editDate);
+		return true;
 	}
 	
 	public void deleteEvent() {
-		if (oldEvent.isRepeatable()) {
-			new DeleteDialog(this);
-			return;
-		}
-		TimetableDatabase db = TimetableDatabase.getInstance(this);
-		db.deleteEvent(oldEvent);
-		EventBroadcastSender.sendEventDeletedBroadcast(this, oldEvent);
+		EventController eventController = new EventController(this);
+		eventController.setOnEventDeletedListener(this);
+		eventController.deleteEvent(oldEvent, editDate);
+	}
+	
+	@Override
+	public void onEventUpdated(Event updatedEvent) {
 		finish();
 	}
-	
-	private void deleteRepeatableEvent(boolean deleteFutureEvents) {
-		if (deleteFutureEvents) {
-			//from today on this oldEvent ends
-			updateOldEventEndDate();
-		} else {
-			//today there is no session of this oldEvent
-			addOldEventException();
-		}
-	}
-	
-	
-	private class SaveDialog extends AlertDialog {
-		
-		public SaveDialog(Context context) {
-			super(context);
-			AlertDialog.Builder saveDialogBuilder = new AlertDialog.Builder(context);
-			saveDialogBuilder.setTitle(R.string.dialog_title_save_event);
-			SaveDialogOnClickListener mListener = new SaveDialogOnClickListener(); 
-			saveDialogBuilder.setPositiveButton(R.string.dialog_button_save, mListener);
-			saveDialogBuilder.setNeutralButton(R.string.dialog_button_cancel, mListener);
-			saveDialogBuilder.setSingleChoiceItems(new String [] {getResources().getString(R.string.dialog_option_change_this_event),
-																	getResources().getString(R.string.dialog_option_change_all_events)}, 1, null);
-			saveDialogBuilder.show(); 
-		}
-		
-		private class SaveDialogOnClickListener implements DialogInterface.OnClickListener {
-			public void onClick(DialogInterface dialog, int buttonType) {
-				switch (buttonType) {
-					case DialogInterface.BUTTON_POSITIVE:
-						int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
-						saveRepeatableEvent(selectedPosition == 1); 
-						finish();
-						break;
-				}
-			}
-		}
-	}
-	
-	private class DeleteDialog extends AlertDialog {
-		
-		public DeleteDialog(Context context) {
-			super(context);
-			AlertDialog.Builder saveDialogBuilder = new AlertDialog.Builder(context);
-			saveDialogBuilder.setTitle(R.string.dialog_title_delete_event);
-			SaveDialogOnClickListener mListener = new SaveDialogOnClickListener(); 
-			saveDialogBuilder.setPositiveButton(R.string.dialog_button_delete, mListener);
-			saveDialogBuilder.setNeutralButton(R.string.dialog_button_cancel, mListener);
-			saveDialogBuilder.setSingleChoiceItems(new String [] {getResources().getString(R.string.dialog_option_delete_this_event),
-																	getResources().getString(R.string.dialog_option_delete_all_events)}, 1, null);
-			saveDialogBuilder.show(); 
-		}
-		
-		private class SaveDialogOnClickListener implements DialogInterface.OnClickListener {
-			public void onClick(DialogInterface dialog, int buttonType) {
-				switch (buttonType) {
-					case DialogInterface.BUTTON_POSITIVE:
-						int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
-						deleteRepeatableEvent(selectedPosition == 1); 
-						TimetableLogger.log("Event was saved. Leaving EventEditActivity.");
-						finish();
-						break;
-				}
-			}
-		}
+
+
+	@Override
+	public void onEventDeleted() {
+		finish();
 	}
 	
 }
