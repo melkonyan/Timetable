@@ -78,8 +78,7 @@
 	<View
 	    android:layout_width="fill_parent"
 	    android:layout_height="0.2dp"
-	    android:layout_below="@+id/layout_event_note"
-	    android:layout_marginTop="20dp"
+	    android:layout_below="@+id/layout_event_buttons_container"
 	    android:layout_alignParentLeft="true"
 	    android:layout_marginBottom="0dp"
 	    android:background="#808080" />
@@ -90,6 +89,65 @@
 	    android:layout_alignTop="@+id/layout_event_image_repeat"
 	    android:layout_toLeftOf="@+id/layout_event_image_repeat"
 	    android:src="@drawable/ic_action_volume_muted" />
+	<LinearLayout 
+	    android:id="@+id/layout_event_buttons_container"
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/layout_event_note"
+	    android:layout_marginTop="20dp"
+	    android:layout_alignParentLeft="true"
+	    android:layout_marginBottom="0dp"
+	    android:background="#808080">
+		
+		<LinearLayout 
+		    android:id="@+id/layout_event_button_copy"
+	        style="@style/EventViewButtonLayoutStyle">
+	       	
+		    <ImageView
+		        android:id="@+id/layout_event_button_copy_image"
+		        style="@style/EventViewButtonImageStyle"
+		        android:focusable="true"
+		        android:src="@drawable/ic_action_copy" />
+  
+	    	<TextView 
+	    	    android:id="@+id/layout_event_button_copy_text"
+	    	    style="@style/EventViewButtonTextStyle"
+				android:text="Copy"/>
+	    
+		    
+	    </LinearLayout>	   
+	    
+	    <LinearLayout 
+		    android:id="@+id/layout_event_button_edit"
+	        style="@style/EventViewButtonLayoutStyle">
+	       	
+		    <ImageView
+				android:id="@+id/layout_event_button_edit_image"
+				style="@style/EventViewButtonImageStyle"
+				android:src="@drawable/ic_action_edit"/>  
+	    	<TextView 
+	    	    android:id="@+id/layout_event_button_edit_text"
+	    	    style="@style/EventViewButtonTextStyle"
+				android:text="Edit"/>
+	    
+		    
+	    </LinearLayout>	   
+	    
+	    <LinearLayout
+	        android:id="@+id/layout_event_button_delete"
+	        style="@style/EventViewButtonLayoutStyle">
+	        
+	        <ImageView
+				android:id="@+id/layout_event_button_delete_image"
+				style="@style/EventViewButtonImageStyle"
+				android:src="@drawable/ic_content_discard"/>  
+	    	<TextView 
+	    	    android:id="@+id/layout_event_button_delete_text"
+	    	    style="@style/EventViewButtonTextStyle"
+				android:text="Delete"/>
+	    </LinearLayout>
+	</LinearLayout>
 	
 </RelativeLayout>
 <!-- </merge> -->
