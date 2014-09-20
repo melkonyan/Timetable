@@ -1,106 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- <merge xmlns:android="http://schemas.android.com/apk/res/android"> -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
    	android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+   	android:orientation="vertical"
    	android:id="@+id/layout_event_container"
-	android:clickable="True"
-	android:background="@drawable/event_day_view_background">
+	android:background="@android:color/transparent">
 	
-	<TextView 
-	    android:id="@+id/layout_event_id"
-	    android:layout_width="wrap_content"
+	<RelativeLayout 
+	   	android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:visibility="invisible"
-	   	android:text=""
-	   />
-	<TextView
-	    android:id="@+id/layout_event_place"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentLeft="true"
-	    android:layout_below="@+id/layout_event_name"
-	    android:text="place"
-	    android:layout_marginLeft="100dp" />
-
-	<TextView
-	    android:id="@+id/layout_event_name"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignLeft="@+id/layout_event_place"
-	    android:layout_alignParentTop="true"
-	    android:layout_marginTop="16dp"
-	    android:layout_marginRight="100dp"
-	    android:text="name"
-	    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-	<TextView
-	    android:id="@+id/layout_event_note"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignLeft="@+id/layout_event_place"
-	    android:text="note"
-	    android:layout_below="@+id/layout_event_place" />
+	   	android:id="@+id/layout_event_info_container"
+		android:clickable="True"
+		android:background="@drawable/event_day_view_background">
+		
+		<TextView 
+		    android:id="@+id/layout_event_id"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:visibility="invisible"
+		   	android:text=""
+		   />
+		<TextView
+		    android:id="@+id/layout_event_place"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_below="@+id/layout_event_name"
+		    android:text="place"
+		    android:layout_marginLeft="100dp" />
+	
+		<TextView
+		    android:id="@+id/layout_event_name"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignLeft="@+id/layout_event_place"
+		    android:layout_alignParentTop="true"
+		    android:layout_marginTop="16dp"
+		    android:layout_marginRight="100dp"
+		    android:text="name"
+		    android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+		<TextView
+		    android:id="@+id/layout_event_note"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignLeft="@+id/layout_event_place"
+		    android:paddingBottom="20dp"
+		    android:text="note"
+		    android:layout_below="@+id/layout_event_place" />
+		
+		<TextView
+		    android:id="@+id/layout_event_start_time"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignTop="@+id/layout_event_name"
+		    android:layout_marginRight="22dp"
+		    android:layout_toLeftOf="@+id/layout_event_name"
+		    android:textAppearance="?android:attr/textAppearanceLarge" />
 	
 	<TextView
-	    android:id="@+id/layout_event_start_time"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignTop="@+id/layout_event_name"
-	    android:layout_marginRight="22dp"
-	    android:layout_toLeftOf="@+id/layout_event_name"
-	    android:textAppearance="?android:attr/textAppearanceLarge" />
-
-<TextView
-	    android:id="@+id/layout_event_end_time"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignRight="@+id/layout_event_start_time"
-	    android:layout_below="@+id/layout_event_start_time"
-	    android:textAppearance="?android:attr/textAppearanceSmall" />
-
-	<ImageView
-	    android:id="@+id/layout_event_image_alarm"
-	    android:layout_alignParentRight="true"
-	    android:layout_alignTop="@+id/layout_event_image_repeat"
-	    android:layout_marginRight="22dp"
-	    style="@style/EventViewImageStyle"
-	    android:src="@drawable/ic_action_alarms" />
-
-	<ImageView
-	    android:id="@+id/layout_event_image_repeat"
-	    style="@style/EventViewImageStyle"
-	    android:layout_alignTop="@+id/layout_event_name"
-	    android:layout_toLeftOf="@+id/layout_event_image_alarm"
-	    android:src="@drawable/ic_action_refresh" />
+		    android:id="@+id/layout_event_end_time"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignRight="@+id/layout_event_start_time"
+		    android:layout_below="@+id/layout_event_start_time"
+		    android:textAppearance="?android:attr/textAppearanceSmall" />
 	
-	<View
-	    android:layout_width="fill_parent"
-	    android:layout_height="0.2dp"
-	    android:layout_below="@+id/layout_event_buttons_container"
-	    android:layout_alignParentLeft="true"
-	    android:layout_marginBottom="0dp"
-	    android:background="#808080" />
-
-	<ImageView
-	    android:id="@+id/layout_event_image_mute_device"
-	    style="@style/EventViewImageStyle"
-	    android:layout_alignTop="@+id/layout_event_image_repeat"
-	    android:layout_toLeftOf="@+id/layout_event_image_repeat"
-	    android:src="@drawable/ic_action_volume_muted" />
+		<ImageView
+		    android:id="@+id/layout_event_image_alarm"
+		    android:layout_alignParentRight="true"
+		    android:layout_alignTop="@+id/layout_event_image_repeat"
+		    android:layout_marginRight="22dp"
+		    style="@style/EventViewImageStyle"
+		    android:src="@drawable/ic_action_alarms" />
+	
+		<ImageView
+		    android:id="@+id/layout_event_image_repeat"
+		    style="@style/EventViewImageStyle"
+		    android:layout_alignTop="@+id/layout_event_name"
+		    android:layout_toLeftOf="@+id/layout_event_image_alarm"
+		    android:src="@drawable/ic_action_refresh" />
+		
+	
+		<ImageView
+		    android:id="@+id/layout_event_image_mute_device"
+		    style="@style/EventViewImageStyle"
+		    android:layout_alignTop="@+id/layout_event_image_repeat"
+		    android:layout_toLeftOf="@+id/layout_event_image_repeat"
+		    android:src="@drawable/ic_action_volume_muted" />
+				
+	</RelativeLayout>
+	
 	<LinearLayout 
 	    android:id="@+id/layout_event_buttons_container"
 	    android:orientation="horizontal"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:layout_below="@+id/layout_event_note"
-	    android:layout_marginTop="20dp"
-	    android:layout_alignParentLeft="true"
-	    android:layout_marginBottom="0dp"
-	    android:background="#808080">
+	   	android:background="#909090">
+	    
 		
-		<LinearLayout 
+	    <LinearLayout 
 		    android:id="@+id/layout_event_button_copy"
 	        style="@style/EventViewButtonLayoutStyle">
 	       	
@@ -117,12 +118,12 @@
 	    
 		    
 	    </LinearLayout>	   
-	    
+	      
 	    <LinearLayout 
 		    android:id="@+id/layout_event_button_edit"
 	        style="@style/EventViewButtonLayoutStyle">
-	       	
-		    <ImageView
+	       
+	        <ImageView
 				android:id="@+id/layout_event_button_edit_image"
 				style="@style/EventViewButtonImageStyle"
 				android:src="@drawable/ic_action_edit"/>  
@@ -132,8 +133,9 @@
 				android:text="Edit"/>
 	    
 		    
+		    
 	    </LinearLayout>	   
-	    
+	     
 	    <LinearLayout
 	        android:id="@+id/layout_event_button_delete"
 	        style="@style/EventViewButtonLayoutStyle">
@@ -147,7 +149,14 @@
 	    	    style="@style/EventViewButtonTextStyle"
 				android:text="Delete"/>
 	    </LinearLayout>
-	</LinearLayout>
 	
-</RelativeLayout>
+		</LinearLayout>
+	
+	<View
+	    android:layout_width="fill_parent"
+	    android:layout_height="0.2dp"
+	    android:layout_marginBottom="0dp"
+	    android:background="#808080" />
+
+</LinearLayout>
 <!-- </merge> -->

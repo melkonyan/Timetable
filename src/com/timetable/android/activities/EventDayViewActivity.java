@@ -18,7 +18,11 @@ import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.timetable.android.EventController;
+import com.timetable.android.EventController.OnEventDeletedListener;
 import com.timetable.android.EventPager;
+import com.timetable.android.EventView;
+import com.timetable.android.EventView.EventViewObserver;
 import com.timetable.android.R;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.utils.DateFormatFactory;
@@ -30,7 +34,7 @@ import com.timetable.android.utils.Utils;
  * Activity that displays all events for certain day.
  * User can view events for next or previous day by shifting page right or left.
  */
-public class EventDayViewActivity extends Activity {
+public class EventDayViewActivity extends Activity implements EventViewObserver, OnEventDeletedListener {
 	
 	public static final SimpleDateFormat ACTION_BAR_DATE_FORMAT = new SimpleDateFormat("EEE, dd.MM", Locale.US); 
 	
@@ -50,6 +54,8 @@ public class EventDayViewActivity extends Activity {
 	
 	private EventPagerListener mListener = new EventPagerListener();
 	
+	//Event view, that shows it's menu.
+	private EventView mSelectedEventView;
 	
 	public EventPager getEventPager() {
 		return eventPager;
@@ -136,6 +142,12 @@ public class EventDayViewActivity extends Activity {
 	}
 
 
+	@Override 
+	public void onPause() {
+		super.onPause();
+		hideOpenedMenu();
+	}
+	
 	@Override
 	public void onRestart() {
 		super.onRestart();
@@ -223,7 +235,42 @@ public class EventDayViewActivity extends Activity {
 				dateString = getResources().getString(R.string.actionbar_date_today);
 			}
 			getSupportActionBar().setTitle(dateString);
+			hideOpenedMenu();
 		}
+	}
+
+	/*
+	 * Hide menu of currently selected EventView
+	 */
+	private void hideOpenedMenu() {
+		if (mSelectedEventView != null) {
+			mSelectedEventView.hideMenu();
+			mSelectedEventView = null;
+		}
+	}
+	
+	@Override
+	public void onEventViewClicked(EventView eventView) {
+		if (mSelectedEventView == eventView) {
+			eventView.hideMenu();
+			mSelectedEventView = null;
+		} else {
+			hideOpenedMenu();
+			eventView.showMenu();
+			mSelectedEventView = eventView;
+		}
+	}
+
+	@Override
+	public void onButtonDeleteClicked(EventView eventView) {
+		EventController eventController = new EventController(this);
+		eventController.setOnEventDeletedListener(this);
+		eventController.deleteEvent(eventView.getEvent(), eventPager.getDisplayedDate());
+	}
+
+	@Override
+	public void onEventDeleted() {
+		getEventPager().update();
 	}
 
 

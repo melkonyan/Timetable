@@ -35,7 +35,7 @@ public class EventPager extends ViewPager {
 		setId(1000);
 		this.activity = activity;
 		this.initDate = initDate;
-	
+		setOffscreenPageLimit(0);
 		LayoutInflater layoutInflater = LayoutInflater.from(activity);	
 		layoutInflater.inflate(R.layout.event_pager, this, true);
 		eventPagerAdapter = new EventPagerAdapter(initDate);
@@ -138,6 +138,7 @@ public class EventPager extends ViewPager {
 					continue;
 				}
 				EventView eventView = new EventView(EventPager.this.activity, event, currentDate);
+				eventView.setEventViewObserver(activity);
 				internalLayout.addView(eventView);
 				hasEventsToday = true;
 			}

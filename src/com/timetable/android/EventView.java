@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.timetable.android.activities.EventAddActivity;
 import com.timetable.android.activities.EventEditActivity;
 import com.timetable.android.utils.DateFormatFactory;
 
@@ -26,8 +28,18 @@ public class EventView extends RelativeLayout {
 	private Context mContext; 
 	
 	private Date mDisplayDate;
+	
+	private LinearLayout mEventContainer;
+	
+	private RelativeLayout mEventInfoContainer;
+	 
+	private LinearLayout mMenuContainer;
+	
+	private EventViewObserver mObserver;
+	
+	
 	/*
-	 * Constuctor for EventView class.
+	 * Constructor for EventView class.
 	 * @mEvent - mEvent to display.
 	 * @displayDate - date, on which mEvent is displayed.
 	 */
@@ -38,7 +50,11 @@ public class EventView extends RelativeLayout {
 		mDisplayDate = displayDate;
 		LayoutInflater layoutInflater =  LayoutInflater.from(context);	
 		layoutInflater.inflate(R.layout.layout_event, this, true);
-		RelativeLayout mContainer = (RelativeLayout) findViewById(R.id.layout_event_container);
+		mEventContainer = (LinearLayout) findViewById(R.id.layout_event_container);
+		mEventInfoContainer = (RelativeLayout) findViewById(R.id.layout_event_info_container);
+		
+		mMenuContainer = (LinearLayout) findViewById(R.id.layout_event_buttons_container);
+		
 		TextView textViewEventId = (TextView) findViewById(R.id.layout_event_id);
 		TextView textViewEventName = (TextView) findViewById(R.id.layout_event_name); 
 		TextView textViewEventPlace = (TextView) findViewById(R.id.layout_event_place); 
@@ -48,6 +64,10 @@ public class EventView extends RelativeLayout {
 		ImageView imageRepeat = (ImageView) findViewById(R.id.layout_event_image_repeat);
 		ImageView imageAlarm = (ImageView) findViewById(R.id.layout_event_image_alarm);
 		ImageView imageMuteDevice = (ImageView) findViewById(R.id.layout_event_image_mute_device);
+		
+		LinearLayout buttonCopy = (LinearLayout) findViewById(R.id.layout_event_button_copy);
+		LinearLayout buttonEdit = (LinearLayout) findViewById(R.id.layout_event_button_edit);
+		LinearLayout buttonDelete = (LinearLayout) findViewById(R.id.layout_event_button_delete);
 		
 		textViewEventId.setText(Integer.toString(event.getId()));
 		textViewEventName.setText(event.getName());
@@ -62,17 +82,18 @@ public class EventView extends RelativeLayout {
 			textViewEventEndTime.setText("");
 		}
 		
+		mMenuContainer.setVisibility(View.GONE);
 		imageRepeat.setVisibility(event.isRepeatable() ? View.VISIBLE : View.INVISIBLE);
 		imageAlarm.setVisibility(event.hasAlarm() ? View.VISIBLE : View.INVISIBLE);
 		imageMuteDevice.setVisibility(event.mutesDevice() ? View.VISIBLE : View.INVISIBLE);
 		
 		TimetableLogger.verbose("Event " + event.getName() + " successfully drawed");
 		
-		mContainer.setOnClickListener(new OnClickListener() {
+		buttonEdit.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
-				TimetableLogger.log("EventView: click performed");
+				TimetableLogger.verbose("EventView: edit button clicked");
 				Intent eventEditIntent = new Intent(mContext, EventEditActivity.class);
 				eventEditIntent.putExtra(EventEditActivity.EXTRA_EVENT_ID, EventView.this.mEvent.getId());
 				//TODO: put date's millis into extra, instead of formatting and then parsing date string 
@@ -82,5 +103,64 @@ public class EventView extends RelativeLayout {
 			}
 		});
 		
+		buttonCopy.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				TimetableLogger.verbose("EventView: copy button clicked.");
+				Intent eventCopyIntent = new Intent(mContext, EventAddActivity.class);
+				eventCopyIntent.putExtra(EventEditActivity.EXTRA_COPY_EVENT, EventView.this.mEvent.convert());
+				//TODO: put date's millis into extra, instead of formatting and then parsing date string 
+				eventCopyIntent.putExtra(EventEditActivity.EXTRA_DATE, EventEditActivity.INIT_DATE_FORMAT.format(mDisplayDate));
+				mContext.startActivity(eventCopyIntent);
+				
+			}
+		});
+		
+		buttonDelete.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				TimetableLogger.verbose("EventView: delete button clicked.");
+				if (mObserver != null) {
+					mObserver.onButtonDeleteClicked(EventView.this);
+				}
+			}
+		});
+		
+		mEventInfoContainer.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				TimetableLogger.verbose("EventView: event clicked.");
+				if (mObserver != null) {
+					mObserver.onEventViewClicked(EventView.this);
+				}
+			}
+		});
+	}
+	
+	public Event getEvent() {
+		return mEvent;
+	}
+	
+	public void showMenu() {
+		mMenuContainer.setVisibility(View.VISIBLE);
+	}
+	
+	public void hideMenu() {
+		mMenuContainer.setVisibility(View.GONE);
+	}
+	
+	public void setEventViewObserver(EventViewObserver observer) {
+		mObserver = observer;
+	}
+	
+	public static interface EventViewObserver {
+		
+		public void onEventViewClicked(EventView eventView);
+		
+		public void onButtonDeleteClicked(EventView eventView);
+	
 	}
 }

@@ -51,15 +51,16 @@
 	    <item name="android:layout_height">wrap_content</item>
 	    <item name="android:layout_width">0dp</item>
 	    <item name="android:layout_weight">1</item>
+    	<item name="android:background">@drawable/button_background</item>
+    	<item name="android:clickable">true</item>
     </style>
     
     <style name = "EventViewButtonImageStyle">
         <item name="android:layout_gravity">center</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_width">wrap_content</item>
-	    <item name="android:background">@android:color/black</item>
-	    <item name="android:focusable">false</item>		
-    </style>
+		<item name="android:layout_height">25dp</item>
+		<item name="android:layout_width">25dp</item>
+	    <item name="android:background">@android:color/transparent</item>
+	 </style>
     
     <style name ="EventViewButtonTextStyle">
         <item name="android:layout_gravity">center</item>

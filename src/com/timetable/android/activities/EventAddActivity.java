@@ -64,7 +64,11 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 	
 	public static final SimpleDateFormat INIT_DATE_FORMAT = DateFormatFactory.getDateTimeFormat();
 	
+	//Date on which event is added
 	public static final String EXTRA_DATE = "date";
+	
+	//If activity is started to copy some event, this field should contain information about event to copy.
+	public static final String EXTRA_COPY_EVENT = "extra_copy_event";
 	
 	private static final EventPeriod.Type EVENT_PERIOD_TYPE_IDS [] = 
 			new EventPeriod.Type[] {
@@ -425,6 +429,20 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 	private void setInitValues() {
 		Bundle extras = getIntent().getExtras();
 		if (extras == null) {
+			TimetableLogger.error("EventAddActivity.setInitValues. Intent with no extra data received.");
+			return;
+		}
+		if (extras.containsKey(EXTRA_COPY_EVENT)) {
+			try {
+				setEvent(new Event(extras.getBundle(EXTRA_COPY_EVENT)));
+				initEventDate = Calendar.getInstance();
+				initEventDate.setTime(INIT_DATE_FORMAT.parse(extras.getString(EventAddActivity.EXTRA_DATE)));
+				setEventDate(getInitDate());
+				
+			} catch (ParseException e) {
+				TimetableLogger.error("EventAddActivity.setInitValues. Unparseble copy-event received.");
+			} 
+			
 			return;
 		}
 		try {
