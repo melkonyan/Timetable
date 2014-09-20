@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,8 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.timetable.android.activities.EventAddActivity;
-import com.timetable.android.activities.EventEditActivity;
 import com.timetable.android.utils.DateFormatFactory;
 
 /*
@@ -94,12 +91,9 @@ public class EventView extends RelativeLayout {
 			@Override
 			public void onClick(View arg0) {
 				TimetableLogger.verbose("EventView: edit button clicked");
-				Intent eventEditIntent = new Intent(mContext, EventEditActivity.class);
-				eventEditIntent.putExtra(EventEditActivity.EXTRA_EVENT_ID, EventView.this.mEvent.getId());
-				//TODO: put date's millis into extra, instead of formatting and then parsing date string 
-				eventEditIntent.putExtra(EventEditActivity.EXTRA_DATE, EventEditActivity.INIT_DATE_FORMAT.format(mDisplayDate));
-				mContext.startActivity(eventEditIntent);
-			
+				if (mObserver != null) {
+					mObserver.onButtonEditClicked(EventView.this);
+				}
 			}
 		});
 		
@@ -108,12 +102,9 @@ public class EventView extends RelativeLayout {
 			@Override
 			public void onClick(View v) {
 				TimetableLogger.verbose("EventView: copy button clicked.");
-				Intent eventCopyIntent = new Intent(mContext, EventAddActivity.class);
-				eventCopyIntent.putExtra(EventEditActivity.EXTRA_COPY_EVENT, EventView.this.mEvent.convert());
-				//TODO: put date's millis into extra, instead of formatting and then parsing date string 
-				eventCopyIntent.putExtra(EventEditActivity.EXTRA_DATE, EventEditActivity.INIT_DATE_FORMAT.format(mDisplayDate));
-				mContext.startActivity(eventCopyIntent);
-				
+				if (mObserver != null) {
+					mObserver.onButtonCopyClicked(EventView.this);
+				}
 			}
 		});
 		
@@ -138,6 +129,18 @@ public class EventView extends RelativeLayout {
 				}
 			}
 		});
+		
+		mEventInfoContainer.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				if (mObserver != null) {
+					mObserver.onEventViewLongClicked(EventView.this);
+					return true;
+				}
+				return false;
+			}
+		});
 	}
 	
 	public Event getEvent() {
@@ -160,7 +163,12 @@ public class EventView extends RelativeLayout {
 		
 		public void onEventViewClicked(EventView eventView);
 		
+		public void onEventViewLongClicked(EventView eventView);
+		
 		public void onButtonDeleteClicked(EventView eventView);
-	
+		
+		public void onButtonEditClicked(EventView eventView);
+		
+		public void onButtonCopyClicked(EventView eventView);
 	}
 }

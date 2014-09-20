@@ -273,6 +273,30 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 		getEventPager().update();
 	}
 
+	@Override
+	public void onButtonEditClicked(EventView eventView) {
+		Intent eventEditIntent = new Intent(this, EventEditActivity.class);
+		eventEditIntent.putExtra(EventEditActivity.EXTRA_EVENT_ID, eventView.getEvent().getId());
+		//TODO: put date's millis into extra, instead of formatting and then parsing date string 
+		eventEditIntent.putExtra(EventEditActivity.EXTRA_DATE, EventEditActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
+		startActivity(eventEditIntent);
+	
+	}
+
+	@Override
+	public void onButtonCopyClicked(EventView eventView) {
+		Intent eventCopyIntent = new Intent(this, EventAddActivity.class);
+		eventCopyIntent.putExtra(EventEditActivity.EXTRA_COPY_EVENT, eventView.getEvent().convert());
+		//TODO: put date's millis into extra, instead of formatting and then parsing date string 
+		eventCopyIntent.putExtra(EventEditActivity.EXTRA_DATE, EventEditActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
+		this.startActivity(eventCopyIntent);
+	}
+
+	@Override
+	public void onEventViewLongClicked(EventView eventView) {
+		onButtonEditClicked(eventView);
+	}
+
 
 	
 }
