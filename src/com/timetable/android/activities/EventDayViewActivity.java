@@ -15,6 +15,7 @@ import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
+import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -53,6 +54,8 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 	private DatePickerDialog datePickerDialog;
 	
 	private EventPagerListener mListener = new EventPagerListener();
+	
+	private ActionBar mActionBar;
 	
 	//Event view, that shows it's menu.
 	private EventView mSelectedEventView;
@@ -102,6 +105,8 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 		TimetableLogger.error(Long.toString(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis()));
 		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
+		mActionBar = getSupportActionBar();
+		
 		setEventPager(new EventPager(this, Utils.getCurrDateTime()));
 		DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
@@ -230,11 +235,14 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 			displayedDate = getEventPager().getDateByPageNumber(pageNumber);
 			
 			//update action bar
-			String dateString = ACTION_BAR_DATE_FORMAT.format(displayedDate);
+			String titleString = ACTION_BAR_DATE_FORMAT.format(displayedDate);
+			String subtitleString = null;
 			if (DateUtils.areSameDates(displayedDate, Utils.getCurrDateTime())) {
-				dateString = getResources().getString(R.string.actionbar_date_today);
+				subtitleString = getResources().getString(R.string.actionbar_date_today);
+				
 			}
-			getSupportActionBar().setTitle(dateString);
+			mActionBar.setTitle(titleString);
+			mActionBar.setSubtitle(subtitleString);
 			hideOpenedMenu();
 		}
 	}
