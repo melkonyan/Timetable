@@ -3,6 +3,7 @@ package com.timetable.android.tests;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -97,6 +98,23 @@ public class EventAlarmTestCase extends TestCase {
 		assertEquals(dateFormat.parse("11.08.2014"), alarm.getEventOccurrence(today));
 	}
 	
+	public void testGetTimeTillNextOccurrence() throws ParseException {
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+		timeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		Event event = new Event.Builder()
+					.setDate(dateFormat.parse("21.09.2014"))
+					.setAlarmTime("21.09.2014 16:00")
+					.build();
+		
+		EventAlarm alarm = event.getAlarm();
+		Date today = dateTimeFormat.parse("21.09.2014 12:00");
+		
+		assertEquals(timeFormat.parse("04:00"), alarm.getTimeTillNextOccurrence(today));
+		
+		today = dateTimeFormat.parse("20.09.2014 15:59");
+		
+		assertEquals(timeFormat.parse("24:01"), alarm.getTimeTillNextOccurrence(today));
+	}
 	public void testGetAlarmOccurrence() throws ParseException {
 		Event event = new Event.Builder()
 						.setDate("11.08.2014")

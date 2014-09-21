@@ -4,13 +4,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class DateUtils {
 	
 	public static final long DAY_MILLIS = 1000*60*60*24;
 	
 	public static final long WEEK_MILLIS = 1000*60*60*24*7;
+	
+	public static final long HOUR_MILLIS = 1000 * 60 * 60;
+	
+	public static final long MINUTE_MILLIS = 1000 * 60;
 	
 	public static final int BEFORE = -1;
 	

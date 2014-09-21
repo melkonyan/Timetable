@@ -167,7 +167,22 @@ public class EventAlarm {
 		return getAlarmOccurrence(nextEventOccurrence);
 	}
 	
-
+	
+	public Date getTimeTillNextOccurrence() {
+		return getTimeTillNextOccurrence(Utils.getCurrDateTime());
+	}
+	
+	/*
+	 * Compute time till next alarm occurrence.
+	 */
+	public Date getTimeTillNextOccurrence(Date today) {
+		Date nextOccurrence = getNextOccurrence(today);
+		if (nextOccurrence == null) {
+			return null;
+		}
+		return new Date(nextOccurrence.getTime() - today.getTime());
+	}
+	
 	/*
 	 * Return true, if alarm's type and time are both set.
 	 * Alarm should also has a reference to event, to which it is set.

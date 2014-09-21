@@ -3,9 +3,14 @@ package com.timetable.android;
 
 import java.util.Date;
 
+import org.holoeverywhere.widget.Toast;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+
+import com.timetable.android.alarm.EventAlarm;
+import com.timetable.android.utils.DateUtils;
 
 /*
  * Class for saving events to database, updating and deleting them. If needed, shows dialog for user to choose some option.
@@ -21,6 +26,8 @@ public class EventController {
 	private OnEventUpdatedListener mOnEventUpdatedListener;
 	
 	private OnEventDeletedListener mOnEventDeletedListener;
+	
+	public static final long MAX_TIME_TILL_NEXT_ALARM_OCCURRENCE = 1000 * 60 * 60 * 24;
 	
 	public EventController(Context context) {
 		mContext = context;
@@ -39,6 +46,55 @@ public class EventController {
 		mOnEventDeletedListener = onEventDeletedListener;
 	}
 	
+	public static String getAlarmToastMessage(long timeTillNextOccurrence) {
+		if (timeTillNextOccurrence > MAX_TIME_TILL_NEXT_ALARM_OCCURRENCE) {
+			return null;
+		}
+		long hoursLeft = timeTillNextOccurrence / DateUtils.HOUR_MILLIS;
+		long minutesLeft = (timeTillNextOccurrence % DateUtils.HOUR_MILLIS)  / DateUtils.MINUTE_MILLIS;
+		String message = "Alarm is set for ";
+		if (hoursLeft > 0) {
+			message += Long.toString(hoursLeft) + " hour";
+			if (hoursLeft % 10 != 1) {
+				message += "s";
+			}
+			message += " ";
+		}
+		if (hoursLeft > 0 && minutesLeft > 0) {
+			message += "and ";
+		}
+		if (minutesLeft > 0) {
+			message += Long.toString(minutesLeft) + " minute";
+			if (minutesLeft % 10 != 1) {
+				message += "s";
+			}
+			message += " ";
+			
+		}
+		if (hoursLeft == 0 && minutesLeft == 0) {
+			message += "less than minute ";
+		}
+		
+		message += "from now.";
+		return message;
+	}
+	/*
+	 * If event has alarm, and it has next occurrence in 12 hours, show time till next alarm occurrence
+	 */
+	public void showAlarmToast(Event event) {
+		EventAlarm alarm = event.getAlarm();
+		Date nextOccurrence = alarm.getTimeTillNextOccurrence();
+		if (nextOccurrence == null) {
+			return;
+		}
+		
+		long timeTillNextOccurrence = alarm.getTimeTillNextOccurrence().getTime();
+		String message = getAlarmToastMessage(timeTillNextOccurrence);
+		if (message != null) {
+			Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
+		}
+	}
+	
 	/*
 	 * Save given event to database. Call onEventSaved after that.
 	 */
@@ -46,7 +102,11 @@ public class EventController {
 		Event savedEvent = db.insertEvent(event);
 		if (savedEvent != null) {
 			EventBroadcastSender.sendEventAddedBroadcast(mContext, event);
+			if (savedEvent.hasAlarm()) {
+				showAlarmToast(savedEvent);
+			}
 		}
+		
 		mOnEventSavedListener.onEventSaved(savedEvent);
 	}
 	
@@ -131,6 +191,9 @@ public class EventController {
 		Event updatedEvent = db.updateEvent(editedEvent);
 		if (updatedEvent != null) {
 			EventBroadcastSender.sendEventUpdatedBroadcast(mContext, updatedEvent);
+			if (editedEvent.hasAlarm() && (!oldEvent.hasAlarm() || !editedEvent.getAlarm().equals(oldEvent.getAlarm()) ) ) {
+				showAlarmToast(editedEvent);
+			}
 		}
 		mOnEventUpdatedListener.onEventUpdated(updatedEvent);
 	}
