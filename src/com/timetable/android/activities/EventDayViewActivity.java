@@ -21,11 +21,13 @@ import android.view.MenuItem;
 
 import com.timetable.android.EventController;
 import com.timetable.android.EventController.OnEventDeletedListener;
+import com.timetable.android.Event;
 import com.timetable.android.EventPager;
 import com.timetable.android.EventView;
 import com.timetable.android.EventView.EventViewObserver;
 import com.timetable.android.R;
 import com.timetable.android.TimetableLogger;
+import com.timetable.android.alarm.AlarmDialogActivity;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
@@ -102,6 +104,7 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 		
 		setContentView(R.layout.activity_event_day_view);
 		
+		
 		TimetableLogger.error(Long.toString(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis()));
 		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
@@ -131,6 +134,18 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 		datePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 
 				cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 
+		/*Intent intent = new Intent(this, AlarmDialogActivity.class);
+		try {
+		Event event = new Event.Builder()
+					.setName("event test nanme")
+					.setStartTime("18:35")
+					.setDate("21.09.2014")
+					.setAlarmTime("21.09.2014 18:30").build();
+		intent.putExtras(event.convert());
+		startActivity(intent); 
+		} catch (Exception e) {
+			TimetableLogger.error(e.getMessage());
+		}*/
 	}
 	
 	/*

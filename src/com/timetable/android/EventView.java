@@ -115,6 +115,7 @@ public class EventView extends RelativeLayout {
 				TimetableLogger.verbose("EventView: delete button clicked.");
 				if (mObserver != null) {
 					mObserver.onButtonDeleteClicked(EventView.this);
+	
 				}
 			}
 		});

@@ -88,4 +88,6 @@
  	
 	<string name = "alarm_sound_preference_dialog_button_positive">Select</string>
 	<string name = "alarm_sound_preference_dialog_button_negative">Cancel</string>
+	
+	<string name = "alarm_alert_button_dismiss">Dismiss</string>
 </resources>

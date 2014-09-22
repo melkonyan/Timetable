@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+   	<org.holoeverywhere.widget.TextView
+        android:id="@+id/alert_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+     	android:layout_marginRight="10dp"
+     	android:layout_marginTop="20dp"
+       	android:textSize="25sp"
+       	android:text="12:51 Reminder" />
+	<View
+	    android:layout_width="fill_parent"
+	    android:layout_height="0.2dp"
+	   	android:layout_below="@+id/alert_title"
+	    android:layout_marginBottom="0dp"
+	    android:background="#808080" />
+   		
+    <LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:layout_below="@+id/alert_event_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="27dp">
+        
+        <org.holoeverywhere.widget.Button
+        android:id="@+id/alert_button_dismiss"
+        android:layout_width="0px"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/alarm_alert_button_dismiss" />
+	
+    </LinearLayout>
+    
+    <org.holoeverywhere.widget.TextView
+        android:id="@+id/alert_event_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/alert_title"
+        android:layout_below="@+id/alert_title"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        
+        android:text="event name"
+        android:textSize="20sp" />
+
+</RelativeLayout>

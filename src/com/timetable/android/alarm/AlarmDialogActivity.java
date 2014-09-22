@@ -1,16 +1,19 @@
 package com.timetable.android.alarm;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+
+import org.holoeverywhere.preference.PreferenceManager;
+import org.holoeverywhere.widget.Button;
+import org.holoeverywhere.widget.TextView;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
+import android.view.View;
+import android.view.Window;
 
 import com.timetable.android.AlarmSoundPreference;
 import com.timetable.android.Event;
@@ -19,6 +22,7 @@ import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.activities.SettingsActivity;
+import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.Utils;
 
 /*
@@ -31,6 +35,8 @@ public class AlarmDialogActivity extends Activity {
 	
 	//Time, that activity should run, until it will be automatically killed.
 	private static final int TIME_TO_RUN_MILLIS = 3*60*1000;
+	
+	private static final SimpleDateFormat TITLE_TIME_FORMAT = DateFormatFactory.getTimeFormat();
 	
 	private Event event;
 	
@@ -61,10 +67,15 @@ public class AlarmDialogActivity extends Activity {
 	{
 	    super.onCreate(savedInstanceState);
 	    TimetableLogger.log("AlarmDialogActivity.onCreate: creating activity.");
+	    //remove title
+	    this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    
+	    setContentView(R.layout.activity_alarm_alert);
 	    
-        
-        TimetableLogger.log("AlarmDialogActivity.onCreate: wake lock is acquired.");
+	    TextView alertTitle = (TextView) findViewById(R.id.alert_title);
+	    Button dismissButton = (Button) findViewById(R.id.alert_button_dismiss);
+	    TextView eventNameText = (TextView) findViewById(R.id.alert_event_name);
+	    
 	    eventData = getIntent().getExtras();
 		if (eventData == null) {
 			TimetableLogger.error("EventAlarmDialogActiovity.onCreate: intent with no data received");
@@ -87,7 +98,6 @@ public class AlarmDialogActivity extends Activity {
 			return;
 		}
 		
-		
 		autoKiller.postDelayed(autoKill, TIME_TO_RUN_MILLIS);
 		
 		mediaPlayer = new MediaPlayer();
@@ -106,17 +116,19 @@ public class AlarmDialogActivity extends Activity {
 		
 	    mediaPlayer.setLooping(true);
 		mediaPlayer.start();
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	    builder.setPositiveButton("Dismiss", new OnClickListener() {
+		
+		dismissButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
+			public void onClick(View v) {
 				dismiss();
 				AlarmDialogActivity.this.finish();
-				
 			}
 		});
-	    builder.setTitle(event.getName()).create().show();
+		
+		alertTitle.setText(TITLE_TIME_FORMAT.format(Utils.getCurrDateTime()) + " Reminder");
+		eventNameText.setText(event.getName());
+	 
 	}
 	
 	@Override
