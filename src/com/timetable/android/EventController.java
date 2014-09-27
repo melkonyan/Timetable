@@ -78,6 +78,7 @@ public class EventController {
 		message += "from now.";
 		return message;
 	}
+	
 	/*
 	 * If event has alarm, and it has next occurrence in 12 hours, show time till next alarm occurrence
 	 */
@@ -95,6 +96,15 @@ public class EventController {
 		}
 	}
 	
+	/*
+	 * Show time till next occurrence if alarm has changed.
+	 */
+	public void showAlarmToast(Event editedEvent, Event oldEvent) {
+		if (editedEvent.hasAlarm() && (!oldEvent.hasAlarm() || !editedEvent.getAlarm().equals(oldEvent.getAlarm()) ) ) {
+			showAlarmToast(editedEvent);
+		}
+	
+	}
 	/*
 	 * Save given event to database. Call onEventSaved after that.
 	 */
@@ -160,6 +170,9 @@ public class EventController {
 			
 		}
 		
+		if (editedEvent.hasAlarm() && (!oldEvent.hasAlarm() || !editedEvent.getAlarm().equals(oldEvent.getAlarm()) ) ) {
+			showAlarmToast(editedEvent);
+		}
 		EventBroadcastSender.sendEventAddedBroadcast(mContext, updatedEvent);
 		mOnEventUpdatedListener.onEventUpdated(updatedEvent);
 	}
@@ -191,9 +204,7 @@ public class EventController {
 		Event updatedEvent = db.updateEvent(editedEvent);
 		if (updatedEvent != null) {
 			EventBroadcastSender.sendEventUpdatedBroadcast(mContext, updatedEvent);
-			if (editedEvent.hasAlarm() && (!oldEvent.hasAlarm() || !editedEvent.getAlarm().equals(oldEvent.getAlarm()) ) ) {
-				showAlarmToast(editedEvent);
-			}
+			showAlarmToast(updatedEvent, oldEvent);
 		}
 		mOnEventUpdatedListener.onEventUpdated(updatedEvent);
 	}
