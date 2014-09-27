@@ -1,6 +1,7 @@
 package com.timetable.android.alarm;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
@@ -61,7 +62,7 @@ public class AlarmService extends Service {
 		@Override
 		public int compare(EventAlarm alarm1, EventAlarm alarm2) {
 			Date today = Utils.getCurrDateTime();
-			//TODO: next occurrence can not be null, but it happens.
+			//TODO: next occurrence can not be null, but it happens. E.g. system time has changed and alarm has no occurrences any more.
 			return alarm1.getNextOccurrence(today).compareTo(alarm2.getNextOccurrence(today));
 		}
 	}
@@ -193,6 +194,7 @@ public class AlarmService extends Service {
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
 		
 		Vector<Event> events = db.searchEventsWithAlarm();
+		Collections.reverse(events);
 		Date today = Utils.getCurrDateTime();
 		for (Event event : events) {
 			EventAlarm alarm = event.getAlarm();
@@ -206,15 +208,19 @@ public class AlarmService extends Service {
 		Intent notificationIntent = new Intent(this, EventDayViewActivity.class);
 		if (getNextAlarm() != null) {
 			Date nextAlarmEventDate = getNextAlarm().getNextEventOccurrence(Utils.getCurrDateTime());
+			TimetableLogger.error(nextAlarmEventDate.toString());
 			notificationIntent.putExtra(EventDayViewActivity.EXTRAS_DATE, EventDayViewActivity.EXTRAS_DATE_FORMAT.format(nextAlarmEventDate));
+			//Unless this hack pending intent in notification is not updated and false date is shown, when user clicks it.
+			notificationIntent.setAction(Long.toString(System.currentTimeMillis()));
 		}
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return notificationIntent;
 	}
 	
 	public PendingIntent getNotificationPendingIntent() {
-		PendingIntent intent = PendingIntent.getActivity(this, 0, getNotificationIntent(), 0);
+		PendingIntent intent = PendingIntent.getActivity(this, PendingIntent.FLAG_CANCEL_CURRENT, getNotificationIntent(), 0);
 		return intent;
+		
     }
 	
 	/*
@@ -238,7 +244,7 @@ public class AlarmService extends Service {
 			.setWhen(0)
 			.setContentIntent(mIntent);
 		notificationManager.notify(ALARM_NOTIFICATION_CODE, mBuilder.build());
-		TimetableLogger.log("Creating notification");
+		TimetableLogger.log("AlarmService: alarm notification created.");
 	}
 	
 	/*
