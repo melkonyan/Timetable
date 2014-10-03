@@ -8,12 +8,16 @@ import org.holoeverywhere.widget.Button;
 import org.holoeverywhere.widget.TextView;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 
 import com.timetable.android.AlarmSoundPreference;
 import com.timetable.android.Event;
@@ -34,7 +38,7 @@ public class AlarmDialogActivity extends Activity {
 	public static final int DEFAULT_ALARM_SOUND = R.raw.new_gitar;
 	
 	//Time, that activity should run, until it will be automatically killed.
-	private static final int TIME_TO_RUN_MILLIS = 3*60*1000;
+	private static final int TIME_TO_RUN_MILLIS = 20*1000;
 	
 	private static final SimpleDateFormat TITLE_TIME_FORMAT = DateFormatFactory.getTimeFormat();
 	
@@ -72,7 +76,29 @@ public class AlarmDialogActivity extends Activity {
 	    
 	    setContentView(R.layout.activity_alarm_alert);
 	    
-	    TextView alertTitle = (TextView) findViewById(R.id.alert_title);
+	    PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP
+                | PowerManager.ON_AFTER_RELEASE, "My Tag");
+        wl.acquire();
+        
+        //turn on screen when alarm is fired.
+	    this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN | 
+	    	    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | 
+	    	    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | 
+	    	    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+	    	    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+	    	    WindowManager.LayoutParams.FLAG_FULLSCREEN | 
+	    	    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | 
+	    	    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | 
+	    	    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+	    	    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        
+	    //disable keyguard
+	    KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+	    final KeyguardManager.KeyguardLock kl = km.newKeyguardLock("MyKeyguardLock");
+	    kl.disableKeyguard();
+	    
+        TextView alertTitle = (TextView) findViewById(R.id.alert_title);
 	    Button dismissButton = (Button) findViewById(R.id.alert_button_dismiss);
 	    TextView eventNameText = (TextView) findViewById(R.id.alert_event_name);
 	    

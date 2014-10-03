@@ -21,6 +21,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.view.WindowManager;
 
 import com.timetable.android.BroadcastActions;
 import com.timetable.android.Event;
@@ -287,7 +288,8 @@ public class AlarmService extends Service {
 				Intent alarmDialogIntent = new Intent(context, AlarmDialogActivity.class);
 				alarmDialogIntent.putExtras(eventData);
 				alarmDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
-				context.startActivity(alarmDialogIntent);
+				alarmDialogIntent.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED + WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD + WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON + WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+			    context.startActivity(alarmDialogIntent);
 				return;
 			}
 			
