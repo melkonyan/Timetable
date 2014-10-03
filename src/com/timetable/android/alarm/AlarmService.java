@@ -46,7 +46,7 @@ public class AlarmService extends Service {
 	
 	public static final int MAX_QUEUE_SIZE = 10000;
 	
-	private static final String NEXT_ALARM_NOTIFICATION_PREFIX = "Next alarm is on: ";
+	private static final String NEXT_ALARM_NOTIFICATION_PREFIX = "";
 	
 	public static final SimpleDateFormat alarmTimeFormat = new SimpleDateFormat("EEE, d. MMM yyyy 'at' HH:mm", Locale.US);
 	
@@ -239,7 +239,7 @@ public class AlarmService extends Service {
 		NotificationCompat.Builder mBuilder = new NotificationCompat
 			.Builder(this)
 			.setSmallIcon(R.drawable.ic_action_alarms_light)
-			.setContentTitle("Timetable")
+			.setContentTitle("Next alarm: ")
 			.setContentText(nextAlarmString)
 			.setLargeIcon(((BitmapDrawable)this.getResources().getDrawable(R.drawable.ic_action_alarms_light)).getBitmap())
 			.setWhen(0)
