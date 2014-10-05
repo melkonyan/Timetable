@@ -21,13 +21,11 @@ import android.view.MenuItem;
 
 import com.timetable.android.EventController;
 import com.timetable.android.EventController.OnEventDeletedListener;
-import com.timetable.android.Event;
 import com.timetable.android.EventPager;
 import com.timetable.android.EventView;
 import com.timetable.android.EventView.EventViewObserver;
 import com.timetable.android.R;
 import com.timetable.android.TimetableLogger;
-import com.timetable.android.alarm.AlarmDialogActivity;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.TestAlarmStarter;
@@ -97,6 +95,7 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 			TimetableLogger.error("EventDayViewActivity.getExtraDate: could not parse date");
 			return null;
 		}
+		
 	}
 	
 	@Override
@@ -104,9 +103,6 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_event_day_view);
-		
-		
-		TimetableLogger.error(Long.toString(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis()));
 		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
 		mActionBar = getSupportActionBar();
@@ -134,7 +130,9 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 		cal.setTime(getEventPager().getDisplayedDate());
 		datePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 
 				cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-
+		
+		//TestAlarmStarter.startAlarm(this);
+		
 	}
 	
 	/*

@@ -29,12 +29,13 @@ import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
+import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
 
 /*
  * Service, that creates alarm, that would be fired later.
  * Has internal BroadcastReceiver, that receives actions: ACTION_EVENT_ADDED, ACTION_EVENT_UPDATED, ACTION_EVENT_DELETED 
- * and ACTION_ALARM_UPDATED, that is broadcasted by AlarmDialogActivity, when user dismisses alarm, and it should be recreated.
+ * and ACTION_ALARM_DISMISSED, that is broadcasted by AlarmDialogActivity, when user dismisses alarm, and it should be recreated.
  */
 public class AlarmService extends Service {
 
@@ -42,7 +43,11 @@ public class AlarmService extends Service {
 
 	public static final String ACTION_ALARM_FIRED = "com.timetable.android.ACTION_ALARM_FIRED";
 	
-	public static final String ACTION_ALARM_UPDATED = "com.timetable.android.ACTION_ALARM_UPDATED";
+	public static final String ACTION_ALARM_DISMISSED = "com.timetable.android.ACTION_ALARM_DISMISSED";
+	
+	public static final String ACTION_ALARM_SNOOZED = "com.timetable.android.ACTION_ALARM_SNOOZED";
+	
+	public static final long SNOOZE_TIME = DateUtils.MINUTE_MILLIS / 2;
 	
 	public static final int MAX_QUEUE_SIZE = 10000;
 	
@@ -56,15 +61,13 @@ public class AlarmService extends Service {
 	
 	private AlarmBroadcastReceiver mReceiver;
 	
-	private PriorityQueue<EventAlarm> alarmQueue = new PriorityQueue<EventAlarm>(MAX_QUEUE_SIZE, new AlarmTimeComparator());
+	private AlarmAdapter mAlarmAdapter;
 	
-	private class AlarmTimeComparator implements Comparator<EventAlarm> {
+	private class AlarmTimeComparator implements Comparator<AlarmContainer> {
 
 		@Override
-		public int compare(EventAlarm alarm1, EventAlarm alarm2) {
-			Date today = Utils.getCurrDateTime();
-			//TODO: next occurrence can not be null, but it happens. E.g. system time has changed and alarm has no occurrences any more.
-			return alarm1.getNextOccurrence(today).compareTo(alarm2.getNextOccurrence(today));
+		public int compare(AlarmContainer alarm1, AlarmContainer alarm2) {
+			return alarm1.nextOccurrence.compareTo(alarm2.nextOccurrence);
 		}
 	}
 	
@@ -79,13 +82,16 @@ public class AlarmService extends Service {
 		alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
 		notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 		mReceiver = new AlarmBroadcastReceiver();
+		mAlarmAdapter = new AlarmAdapter();
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(BroadcastActions.ACTION_EVENT_ADDED);
 		intentFilter.addAction(BroadcastActions.ACTION_EVENT_UPDATED);
 		intentFilter.addAction(BroadcastActions.ACTION_EVENT_DELETED);
 		intentFilter.addAction(AlarmService.ACTION_ALARM_FIRED);
-		intentFilter.addAction(AlarmService.ACTION_ALARM_UPDATED);
+		intentFilter.addAction(AlarmService.ACTION_ALARM_DISMISSED);
+		intentFilter.addAction(AlarmService.ACTION_ALARM_SNOOZED);
 		registerReceiver(mReceiver, intentFilter);
+		
 		loadAlarms();
 		TimetableLogger.log("AlarmService.onCreate: service is successfully created");
 	}
@@ -112,10 +118,19 @@ public class AlarmService extends Service {
 		return PendingIntent.getBroadcast(this, event.getId(), getIntentFromEvent(event), PendingIntent.FLAG_UPDATE_CURRENT);
 	}
 	
+	public void createAlarm(Event event, Long alarmTime) {
+		alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime, getPendingIntentFromEvent(event));
+		mAlarmAdapter.add(event, new Date(alarmTime));
+		updateNotification();
+		
+	}
 	/*
 	 * Create alarm with pending intent, that will be broadcasted to this class, when alarm should run.
 	 */
 	public void createAlarm(Event event) {
+		if (!event.hasAlarm()) {
+			return;
+		}
 		Date nextOccurrence = event.getAlarm().getNextOccurrence();
 		if (nextOccurrence == null) {
 			return;
@@ -126,16 +141,7 @@ public class AlarmService extends Service {
 									+ "Event information: \n" + event.toString());
 			return;
 		}
-		alarmManager.set(AlarmManager.RTC_WAKEUP, nextOccurrence.getTime(), getPendingIntentFromEvent(event));
-		Iterator<EventAlarm> iterator = alarmQueue.iterator();
-		while(iterator.hasNext()) {
-			if (iterator.next().id == event.getAlarm().id) {
-				iterator.remove();
-				break;
-			}
-		}
-		alarmQueue.offer(event.getAlarm());
-		updateNotification();
+		createAlarm(event, nextOccurrence.getTime());
 		TimetableLogger.log("AlarmService.createAlarm: creating alarm on date: " + nextOccurrence.toString());
 		
 	}
@@ -146,50 +152,34 @@ public class AlarmService extends Service {
 	 * Delete notification, if needed.
 	 */
 	public void deleteAlarm(Event event) {
-		TimetableLogger.log("AlarmService.updateAlarm: deleting alarm");
-		if (!alarmQueue.contains(event.getAlarm())) {
+		TimetableLogger.log("AlarmService.deleteAlarm: deleting alarm");
+		if (!mAlarmAdapter.delete(event)) {
+			TimetableLogger.log("AlarmService.deleteAlarm: no such alarm found.");
 			return;
 		}
 		PendingIntent mIntent = getPendingIntentFromEvent(event);
 		alarmManager.cancel(mIntent);
 		mIntent.cancel();
-		alarmQueue.remove(event.getAlarm());
 		updateNotification();
 	}
 	
 	public void updateAlarm(Event event) {
-		if (event.getAlarm().getNextOccurrence() != null) {
+		if (event.hasAlarm() && event.getAlarm().getNextOccurrence() != null) {
 			createAlarm(event);
 		} else {
 			deleteAlarm(event);
 		}	
 	}
 	
-	/*
-	 * Method to call, event ACTION_EVENT_UPDATED is received, and received event has no alarm.
-	 * We need to check, if event's alarm was deleted, and if so, delete it from alarmQueue.
-	 */
-	public void deleteEventAlarm(Event event) {
-		Iterator<EventAlarm> iterator = alarmQueue.iterator();
-		while(iterator.hasNext()) {
-			EventAlarm nextAlarm = iterator.next();
-			if (nextAlarm.event.getId() == event.getId()) {
-				iterator.remove();
-				PendingIntent mIntent = getPendingIntentFromEvent(event);
-				alarmManager.cancel(mIntent);
-				mIntent.cancel();
-				updateNotification();
-			}
-		}
+	public void snoozeAlarm(Event event) {
+		mAlarmAdapter.delete(event);
+		createAlarm(event, Utils.getCurrDateTime().getTime() + SNOOZE_TIME);
 	}
 	
 	public boolean existAlarm(Event event) {
 		return PendingIntent.getBroadcast(this, event.getId(), getIntentFromEvent(event), PendingIntent.FLAG_NO_CREATE) != null;
 	}
 	
-	public EventAlarm getNextAlarm() {
-		return alarmQueue.peek();
-	}
 	
 	public void loadAlarms() {
 		TimetableDatabase db = TimetableDatabase.getInstance(this);
@@ -207,9 +197,8 @@ public class AlarmService extends Service {
 	
 	public Intent getNotificationIntent() {
 		Intent notificationIntent = new Intent(this, EventDayViewActivity.class);
-		if (getNextAlarm() != null) {
-			Date nextAlarmEventDate = getNextAlarm().getNextEventOccurrence(Utils.getCurrDateTime());
-			TimetableLogger.error(nextAlarmEventDate.toString());
+		if (mAlarmAdapter.getNextAlarm() != null) {
+			Date nextAlarmEventDate = mAlarmAdapter.getNextAlarm().nextOccurrence;
 			notificationIntent.putExtra(EventDayViewActivity.EXTRAS_DATE, EventDayViewActivity.EXTRAS_DATE_FORMAT.format(nextAlarmEventDate));
 			//Unless this hack pending intent in notification is not updated and false date is shown, when user clicks it.
 			notificationIntent.setAction(Long.toString(System.currentTimeMillis()));
@@ -230,8 +219,8 @@ public class AlarmService extends Service {
 	public void createNotification() {
 		PendingIntent mIntent = getNotificationPendingIntent(); 
 		String nextAlarmString = "No alarms are set.";
-		if (getNextAlarm() != null ) {
-			Date nextAlarm = getNextAlarm().getNextOccurrence(Utils.getCurrDateTime());
+		if (mAlarmAdapter.getNextAlarm() != null ) {
+			Date nextAlarm = mAlarmAdapter.getNextAlarm().nextOccurrence;
 			if (nextAlarm != null) {
 				nextAlarmString = NEXT_ALARM_NOTIFICATION_PREFIX + alarmTimeFormat.format(nextAlarm); 
 			}
@@ -257,12 +246,69 @@ public class AlarmService extends Service {
 	}
 	
 	public void updateNotification() {
-		if (alarmQueue.size() == 0) {
+		if (mAlarmAdapter.isEmpty()) {
 			deleteNotification();
 		} else {
 			createNotification();
 		}
 		
+	}
+	
+	public static class AlarmContainer {
+		
+		public EventAlarm alarm;
+		
+		public Date nextOccurrence;
+		
+		public AlarmContainer(EventAlarm _alarm, Date _nextOccurrence) {
+			alarm = _alarm;
+			nextOccurrence = _nextOccurrence;
+		}
+	}
+	
+	public class AlarmAdapter {
+
+		private PriorityQueue<AlarmContainer> alarmQueue = new PriorityQueue<AlarmContainer>(MAX_QUEUE_SIZE, new AlarmTimeComparator());
+		
+		public void add(Event event) {
+			add(event, event.getAlarm().getNextOccurrence());
+		}
+		
+		public void add(Event event, Date nextOccurrence) {
+			alarmQueue.offer(new AlarmContainer(event.getAlarm(), nextOccurrence));
+		}
+		
+		/*
+		 * Remove event's alarm from adapter. Return true if alarm was found.
+		 */
+		public boolean delete(Event event) {
+			Iterator<AlarmContainer> iterator = alarmQueue.iterator();
+			while(iterator.hasNext()) {
+				EventAlarm nextAlarm = iterator.next().alarm;
+				if (nextAlarm.event.getId() == event.getId()) {
+					iterator.remove();
+					return true;
+				}
+			}
+			return false;
+		
+		}
+		
+		public void update(Event event) {
+			delete(event);
+			add(event);
+		}
+		
+		public AlarmContainer getNextAlarm() {
+			if (isEmpty()) {
+				return null;
+			}
+			return alarmQueue.peek();
+		}
+		
+		public boolean isEmpty() {
+			return alarmQueue.isEmpty();
+		}
 	}
 	
 	/*
@@ -293,18 +339,15 @@ public class AlarmService extends Service {
 				return;
 			}
 			
-			if (!event.hasAlarm()) {
-				deleteEventAlarm(event);
-				return;
-			}
-			
 			if (action.equals(BroadcastActions.ACTION_EVENT_ADDED)) {
 				createAlarm(event);
-			} else if (action.equals(BroadcastActions.ACTION_EVENT_UPDATED) || action.equals(ACTION_ALARM_UPDATED)) {
+			} else if (action.equals(BroadcastActions.ACTION_EVENT_UPDATED) || action.equals(ACTION_ALARM_DISMISSED)) {
 				updateAlarm(event);
 			} else if (action.equals(BroadcastActions.ACTION_EVENT_DELETED)) {
 				deleteAlarm(event);
-			}  
+			}  else if (action.equals(ACTION_ALARM_SNOOZED)) {
+				snoozeAlarm(event);
+			}
 		}
 	}
 }

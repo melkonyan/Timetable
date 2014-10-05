@@ -30,7 +30,7 @@ public class AlarmSoundPreference extends ListPreference {
 	//Activity, that has started preference.
 	private Context mContext;
 	
-	private static final Long MINIMAL_SOUND_DURATION = 1000L;
+	private static final long MINIMAL_SOUND_DURATION = 1000L;
 	
 	private String selection = String.format(" %s != 0 and %s > %d", 
 												MediaStore.Audio.Media.IS_MUSIC, 

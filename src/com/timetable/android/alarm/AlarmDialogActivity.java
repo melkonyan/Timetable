@@ -27,6 +27,7 @@ import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.activities.SettingsActivity;
 import com.timetable.android.utils.DateFormatFactory;
+import com.timetable.android.utils.TestAlarmStarter;
 import com.timetable.android.utils.Utils;
 
 /*
@@ -50,8 +51,11 @@ public class AlarmDialogActivity extends Activity {
 	
 	private boolean ok = true;
 	
-	//flag, that indicates weather alarm is dismissed by user.
+	//flag, that indicates whether alarm is dismissed by user.
 	private boolean isDismissed = false;
+	
+	//flag, that indicates whether alarm is snoozed by user. 
+	private boolean isSnoozed = false;
 	
 	//handler, that will finish activity after a given amount of time.
 	private Handler autoKiller = new Handler();
@@ -60,17 +64,30 @@ public class AlarmDialogActivity extends Activity {
 		
 		@Override
 		public void run() {
+			if (isSnoozed || isDismissed) {
+				return;
+			}
 			TimetableLogger.log("AlarmDialogActivity.autoKill: user has not dissmised alarm. Stopping alarm self.");
-			dismiss();
+			snooze();
 			AlarmDialogActivity.this.finish();
 		}
 	};
+	
+	void stopPlayer() {
+		try {
+			mediaPlayer.stop();
+			mediaPlayer.release();
+		} catch (Exception e) {
+			//ignore.
+		}
+	}
 	
 	@Override 
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 	    super.onCreate(savedInstanceState);
 	    TimetableLogger.log("AlarmDialogActivity.onCreate: creating activity.");
+	    
 	    //remove title
 	    this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    
@@ -100,6 +117,8 @@ public class AlarmDialogActivity extends Activity {
 	    
         TextView alertTitle = (TextView) findViewById(R.id.alert_title);
 	    Button dismissButton = (Button) findViewById(R.id.alert_button_dismiss);
+	    Button snoozeButton = (Button) findViewById(R.id.alert_button_snooze);
+	    
 	    TextView eventNameText = (TextView) findViewById(R.id.alert_event_name);
 	    
 	    eventData = getIntent().getExtras();
@@ -120,8 +139,8 @@ public class AlarmDialogActivity extends Activity {
 		
 		if (!db.existsEvent(event)) {
 			TimetableLogger.error("AlarmDialogActivity.onReceive: event, that is not in the database received.");
-			ok = false;
-			return;
+			//ok = false;
+			//return;
 		}
 		
 		autoKiller.postDelayed(autoKill, TIME_TO_RUN_MILLIS);
@@ -152,16 +171,23 @@ public class AlarmDialogActivity extends Activity {
 			}
 		});
 		
+		snoozeButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				snooze();
+				AlarmDialogActivity.this.finish();
+			}
+		});
 		alertTitle.setText(TITLE_TIME_FORMAT.format(Utils.getCurrDateTime()) + " Reminder");
 		eventNameText.setText(event.getName());
-	 
 	}
 	
 	@Override
 	public void onUserLeaveHint() {
 		super.onUserLeaveHint();
-		if (!isDismissed) {
-			dismiss();
+		if (!isDismissed && !isSnoozed && ok) {
+			snooze();
 			finish();
 		}
 	}
@@ -175,9 +201,21 @@ public class AlarmDialogActivity extends Activity {
 	@Override 
 	public void onDestroy() {
 		super.onDestroy();
-		if (!isDismissed && ok) {
-			dismiss();
+		if (!isDismissed && !isSnoozed && ok) {
+			snooze();
 		}
+	}
+	
+	/*
+	 * Snooze alarm.
+	 */
+	private void snooze() {
+		TimetableLogger.log("AlarmDialogActity.snooze: snoozing alarm.");
+		stopPlayer();
+		isSnoozed = true;
+		Intent broadcast = new Intent(AlarmService.ACTION_ALARM_SNOOZED);
+		broadcast.putExtras(eventData);
+		sendBroadcast(broadcast);
 	}
 	
 	/*
@@ -186,16 +224,11 @@ public class AlarmDialogActivity extends Activity {
 	private void dismiss() {
 		TimetableLogger.log("AlarmDialogActivity.dismiss: dismissing alarm.");
 		
-		try {
-			mediaPlayer.stop();
-			mediaPlayer.release();
-		} catch (Exception e) {
-			//ignore.
-		}
+		stopPlayer();
 		
 		isDismissed = true;
 		
-		Intent broadcast = new Intent(AlarmService.ACTION_ALARM_UPDATED);
+		Intent broadcast = new Intent(AlarmService.ACTION_ALARM_DISMISSED);
 		broadcast.putExtras(eventData);
 		sendBroadcast(broadcast);
 	

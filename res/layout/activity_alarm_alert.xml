@@ -27,12 +27,21 @@
         android:layout_marginTop="27dp">
         
         <org.holoeverywhere.widget.Button
-        android:id="@+id/alert_button_dismiss"
-        android:layout_width="0px"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="@string/alarm_alert_button_dismiss" />
-	
+	        android:id="@+id/alert_button_snooze"
+	        android:layout_width="0px"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:text="@string/alarm_alert_button_snooze" />
+		
+        <org.holoeverywhere.widget.Button
+	        android:id="@+id/alert_button_dismiss"
+	        android:layout_width="0px"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:text="@string/alarm_alert_button_dismiss" />
+			
+        
+        
     </LinearLayout>
     
     <org.holoeverywhere.widget.TextView
