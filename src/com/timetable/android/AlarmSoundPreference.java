@@ -2,7 +2,6 @@ package com.timetable.android;
 
 import java.util.ArrayList;
 
-import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.app.AlertDialog.Builder;
 import org.holoeverywhere.preference.ListPreference;
 
@@ -11,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 
@@ -30,8 +30,14 @@ public class AlarmSoundPreference extends ListPreference {
 	//Activity, that has started preference.
 	private Context mContext;
 	
-	private String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
-
+	private static final Long MINIMAL_SOUND_DURATION = 1000L;
+	
+	private String selection = String.format(" %s != 0 and %s > %d", 
+												MediaStore.Audio.Media.IS_MUSIC, 
+												MediaStore.Audio.Media.DURATION,
+												MINIMAL_SOUND_DURATION);
+	private String order = MediaStore.Audio.Media.TITLE;
+	
 	private String[] projection = {
 	        MediaStore.Audio.Media.TITLE,
 	        MediaStore.Audio.Media.DATA
@@ -46,19 +52,13 @@ public class AlarmSoundPreference extends ListPreference {
 	ArrayList<String> songNames = new ArrayList<String>();
 	ArrayList<String> songFiles = new ArrayList<String>();
 
-	public AlarmSoundPreference(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		mContext = context;
-		mResources = mContext.getResources();
+	private void loadMedia(Uri uri) {
 		Cursor cursor = mContext.getContentResolver().query(
-		        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-		        projection,
+		        uri,
+				projection,
 		        selection,
 		        null,
-		        null);
-
-		songNames.add("Default");
-		songFiles.add(DEFAULT_ALARM_SOUND);
+		        order);
 		if (cursor != null) {
 			cursor.moveToFirst();
 			while(cursor.moveToNext()) {
@@ -66,6 +66,20 @@ public class AlarmSoundPreference extends ListPreference {
 				songFiles.add(cursor.getString(1));
 			}
 		}
+	
+
+	}
+	public AlarmSoundPreference(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		mContext = context;
+		mResources = mContext.getResources();
+		//Add default ringtone.
+		songNames.add("Default");
+		songFiles.add(DEFAULT_ALARM_SOUND);
+		//Add media from SD card
+		loadMedia(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+		//Add medio from phone.
+		loadMedia(MediaStore.Audio.Media.INTERNAL_CONTENT_URI);
 	}
 	
 	public AlarmSoundPreference(Context context) {

@@ -166,6 +166,7 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 	
 	@Override 
 	public void onDestroy() {
+	
 		super.onDestroy();
 		TimetableLogger.sendReport();
 	}
