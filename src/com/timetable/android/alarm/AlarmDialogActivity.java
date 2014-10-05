@@ -27,7 +27,7 @@ import com.timetable.android.TimetableLogger;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.activities.SettingsActivity;
 import com.timetable.android.utils.DateFormatFactory;
-import com.timetable.android.utils.TestAlarmStarter;
+import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
 
 /*
@@ -39,7 +39,7 @@ public class AlarmDialogActivity extends Activity {
 	public static final int DEFAULT_ALARM_SOUND = R.raw.new_gitar;
 	
 	//Time, that activity should run, until it will be automatically killed.
-	private static final int TIME_TO_RUN_MILLIS = 20*1000;
+	private static final long TIME_TO_RUN_MILLIS = 3 * DateUtils.MINUTE_MILLIS;
 	
 	private static final SimpleDateFormat TITLE_TIME_FORMAT = DateFormatFactory.getTimeFormat();
 	

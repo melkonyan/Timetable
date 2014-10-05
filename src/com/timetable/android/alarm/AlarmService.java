@@ -47,7 +47,7 @@ public class AlarmService extends Service {
 	
 	public static final String ACTION_ALARM_SNOOZED = "com.timetable.android.ACTION_ALARM_SNOOZED";
 	
-	public static final long SNOOZE_TIME = DateUtils.MINUTE_MILLIS / 2;
+	public static final long SNOOZE_TIME = 10 * DateUtils.MINUTE_MILLIS;
 	
 	public static final int MAX_QUEUE_SIZE = 10000;
 	
