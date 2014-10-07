@@ -91,4 +91,18 @@
 	
 	<string name = "alarm_alert_button_dismiss">Dismiss</string>
 	<string name = "alarm_alert_button_snooze">Snooze</string>
+	
+	<string name = "month_view_monday">Mo</string>
+	<string name = "month_view_tuesday">Tu</string>
+	<string name = "month_view_wednesday">We</string>
+	<string name = "month_view_thursday">Th</string>
+	<string name = "month_view_friday">Fr</string>
+	<string name = "month_view_saturday">Sa</string>
+	<string name = "month_view_sunday">Su</string>
+	
+	
+	
+	
+	
+	
 </resources>

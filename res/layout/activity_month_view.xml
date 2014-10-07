@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_month_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    	
+	<LinearLayout
+	    android:id="@+id/month_view_week_days"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal" >
+
+	    <TextView 
+	        style="@style/ActivityMonthViewWeekdayStyle"
+	        android:text="@string/month_view_sunday"/>
+	    <TextView 
+	        style="@style/ActivityMonthViewWeekdayStyle"
+	        android:text="@string/month_view_monday"/>
+	    <TextView 
+	        style="@style/ActivityMonthViewWeekdayStyle"
+	        android:text="@string/month_view_tuesday"/>
+	    <TextView 
+	        style="@style/ActivityMonthViewWeekdayStyle"
+	        android:text="@string/month_view_wednesday"/>
+	    <TextView 
+	        style="@style/ActivityMonthViewWeekdayStyle"
+	        android:text="@string/month_view_thursday"/>
+	    <TextView 
+	        style="@style/ActivityMonthViewWeekdayStyle"
+	        android:text="@string/month_view_friday"/>
+	    <TextView 
+	        style="@style/ActivityMonthViewWeekdayStyle"
+	        android:text="@string/month_view_saturday"/>
+	    
+	</LinearLayout>
+	
+	<GridView 
+	    android:id="@+id/month_days"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:numColumns="7" >
+	
+	</GridView>
+
+</LinearLayout>
