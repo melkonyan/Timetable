@@ -275,6 +275,7 @@ public class AlarmService extends Service {
 		}
 		
 		public void add(Event event, Date nextOccurrence) {
+			delete(event);
 			alarmQueue.offer(new AlarmContainer(event.getAlarm(), nextOccurrence));
 		}
 		
@@ -295,7 +296,6 @@ public class AlarmService extends Service {
 		}
 		
 		public void update(Event event) {
-			delete(event);
 			add(event);
 		}
 		
