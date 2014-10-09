@@ -21,25 +21,28 @@ import com.timetable.android.activities.EventDayViewActivity;
  */
 public class EventPager extends ViewPager {
 
-	private final EventDayViewActivity activity;
+	private final EventDayViewActivity mActivity;
 
-	private Date initDate; 
+	private Date mInitDate; 
 	
 	private final static int INIT_PAGE_NUMBER = 1000;
 	
-	private EventPagerAdapter eventPagerAdapter;
+	private EventPagerAdapter mEventPagerAdapter;
 	
+	private EventViewProvider mEventViewProvider; 
 	
 	public EventPager(EventDayViewActivity activity, Date initDate) {
 		super(activity);
 		setId(1000);
-		this.activity = activity;
-		this.initDate = initDate;
+		mActivity = activity;
+		mInitDate = initDate;
+		
 		setOffscreenPageLimit(0);
 		LayoutInflater layoutInflater = LayoutInflater.from(activity);	
 		layoutInflater.inflate(R.layout.event_pager, this, true);
-		eventPagerAdapter = new EventPagerAdapter(initDate);
-		setAdapter(eventPagerAdapter);
+		mEventViewProvider = EventViewProvider.getInstance(mActivity);
+		mEventPagerAdapter = new EventPagerAdapter(initDate);
+		setAdapter(mEventPagerAdapter);
 		setOnPageChangeListener(activity.getEventPagerListener());
 		
 	}
@@ -60,13 +63,13 @@ public class EventPager extends ViewPager {
 	
 	public Date getDateByPageNumber(int pageNumber) {
 		Date date = new Date();
-		date.setTime(initDate.getTime() + (long) (pageNumber-INIT_PAGE_NUMBER)*24*3600*1000);
+		date.setTime(mInitDate.getTime() + (long) (pageNumber-INIT_PAGE_NUMBER)*24*3600*1000);
 		return date;
 	}
 	
 	private int getPageNumberByDate(Date date) {
 		long day = 24*3600*1000;
-		return  INIT_PAGE_NUMBER + (int) ((date.getTime() - initDate.getTime()) / day);
+		return  INIT_PAGE_NUMBER + (int) ((date.getTime() - mInitDate.getTime()) / day);
 	}
 	
 	/*
@@ -81,8 +84,8 @@ public class EventPager extends ViewPager {
 	 * Update pages when content has changed.
 	 */
 	public void update() {
-		eventPagerAdapter.update();
-		eventPagerAdapter.notifyDataSetChanged();
+		mEventPagerAdapter.update();
+		mEventPagerAdapter.notifyDataSetChanged();
 	}
 	
 	private class EventPagerAdapter extends PagerAdapter{
@@ -94,7 +97,7 @@ public class EventPager extends ViewPager {
 		
 		public EventPagerAdapter(Date currentDate) {
 			TimetableLogger.log("EventPagerAdapter created");
-			db = TimetableDatabase.getInstance(activity);
+			db = TimetableDatabase.getInstance(mActivity);
 			loadEvents();
 		}
 		
@@ -121,13 +124,13 @@ public class EventPager extends ViewPager {
 			TimetableLogger.verbose("EventPager: try instantiate page " + Integer.toString(pageNumber));
 			Date currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			
-			LinearLayout externalLayout = new LinearLayout(activity);
+			LinearLayout externalLayout = new LinearLayout(mActivity);
 			externalLayout.setOrientation(LinearLayout.HORIZONTAL);
-			ScrollView scrollView = new ScrollView(activity);
+			ScrollView scrollView = new ScrollView(mActivity);
 			scrollView.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.MATCH_PARENT));
 			scrollView.setFillViewport(true);
 			
-			LinearLayout internalLayout = new LinearLayout(activity); 
+			LinearLayout internalLayout = new LinearLayout(mActivity); 
 			internalLayout.setOrientation(LinearLayout.VERTICAL);
 			internalLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 			
@@ -137,13 +140,15 @@ public class EventPager extends ViewPager {
 				if (!event.isToday(currentDate)) {
 					continue;
 				}
-				EventView eventView = new EventView(EventPager.this.activity, event, currentDate);
-				eventView.setEventViewObserver(activity);
+				
+				EventView eventView = mEventViewProvider.getView(pageNumber);
+				eventView.populate(event, currentDate);
+				eventView.setEventViewObserver(mActivity);
 				internalLayout.addView(eventView);
 				hasEventsToday = true;
 			}
 			if (!hasEventsToday) {
-				TextView textView = new TextView(activity);
+				TextView textView = new TextView(mActivity);
 				textView.setPadding(0,60,0,0);
 				textView.setGravity(Gravity.CENTER_HORIZONTAL);
 				textView.setText(R.string.event_pager_no_events);
@@ -169,7 +174,8 @@ public class EventPager extends ViewPager {
 	    public void destroyItem(View viewPager, int pageNumber, Object view) {
 	            TimetableLogger.verbose("EventPagerAdapter destroys page number " + pageNumber);
 	            ((ViewPager) viewPager).removeView((View) view);
-	    }
+	            mEventViewProvider.releaseViews(pageNumber);
+		}
 	}
 
 }
