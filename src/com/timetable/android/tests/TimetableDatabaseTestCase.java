@@ -31,6 +31,7 @@ public class TimetableDatabaseTestCase extends AndroidTestCase {
 	public void setUp() throws ParseException {
 		mContext = new RenamingDelegatingContext(getContext(), "TimetableDatabaseTestCase_");
 		db = TimetableDatabase.getInstance(mContext);
+		assertEquals(0, db.getAllEvents());
 		searchDate = dateFormat.parse("27.12.2013");
 		Event event1 = new Event.Builder()
 						.setName("event1")

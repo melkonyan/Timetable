@@ -92,7 +92,7 @@ public class EventService extends Service {
 		
 		TimetableLogger.log("EventService.createEventStartedAlarm: creating alarm at " + nextStartTime.toString());
 		alarmManager.set(AlarmManager.RTC_WAKEUP, 
-							DateUtils.getLocalTime(nextStartTime), 
+							nextStartTime.getTime(), 
 							getPendingIntentFromEvent(context, event, BroadcastActions.ACTION_EVENT_STARTED));
 	}
 	
@@ -102,9 +102,9 @@ public class EventService extends Service {
 			TimetableLogger.log("EventService.createEventEndedAlarm: event already finished.");
 			return;
 		}
-		TimetableLogger.log("EventService.createEventEndedAlarm: creating alarm at " + new Date(DateUtils.getLocalTime(nextEndTime)).toString());
+		TimetableLogger.log("EventService.createEventEndedAlarm: creating alarm at " + nextEndTime.toString());
 		alarmManager.set(AlarmManager.RTC_WAKEUP, 
-							DateUtils.getLocalTime(nextEndTime), 
+							nextEndTime.getTime(), 
 							getPendingIntentFromEvent(context, event, BroadcastActions.ACTION_EVENT_ENDED));
 	}
 	
