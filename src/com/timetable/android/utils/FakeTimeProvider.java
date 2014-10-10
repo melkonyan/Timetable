@@ -2,7 +2,6 @@ package com.timetable.android.utils;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class FakeTimeProvider extends TimeProvider {
 

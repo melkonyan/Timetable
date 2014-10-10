@@ -1,10 +1,6 @@
 package com.timetable.android.utils;
 
 import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
-import com.timetable.android.TimetableLogger;
 
 public class SimpleTimeProvider extends TimeProvider {
 

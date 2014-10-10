@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.timetable.android.utils.DateFormatFactory;
 
 /*
- * Class, that represents mEvent's information. Is used in EventDayViewActivity.
+ * Class, that represents event's information. Is used in EventDayViewActivity.
  */
 public class EventView extends RelativeLayout {
 
@@ -33,6 +33,29 @@ public class EventView extends RelativeLayout {
 	private LinearLayout mMenuContainer;
 	
 	private EventViewObserver mObserver;
+
+	private TextView mEventNameText;
+
+	private TextView mEventPlaceText;
+
+	private TextView mEventNoteText;
+
+	private TextView mEventStartTimeText;
+
+	private TextView mEventEndTimeText;
+
+	private ImageView mIsRepeatedIcon;
+
+	private ImageView mHasAlarmIcon;
+
+	private ImageView mMutesDeviceIcon;
+
+	private LinearLayout mCopyButton;
+
+	private LinearLayout mEditButton;
+
+	private LinearLayout mDeleteButton;
+	
 	
 	
 	/*
@@ -41,52 +64,90 @@ public class EventView extends RelativeLayout {
 	 * @displayDate - date, on which mEvent is displayed.
 	 */
 	public EventView(Context context, Event event, Date displayDate) {
+		this(context);
+		populate(event, displayDate);
+	}
+	
+	
+	public EventView(Context context) {
 		super(context);
-		mEvent = event;
+		inflate(context);
+	}
+	
+	/*
+	 * Inflate view from xml layout and find views.
+	 */
+	private void inflate(Context context) {
 		mContext = context;
-		mDisplayDate = displayDate;
-		LayoutInflater layoutInflater =  LayoutInflater.from(context);	
+		
+		LayoutInflater layoutInflater =  LayoutInflater.from(mContext);	
 		layoutInflater.inflate(R.layout.layout_event, this, true);
 		mEventContainer = (LinearLayout) findViewById(R.id.layout_event_container);
 		mEventInfoContainer = (RelativeLayout) findViewById(R.id.layout_event_info_container);
 		
 		mMenuContainer = (LinearLayout) findViewById(R.id.layout_event_buttons_container);
 		
-		TextView textViewEventId = (TextView) findViewById(R.id.layout_event_id);
-		TextView textViewEventName = (TextView) findViewById(R.id.layout_event_name); 
-		TextView textViewEventPlace = (TextView) findViewById(R.id.layout_event_place); 
-		TextView textViewEventNote = (TextView) findViewById(R.id.layout_event_note); 
-		TextView textViewEventStartTime = (TextView) findViewById(R.id.layout_event_start_time);
-		TextView textViewEventEndTime = (TextView) findViewById(R.id.layout_event_end_time);
-		ImageView imageRepeat = (ImageView) findViewById(R.id.layout_event_image_repeat);
-		ImageView imageAlarm = (ImageView) findViewById(R.id.layout_event_image_alarm);
-		ImageView imageMuteDevice = (ImageView) findViewById(R.id.layout_event_image_mute_device);
+		//TextView textViewEventId = (TextView) findViewById(R.id.layout_event_id);
+		mEventNameText = (TextView) findViewById(R.id.layout_event_name); 
+		mEventPlaceText = (TextView) findViewById(R.id.layout_event_place); 
+		mEventNoteText = (TextView) findViewById(R.id.layout_event_note); 
+		mEventStartTimeText = (TextView) findViewById(R.id.layout_event_start_time);
+		mEventEndTimeText = (TextView) findViewById(R.id.layout_event_end_time);
+		mIsRepeatedIcon = (ImageView) findViewById(R.id.layout_event_image_repeat);
+		mHasAlarmIcon = (ImageView) findViewById(R.id.layout_event_image_alarm);
+		mMutesDeviceIcon = (ImageView) findViewById(R.id.layout_event_image_mute_device);
 		
-		LinearLayout buttonCopy = (LinearLayout) findViewById(R.id.layout_event_button_copy);
-		LinearLayout buttonEdit = (LinearLayout) findViewById(R.id.layout_event_button_edit);
-		LinearLayout buttonDelete = (LinearLayout) findViewById(R.id.layout_event_button_delete);
-		
-		textViewEventId.setText(Integer.toString(event.getId()));
-		textViewEventName.setText(event.getName());
-		textViewEventPlace.setText(event.getPlace());
-		textViewEventNote.setText(event.getNote());
-		textViewEventStartTime.setText(START_TIME_FORMAT.format(event.getStartTime()));
+		mCopyButton = (LinearLayout) findViewById(R.id.layout_event_button_copy);
+		mEditButton = (LinearLayout) findViewById(R.id.layout_event_button_edit);
+		mDeleteButton = (LinearLayout) findViewById(R.id.layout_event_button_delete);
+	}
+	
+	/*
+	 * Populate view with event's information.
+	 */
+	public void populate(Event event, Date displayDate) {
+		mDisplayDate = displayDate;
+		mEvent = event;
+		//textViewEventId.setText(Integer.toString(event.getId()));
+		mEventNameText.setText(event.getName());
+		mEventPlaceText.setText(event.getPlace());
+		mEventNoteText.setText(event.getNote());
+		mEventStartTimeText.setText(START_TIME_FORMAT.format(event.getStartTime()));
 		
 		if (event.hasEndTime()) {
-			textViewEventEndTime.setText("- " + START_TIME_FORMAT.format(event.getEndTime()));
+			mEventEndTimeText.setText("- " + START_TIME_FORMAT.format(event.getEndTime()));
 		}
 		else {
-			textViewEventEndTime.setText("");
+			mEventEndTimeText.setText("");
 		}
 		
 		mMenuContainer.setVisibility(View.GONE);
-		imageRepeat.setVisibility(event.isRepeatable() ? View.VISIBLE : View.INVISIBLE);
-		imageAlarm.setVisibility(event.hasAlarm() ? View.VISIBLE : View.INVISIBLE);
-		imageMuteDevice.setVisibility(event.mutesDevice() ? View.VISIBLE : View.INVISIBLE);
+		mIsRepeatedIcon.setVisibility(event.isRepeatable() ? View.VISIBLE : View.INVISIBLE);
+		mHasAlarmIcon.setVisibility(event.hasAlarm() ? View.VISIBLE : View.INVISIBLE);
+		mMutesDeviceIcon.setVisibility(event.mutesDevice() ? View.VISIBLE : View.INVISIBLE);
 		
-		TimetableLogger.verbose("Event " + event.getName() + " successfully drawed");
-		
-		buttonEdit.setOnClickListener(new OnClickListener() {
+		//TimetableLogger.verbose("Event " + event.getName() + " successfully drawed");
+	}
+	public Event getEvent() {
+		return mEvent;
+	}
+	
+	public void showMenu() {
+		mMenuContainer.setVisibility(View.VISIBLE);
+	}
+	
+	public void hideMenu() {
+		mMenuContainer.setVisibility(View.GONE);
+	}
+	
+	/*
+	 * Set observer, that implement EventView.EventViewObserver interface.
+	 * His methods will be called, when corresponding elements are clicked.
+	 */
+	public void setEventViewObserver(EventViewObserver observer) {
+		mObserver = observer;
+
+		mEditButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
@@ -97,26 +158,21 @@ public class EventView extends RelativeLayout {
 			}
 		});
 		
-		buttonCopy.setOnClickListener(new OnClickListener() {
+		mCopyButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				TimetableLogger.verbose("EventView: copy button clicked.");
-				if (mObserver != null) {
-					mObserver.onButtonCopyClicked(EventView.this);
-				}
+				mObserver.onButtonCopyClicked(EventView.this);
 			}
 		});
 		
-		buttonDelete.setOnClickListener(new OnClickListener() {
+		mDeleteButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				TimetableLogger.verbose("EventView: delete button clicked.");
-				if (mObserver != null) {
-					mObserver.onButtonDeleteClicked(EventView.this);
-	
-				}
+				mObserver.onButtonDeleteClicked(EventView.this);
 			}
 		});
 		
@@ -125,9 +181,7 @@ public class EventView extends RelativeLayout {
 			@Override
 			public void onClick(View v) {
 				TimetableLogger.verbose("EventView: event clicked.");
-				if (mObserver != null) {
-					mObserver.onEventViewClicked(EventView.this);
-				}
+				mObserver.onEventViewClicked(EventView.this);
 			}
 		});
 		
@@ -142,22 +196,7 @@ public class EventView extends RelativeLayout {
 				return false;
 			}
 		});
-	}
 	
-	public Event getEvent() {
-		return mEvent;
-	}
-	
-	public void showMenu() {
-		mMenuContainer.setVisibility(View.VISIBLE);
-	}
-	
-	public void hideMenu() {
-		mMenuContainer.setVisibility(View.GONE);
-	}
-	
-	public void setEventViewObserver(EventViewObserver observer) {
-		mObserver = observer;
 	}
 	
 	public static interface EventViewObserver {

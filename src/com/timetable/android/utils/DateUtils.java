@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class DateUtils {
 	
@@ -21,9 +22,25 @@ public class DateUtils {
 	
 	public static final int AFTER = 1;
 	
-	public static long getLocalTime(Date time) {
-		return time.getTime();
-		//return time.getTime() - (long) 3*60*60*1000;//TimeZone.getDefault().getRawOffset();
+	
+	public static long getOffset(long time) {
+		return TimeZone.getDefault().getOffset(time);
+	}
+	
+	public static long addOffset(long time) {
+		return time + getOffset(time);
+	}
+	
+	public static Date addOffset(Date time) {
+		return new Date(addOffset(time.getTime()));
+	}
+	
+	public static long removeOffset(long time) {
+		return time - getOffset(time);
+	}
+	
+	public static Date removeOffset(Date time) {
+		return new Date(removeOffset(time.getTime()));
 	}
 	
 	/*
@@ -53,13 +70,16 @@ public class DateUtils {
 	 * Return new date with hours, minutes and second set to zero.
 	 */
 	public static Date extractDate(Date dateTime) {
-		Calendar cal = Calendar.getInstance();
+		/*Calendar cal = Calendar.getInstance();
 		cal.setTime(dateTime);
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 0);
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
 		return cal.getTime();
+	*/
+		long localTime = addOffset(dateTime.getTime());
+		return removeOffset(new Date(localTime - localTime % DAY_MILLIS));
 	}
 	
 	public static Calendar extractTime(Calendar dateTime) {
@@ -72,11 +92,13 @@ public class DateUtils {
 	 * Return new date with date set to zero.
 	 */
 	public static Date extractTime(Date dateTime) {
-		Calendar cal = Calendar.getInstance();
+		/*Calendar cal = Calendar.getInstance();
 		cal.setTime(dateTime);
 		cal.set(Calendar.YEAR, 1970);
 		cal.set(Calendar.DAY_OF_YEAR, 1);
 		return cal.getTime();
+	*/
+		return new Date(removeOffset(addOffset(dateTime.getTime()) % DAY_MILLIS));
 	}
 	
 	public static Date setTime(Date date, Date time) {
