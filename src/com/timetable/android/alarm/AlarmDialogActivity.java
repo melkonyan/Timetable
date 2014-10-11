@@ -139,8 +139,8 @@ public class AlarmDialogActivity extends Activity {
 		
 		if (!db.existsEvent(event)) {
 			TimetableLogger.error("AlarmDialogActivity.onReceive: event, that is not in the database received.");
-			//ok = false;
-			//return;
+			ok = false;
+			return;
 		}
 		
 		autoKiller.postDelayed(autoKill, TIME_TO_RUN_MILLIS);

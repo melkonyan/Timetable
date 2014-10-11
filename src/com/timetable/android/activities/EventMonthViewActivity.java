@@ -9,12 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.timetable.android.R;
+import com.timetable.android.TimetableLogger;
 
 public class EventMonthViewActivity extends ActionBarActivity{
+	
+	
+	GridView mGreedView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -22,17 +25,26 @@ public class EventMonthViewActivity extends ActionBarActivity{
 		
 		setContentView(R.layout.activity_month_view);
 		
-		GridView greedView = (GridView) findViewById(R.id.month_days);
-		greedView.setAdapter(new MonthViewAdapter(this));
-		
+		mGreedView = (GridView) findViewById(R.id.month_days);
+		mGreedView.setAdapter(new MonthViewAdapter(this));
 	}
 	
 	public class MonthViewAdapter extends BaseAdapter {
 
 		private Context mContext;
 		
+		int mDayViewHeight = -1;
+		
 		public MonthViewAdapter(Context context) {
 			mContext = context;
+		}
+		
+		private int getDayViewHeight() {
+			if (mDayViewHeight <= 0) {
+				mDayViewHeight = EventMonthViewActivity.this.mGreedView.getHeight() / 7;
+			}
+
+			return mDayViewHeight;
 		}
 		
 		@Override
@@ -42,10 +54,15 @@ public class EventMonthViewActivity extends ActionBarActivity{
 		}
 
 		@Override
-		public View getView(int position, View converView, ViewGroup Parent) {
-			TextView textView = new TextView(mContext);
-			
-			textView.setText("1");
+		public View getView(int position, View convertView, ViewGroup Parent) {
+			TextView textView = (TextView) convertView;
+			if (textView == null ) {
+				textView = (TextView) getLayoutInflater().inflate(R.layout.month_day_view, null);
+				textView.setHeight(getDayViewHeight());
+				TimetableLogger.error(Integer.toString(getDayViewHeight()));
+				
+			}
+			textView.setText(Integer.toString(position));
 			return textView;
 		}
 
