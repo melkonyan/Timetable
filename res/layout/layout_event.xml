@@ -98,7 +98,9 @@
 	    android:orientation="horizontal"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	   	android:background="#909090">
+	   	android:background="#909090"
+	   	android:focusable="True"
+	   	android:focusableInTouchMode="True">
 	    
 		
 	    <LinearLayout 
