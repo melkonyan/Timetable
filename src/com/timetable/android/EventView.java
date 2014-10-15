@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.timetable.android.utils.DateFormatFactory;
@@ -55,8 +56,10 @@ public class EventView extends RelativeLayout {
 	private LinearLayout mEditButton;
 
 	private LinearLayout mDeleteButton;
+
+	private ScrollView mScrollView;
 	
-	
+	private View mBottomLine;
 	
 	/*
 	 * Constructor for EventView class.
@@ -86,6 +89,7 @@ public class EventView extends RelativeLayout {
 		mEventInfoContainer = (RelativeLayout) findViewById(R.id.layout_event_info_container);
 		
 		mMenuContainer = (LinearLayout) findViewById(R.id.layout_event_buttons_container);
+		mBottomLine = findViewById(R.id.layout_event_bottom_line);
 		
 		//TextView textViewEventId = (TextView) findViewById(R.id.layout_event_id);
 		mEventNameText = (TextView) findViewById(R.id.layout_event_name); 
@@ -134,6 +138,8 @@ public class EventView extends RelativeLayout {
 	
 	public void showMenu() {
 		mMenuContainer.setVisibility(View.VISIBLE);
+		TimetableLogger.error(Boolean.toString(mBottomLine.requestFocus()));
+		TimetableLogger.error(Boolean.toString(mEventContainer.requestFocus()));
 		TimetableLogger.error(Boolean.toString(mMenuContainer.requestFocusFromTouch()));
 		TimetableLogger.error(Boolean.toString(mMenuContainer.isFocusable()));
 		TimetableLogger.error(Boolean.toString(mMenuContainer.isFocusableInTouchMode()));
@@ -141,10 +147,16 @@ public class EventView extends RelativeLayout {
 	}
 	
 	public void hideMenu() {
-		mMenuContainer.clearFocus();
+		//mMenuContainer.clearFocus();
 		mMenuContainer.setVisibility(View.GONE);
 	}
 	
+	/*
+	 * If event view is contained in scroll view, it should has a reference to it.
+	 */
+	public void setScrollView(ScrollView scrollView) {
+		mScrollView = scrollView;
+	}
 	/*
 	 * Set observer, that implement EventView.EventViewObserver interface.
 	 * His methods will be called, when corresponding elements are clicked.

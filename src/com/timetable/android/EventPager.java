@@ -144,6 +144,7 @@ public class EventPager extends ViewPager {
 				EventView eventView = mEventViewProvider.getView(pageNumber);
 				eventView.populate(event, currentDate);
 				eventView.setEventViewObserver(mActivity);
+				eventView.setScrollView(scrollView);
 				internalLayout.addView(eventView);
 				hasEventsToday = true;
 			}
