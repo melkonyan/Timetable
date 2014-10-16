@@ -432,19 +432,6 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 			TimetableLogger.error("EventAddActivity.setInitValues. Intent with no extra data received.");
 			return;
 		}
-		if (extras.containsKey(EXTRA_COPY_EVENT)) {
-			try {
-				setEvent(new Event(extras.getBundle(EXTRA_COPY_EVENT)));
-				initEventDate = Calendar.getInstance();
-				initEventDate.setTime(INIT_DATE_FORMAT.parse(extras.getString(EventAddActivity.EXTRA_DATE)));
-				setEventDate(getInitDate());
-				
-			} catch (ParseException e) {
-				TimetableLogger.error("EventAddActivity.setInitValues. Unparseble copy-event received.");
-			} 
-			
-			return;
-		}
 		try {
 			initEventDate = Calendar.getInstance();
 			initEventDate.setTime(INIT_DATE_FORMAT.parse(extras.getString(EventAddActivity.EXTRA_DATE)));

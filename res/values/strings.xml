@@ -70,6 +70,7 @@
 	<string name = "actionbar_date_today">Today</string>
 	<string name = "actionbar_add_event">Add event</string>
 	<string name = "actionbar_edit_event">Edit event</string>
+	<string name = "actionbar_copy_event">Copy event</string>
 	
 	<string name = "dialog_button_save">Save</string>
 	<string name = "dialog_button_delete">Delete</string>
