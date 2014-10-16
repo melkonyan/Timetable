@@ -313,10 +313,10 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 
 	@Override
 	public void onButtonCopyClicked(EventView eventView) {
-		Intent eventCopyIntent = new Intent(this, EventAddActivity.class);
-		eventCopyIntent.putExtra(EventEditActivity.EXTRA_COPY_EVENT, eventView.getEvent().convert());
+		Intent eventCopyIntent = new Intent(this, EventCopyActivity.class);
+		eventCopyIntent.putExtra(EventCopyActivity.EXTRA_COPY_EVENT, eventView.getEvent().convert());
 		//TODO: put date's millis into extra, instead of formatting and then parsing date string 
-		eventCopyIntent.putExtra(EventEditActivity.EXTRA_DATE, EventEditActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
+		eventCopyIntent.putExtra(EventCopyActivity.EXTRA_DATE, EventCopyActivity.INIT_DATE_FORMAT.format(getEventPager().getDisplayedDate()));
 		this.startActivity(eventCopyIntent);
 	}
 

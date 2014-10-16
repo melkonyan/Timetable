@@ -22,9 +22,9 @@ public class DeviceMuteService extends Service {
 	
 	private static final long VIBRATE_DURATION_MILLIS = 500;
 	
-	private AudioManager audioManager;
+	private AudioManager mAudioManager;
 	
-	private Vibrator vibrator;
+	private Vibrator mVibrator;
 
 	private TaskReceiver mReceiver;
 	
@@ -49,8 +49,8 @@ public class DeviceMuteService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		TimetableLogger.log("DeviceMuteService: service is created.");
-		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		mReceiver = new TaskReceiver();
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(BroadcastActions.ACTION_EVENT_STARTED);
@@ -74,23 +74,23 @@ public class DeviceMuteService extends Service {
 	}
 	
 	private boolean isMuted() {
-		int state = audioManager.getRingerMode();
+		int state = mAudioManager.getRingerMode();
 		return state == AudioManager.RINGER_MODE_SILENT || state == AudioManager.RINGER_MODE_VIBRATE;
 	}
 	
 	private void vibrate() {
-		vibrator.vibrate(VIBRATE_DURATION_MILLIS);
+		mVibrator.vibrate(VIBRATE_DURATION_MILLIS);
 	}
 	
 	private void muteDevice() {
 		TimetableLogger.log("DeviceMuteService.muteDevice: try to mute device.");
-		audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+		mAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 		vibrate();
 	}
 	
 	private void unmuteDevice() {
 		TimetableLogger.log("DeviceMuteService.unmuteDevice: try to unmute device.");
-		audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+		mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 		vibrate();
 	}
 	

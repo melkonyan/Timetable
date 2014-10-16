@@ -54,6 +54,9 @@
    	        </activity>
    	        <activity android:name="com.timetable.android.activities.EventEditActivity" >
    	        </activity>
+   	        <activity android:name="com.timetable.android.activities.EventCopyActivity" >
+   	        </activity>
+   	        
    	        <activity
    	            android:name="com.timetable.android.alarm.AlarmDialogActivity"
    	            android:launchMode="singleTask"
