@@ -98,7 +98,9 @@
 	    android:orientation="horizontal"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	   	android:background="#909090">
+	   	android:background="#909090"
+	   	android:focusable="True"
+	   	android:focusableInTouchMode="True">
 	    
 		
 	    <LinearLayout 
@@ -153,10 +155,14 @@
 		</LinearLayout>
 	
 	<View
+	    android:id="@+id/layout_event_bottom_line"
 	    android:layout_width="fill_parent"
 	    android:layout_height="0.2dp"
 	    android:layout_marginBottom="0dp"
-	    android:background="#808080" />
+	    android:background="#808080"
+	    android:focusable="True"
+	   	android:focusableInTouchMode="True"
+	     />
 
 </LinearLayout>
 <!-- </merge> -->

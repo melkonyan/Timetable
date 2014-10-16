@@ -38,15 +38,16 @@ import com.timetable.android.utils.Utils;
  */
 public class EventDayViewActivity extends Activity implements EventViewObserver, OnEventDeletedListener {
 	
-	public static final SimpleDateFormat ACTION_BAR_DATE_FORMAT = new SimpleDateFormat("EEE, dd.MM", Locale.US); 
+	public static final SimpleDateFormat ACTION_BAR_DATE_FORMAT = DateFormatFactory.getFormat("EEE, dd.MM"); 
 	
+	public static final SimpleDateFormat ACTION_BAR_DATE_FORMAT_WITH_YEAR = DateFormatFactory.getFormat("EEE, dd.MM.yyyy");
 	public static final String EXTRAS_DATE = "date";
 	
 	public static final SimpleDateFormat EXTRAS_DATE_FORMAT = DateFormatFactory.getDateFormat();
 	
 	public static final int EVENT_ADD_ACTIVITY_REQUEST_CODE = 10001;
 	
-	private Date displayedDate;
+	private Date mDisplayedDate;
 	
 	private LinearLayout eventLayout;
 	
@@ -213,7 +214,7 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 	        	return true;
 	        case R.id.action_go_to_date:
 	        	Calendar currDate = Calendar.getInstance();
-	        	currDate.setTime(displayedDate);
+	        	currDate.setTime(mDisplayedDate);
 	        	datePickerDialog.setDate(currDate.get(Calendar.YEAR), currDate.get(Calendar.MONTH), currDate.get(Calendar.DAY_OF_MONTH));
 	        	datePickerDialog.show(getSupportFragmentManager());
 	        	return true;
@@ -226,27 +227,43 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 	
 	private class EventPagerListener extends SimpleOnPageChangeListener {
 		
+		private int mCurrentYear;
 		
 		public EventPagerListener() {
 			super();
+			mCurrentYear = Utils.getCurrDateTimeCal().get(Calendar.YEAR);
+			
 			TimetableLogger.log("EventPagerListener successfully created.");
 		}
 		
 		@Override
 		public void  onPageSelected(int pageNumber) {
 			TimetableLogger.log("EventPagerListener detected page # " + pageNumber + " selection.");
-			displayedDate = getEventPager().getDateByPageNumber(pageNumber);
+			mDisplayedDate = getEventPager().getDateByPageNumber(pageNumber);
 			
 			//update action bar
-			String titleString = ACTION_BAR_DATE_FORMAT.format(displayedDate);
+			
+			updateActionBarTitile();
+			hideOpenedMenu();
+		}
+
+		private void updateActionBarTitile() {
+			String titleString;
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(mDisplayedDate);
+			int displayedYear = cal.get(Calendar.YEAR);
+			if (displayedYear == mCurrentYear) {
+				titleString = ACTION_BAR_DATE_FORMAT.format(mDisplayedDate);
+			} else {
+				titleString = ACTION_BAR_DATE_FORMAT_WITH_YEAR.format(mDisplayedDate);
+			}
+			
 			String subtitleString = null;
-			if (DateUtils.areSameDates(displayedDate, Utils.getCurrDateTime())) {
+			if (DateUtils.areSameDates(mDisplayedDate, Utils.getCurrDateTime())) {
 				subtitleString = getResources().getString(R.string.actionbar_date_today);
-				
 			}
 			mActionBar.setTitle(titleString);
 			mActionBar.setSubtitle(subtitleString);
-			hideOpenedMenu();
 		}
 	}
 
