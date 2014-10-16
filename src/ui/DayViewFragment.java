@@ -1,4 +1,4 @@
-package com.timetable.android.activities;
+package ui;
 
 
 import java.text.SimpleDateFormat;

@@ -1,19 +1,18 @@
-package com.timetable.android.activities;
-
-
+package ui;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
+import org.holoeverywhere.LayoutInflater;
+import org.holoeverywhere.widget.LinearLayout;
+import org.holoeverywhere.widget.TextView;
+
 import android.content.Context;
-import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.TextView;
 
 import com.timetable.android.Event;
 import com.timetable.android.R;
@@ -22,23 +21,25 @@ import com.timetable.android.TimetableLogger;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
 
-public class EventMonthViewActivity extends ActionBarActivity{
-	
-	
+public class MonthView extends LinearLayout {
+
 	GridView mGreedView;
 	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-		setContentView(R.layout.activity_month_view);
-		
-		mGreedView = (GridView) findViewById(R.id.month_days);
-		mGreedView.setAdapter(new MonthViewAdapter(this));
-	}
+	LayoutInflater mLayoutInflater;
 	
-	public class MonthViewAdapter extends BaseAdapter {
+	Context mContext;
+	public MonthView(Context context) {
+		super(context);
+		mContext = context;
+		mLayoutInflater = LayoutInflater.from(mContext);
+		mLayoutInflater.inflate(R.layout.layout_month_view, this, true);
+		mGreedView = (GridView) findViewById(R.id.month_days);
+		mGreedView.setAdapter(new MonthViewAdapter(context));
+	
+	}
 
+	public class MonthViewAdapter extends BaseAdapter {
+	
 		private Context mContext;
 		
 		int mDayViewHeight = -1;
@@ -114,9 +115,9 @@ public class EventMonthViewActivity extends ActionBarActivity{
 		
 		private int getDayViewHeight() {
 			if (mDayViewHeight <= 0) {
-				mDayViewHeight = EventMonthViewActivity.this.mGreedView.getHeight() / mRowsNum;
+				mDayViewHeight = MonthView.this.mGreedView.getHeight() / mRowsNum;
 			}
-
+	
 			return mDayViewHeight;
 		}
 		
@@ -126,12 +127,12 @@ public class EventMonthViewActivity extends ActionBarActivity{
 			// TODO Auto-generated method stub
 			return 0;
 		}
-
+	
 		@Override
 		public View getView(int position, View convertView, ViewGroup Parent) {
 			TextView textView = (TextView) convertView;
 			if (textView == null ) {
-				textView = (TextView) getLayoutInflater().inflate(R.layout.month_day_view, null);
+				textView = (TextView) MonthView.this.mLayoutInflater.inflate(R.layout.month_day_view, null);
 				if (getDayViewHeight() > 0) {
 					textView.setHeight(getDayViewHeight());
 				}
@@ -139,13 +140,13 @@ public class EventMonthViewActivity extends ActionBarActivity{
 			textView.setText(Integer.toString(mDisplayedDays[position]) + " " + Integer.toString(mEventCounts[position]));
 			return textView;
 		}
-
+	
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
 			return mGreedSize;
 		}
-
+	
 		@Override
 		public Object getItem(int position) {
 			// TODO Auto-generated method stub

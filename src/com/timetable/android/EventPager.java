@@ -7,6 +7,8 @@ import java.util.Vector;
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.TextView;
 
+import ui.DayViewFragment;
+
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -16,7 +18,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.timetable.android.EventView.EventViewObserver;
-import com.timetable.android.activities.DayViewFragment;
 
 /*
  * Class, that instantiate views of events for each day, and allows user to slide among the days.
