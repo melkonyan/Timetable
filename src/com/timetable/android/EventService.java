@@ -143,9 +143,6 @@ public class EventService extends Service {
 				createEventStartedAlarm(context, event);
 				createEventEndedAlarm(context, event);
 			} else if (BroadcastActions.ACTION_EVENT_UPDATED.equals(action)) {
-				
-				
-				
 				updateAlarm(context, event);
 				if (!event.isCurrent(Utils.getCurrDateTime())) {
 					EventBroadcastSender.sendEventEndedBroadcast(context, eventData);
