@@ -24,7 +24,8 @@ import com.timetable.android.Event;
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
-import com.timetable.android.activities.EventDayViewActivity;
+import com.timetable.android.activities.DayViewFragment;
+import com.timetable.android.activities.MainActivity;
 import com.timetable.android.activities.SettingsActivity;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
@@ -232,9 +233,9 @@ public class AlarmDialogActivity extends Activity {
 		broadcast.putExtras(eventData);
 		sendBroadcast(broadcast);
 	
-		Intent intent = new Intent(AlarmDialogActivity.this, EventDayViewActivity.class);
-		intent.putExtra(EventDayViewActivity.EXTRAS_DATE, 
-						EventDayViewActivity.EXTRAS_DATE_FORMAT.format(event.getAlarm().getEventOccurrence(Utils.getCurrDateTime())));
+		Intent intent = new Intent(AlarmDialogActivity.this, MainActivity.class);
+		intent.putExtra(MainActivity.EXTRAS_DATE, 
+						MainActivity.EXTRAS_DATE_FORMAT.format(event.getAlarm().getEventOccurrence(Utils.getCurrDateTime())));
 		
 		AlarmDialogActivity.this.startActivity(intent);
 		

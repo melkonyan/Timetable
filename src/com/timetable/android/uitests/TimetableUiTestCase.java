@@ -2,7 +2,6 @@ package com.timetable.android.uitests;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.holoeverywhere.widget.EditText;
 import org.holoeverywhere.widget.Spinner;
@@ -16,11 +15,12 @@ import com.timetable.android.Event;
 import com.timetable.android.EventPeriod;
 import com.timetable.android.EventView;
 import com.timetable.android.R;
+import com.timetable.android.activities.DayViewFragment;
 import com.timetable.android.activities.EventAddActivity;
-import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.activities.EventEditActivity;
+import com.timetable.android.activities.MainActivity;
 
-public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventDayViewActivity> {
+public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<MainActivity> {
 
 	private static final int DEFAULT_TIMEOUT = 1000;
 	
@@ -36,7 +36,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 
 	
 	public TimetableUiTestCase() {
-		super(EventDayViewActivity.class);
+		super(MainActivity.class);
 	}
 	
 	private void clickOnView(int id) {
@@ -72,7 +72,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 	}
 	
 	/*public void testPageViewer() throws ParseException, InterruptedException {
-		solo.assertCurrentActivity("Wrong Activity", EventDayViewActivity.class);
+		solo.assertCurrentActivity("Wrong Activity", DayViewFragment.class);
 		ActionBarActivity mActivity = (ActionBarActivity) solo.getCurrentActivity();
 		
 		assertEquals(mActivity.getSupportActionBar().getTitle().toString(), mResources.getString(R.string.actionbar_date_today));
@@ -108,7 +108,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 						.build();
 		
 		View eventAddButton = solo.getView(R.id.action_add_event);
-		solo.assertCurrentActivity("Wrong Activity", EventDayViewActivity.class);
+		solo.assertCurrentActivity("Wrong Activity", DayViewFragment.class);
 		
 		solo.clickOnView(eventAddButton);
 		solo.sleep(1000);
@@ -134,7 +134,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		selectSpinnerItem(0, event.getPeriod().getType().ordinal() + 1);
 		solo.clickOnView(eventSaveButton);
 		
-		assertTrue(solo.waitForActivity(EventDayViewActivity.class, DEFAULT_TIMEOUT));
+		assertTrue(solo.waitForActivity(MainActivity.class, DEFAULT_TIMEOUT));
 		assertTrue(solo.searchText(event.getName()));
 		assertTrue(solo.searchText(EventView.START_TIME_FORMAT.format(event.getStartTime())));
 		assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_repeat).getVisibility());
@@ -153,7 +153,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		solo.clickOnView(solo.getView(View.class, 1));
 		solo.clickOnButton(mResources.getText(R.string.dialog_button_save).toString());
 		
-		assertTrue(solo.waitForActivity(EventDayViewActivity.class, DEFAULT_TIMEOUT));
+		assertTrue(solo.waitForActivity(MainActivity.class, DEFAULT_TIMEOUT));
 		assertEquals(View.INVISIBLE, getActivity().findViewById(R.id.layout_event_image_repeat).getVisibility());
 		assertEquals(View.INVISIBLE, getActivity().findViewById(R.id.layout_event_image_alarm).getVisibility());
 		
@@ -168,7 +168,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		selectSpinnerItem(0, event.getPeriod().getType().ordinal() + 1);
 		solo.clickOnView(eventUpdateButton);
 		
-		assertTrue(solo.waitForActivity(EventDayViewActivity.class, DEFAULT_TIMEOUT));
+		assertTrue(solo.waitForActivity(MainActivity.class, DEFAULT_TIMEOUT));
 		assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_repeat).getVisibility());
 		//assertEquals(View.VISIBLE, solo.getView(R.id.layout_event_image_alarm).getVisibility());
 		
@@ -182,7 +182,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<EventD
 		solo.clickOnView(solo.getView(View.class, 1));
 		solo.clickOnButton(mResources.getText(R.string.dialog_button_delete).toString());
 		
-		assertTrue(solo.waitForActivity(EventDayViewActivity.class, DEFAULT_TIMEOUT));
+		assertTrue(solo.waitForActivity(MainActivity.class, DEFAULT_TIMEOUT));
 		assertFalse(solo.searchText(event.getName()));
 		
 	}

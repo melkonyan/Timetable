@@ -15,13 +15,14 @@ import android.widget.TextView;
 import com.timetable.android.utils.DateFormatFactory;
 
 /*
- * Class, that represents event's information. Is used in EventDayViewActivity.
+ * Class, that represents event's information. Is used in DayViewFragment.
  */
 public class EventView extends RelativeLayout {
 
 	public static final SimpleDateFormat START_TIME_FORMAT = DateFormatFactory.getFormat("HH:mm");
 	
 	private Event mEvent;
+	
 	
 	private Context mContext; 
 	

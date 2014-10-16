@@ -884,7 +884,7 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 		}
 		else { 
 			Intent resultData = new Intent();
-			resultData.putExtra(EventDayViewActivity.EXTRAS_DATE, savedEvent.getDateMillis());
+			resultData.putExtra(MainActivity.EXTRAS_DATE, savedEvent.getDateMillis());
 			setResult(RESULT_OK, resultData);
 		}
 		finish();

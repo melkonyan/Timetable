@@ -28,7 +28,8 @@ import com.timetable.android.Event;
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
-import com.timetable.android.activities.EventDayViewActivity;
+import com.timetable.android.activities.DayViewFragment;
+import com.timetable.android.activities.MainActivity;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
 
@@ -196,10 +197,10 @@ public class AlarmService extends Service {
 	}
 	
 	public Intent getNotificationIntent() {
-		Intent notificationIntent = new Intent(this, EventDayViewActivity.class);
+		Intent notificationIntent = new Intent(this, DayViewFragment.class);
 		if (mAlarmAdapter.getNextAlarm() != null) {
 			Date nextAlarmEventDate = mAlarmAdapter.getNextAlarm().nextOccurrence;
-			notificationIntent.putExtra(EventDayViewActivity.EXTRAS_DATE, EventDayViewActivity.EXTRAS_DATE_FORMAT.format(nextAlarmEventDate));
+			notificationIntent.putExtra(MainActivity.EXTRAS_DATE, MainActivity.EXTRAS_DATE_FORMAT.format(nextAlarmEventDate));
 			//Unless this hack pending intent in notification is not updated and false date is shown, when user clicks it.
 			notificationIntent.setAction(Long.toString(System.currentTimeMillis()));
 		}

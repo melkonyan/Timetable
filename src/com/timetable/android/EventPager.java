@@ -7,6 +7,7 @@ import java.util.Vector;
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.TextView;
 
+import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
@@ -14,15 +15,18 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import com.timetable.android.activities.EventDayViewActivity;
+import com.timetable.android.EventView.EventViewObserver;
+import com.timetable.android.activities.DayViewFragment;
 
 /*
  * Class, that instantiate views of events for each day, and allows user to slide among the days.
  */
 public class EventPager extends ViewPager {
 
-	private final EventDayViewActivity mActivity;
-
+	private Context mContext;
+	
+	private DayViewFragment mFragment;
+	
 	private Date mInitDate; 
 	
 	private final static int INIT_PAGE_NUMBER = 1000;
@@ -31,19 +35,20 @@ public class EventPager extends ViewPager {
 	
 	private EventViewProvider mEventViewProvider; 
 	
-	public EventPager(EventDayViewActivity activity, Date initDate) {
-		super(activity);
+	public EventPager(Context context, DayViewFragment fragment, Date initDate) {
+		super(context);
 		setId(1000);
-		mActivity = activity;
+		mContext = context;
 		mInitDate = initDate;
+		mFragment = fragment;
 		
 		setOffscreenPageLimit(0);
-		LayoutInflater layoutInflater = LayoutInflater.from(activity);	
+		LayoutInflater layoutInflater = LayoutInflater.from(context);	
 		layoutInflater.inflate(R.layout.event_pager, this, true);
-		mEventViewProvider = EventViewProvider.getInstance(mActivity);
+		mEventViewProvider = EventViewProvider.getInstance(mContext);
 		mEventPagerAdapter = new EventPagerAdapter(initDate);
 		setAdapter(mEventPagerAdapter);
-		setOnPageChangeListener(activity.getEventPagerListener());
+		setOnPageChangeListener(mFragment.getEventPagerListener());
 		
 	}
 	
@@ -97,7 +102,7 @@ public class EventPager extends ViewPager {
 		
 		public EventPagerAdapter(Date currentDate) {
 			TimetableLogger.log("EventPagerAdapter created");
-			db = TimetableDatabase.getInstance(mActivity);
+			db = TimetableDatabase.getInstance(mContext);
 			loadEvents();
 		}
 		
@@ -124,13 +129,13 @@ public class EventPager extends ViewPager {
 			TimetableLogger.verbose("EventPager: try instantiate page " + Integer.toString(pageNumber));
 			Date currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			
-			LinearLayout externalLayout = new LinearLayout(mActivity);
+			LinearLayout externalLayout = new LinearLayout(mContext);
 			externalLayout.setOrientation(LinearLayout.HORIZONTAL);
-			ScrollView scrollView = new ScrollView(mActivity);
+			ScrollView scrollView = new ScrollView(mContext);
 			scrollView.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.MATCH_PARENT));
 			scrollView.setFillViewport(true);
 			
-			LinearLayout internalLayout = new LinearLayout(mActivity); 
+			LinearLayout internalLayout = new LinearLayout(mContext); 
 			internalLayout.setOrientation(LinearLayout.VERTICAL);
 			internalLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 			
@@ -143,13 +148,13 @@ public class EventPager extends ViewPager {
 				
 				EventView eventView = mEventViewProvider.getView(pageNumber);
 				eventView.populate(event, currentDate);
-				eventView.setEventViewObserver(mActivity);
+				eventView.setEventViewObserver(mFragment);
 				eventView.setScrollView(scrollView);
 				internalLayout.addView(eventView);
 				hasEventsToday = true;
 			}
 			if (!hasEventsToday) {
-				TextView textView = new TextView(mActivity);
+				TextView textView = new TextView(mContext);
 				textView.setPadding(0,60,0,0);
 				textView.setGravity(Gravity.CENTER_HORIZONTAL);
 				textView.setText(R.string.event_pager_no_events);
