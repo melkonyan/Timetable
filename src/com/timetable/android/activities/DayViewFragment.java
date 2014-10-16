@@ -61,6 +61,11 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 	//Event view, that shows it's menu.
 	private EventView mSelectedEventView;
 	
+	public DayViewFragment(IEventViewerContainer container, Date initDate) {
+		mContainer = container;
+		mInitDate = initDate;
+	}
+	
 	public EventPager getEventPager() {
 		return eventPager;
 	}
@@ -84,13 +89,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		TimetableLogger.log("DayViewFragment. Fragment attaches to activity.");
-		if (activity instanceof IEventViewerContainer) {
-			mActivity = activity;
-			mContainer = (IEventViewerContainer) activity;
-			mInitDate = mContainer.getInitDate(); 
-		} else {
-			TimetableLogger.error("DayViewFragment.onAttach: fragment should be attached to IEventViewerContainer!");
-		}
+		mActivity = activity;
 	}
 	
 	

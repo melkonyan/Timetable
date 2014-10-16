@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements IEventViewerContainer {
 		};
 		
 		mDatePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 0, 0, 0);
-		DayViewFragment fragment = new DayViewFragment();
+		DayViewFragment fragment = new DayViewFragment(this, mInitDate);
 		mEventViewer = fragment;
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -147,7 +147,7 @@ public class MainActivity extends Activity implements IEventViewerContainer {
 		TimetableLogger.log("EventDayViewAvtivity: new intent received!");
 		setIntent(intent);
 		setInitDate();
-		mEventViewer.update();
+		mEventViewer.goToDate(mInitDate);
 	}
 	
 	@Override 
@@ -183,9 +183,5 @@ public class MainActivity extends Activity implements IEventViewerContainer {
 		mActionBar.setSubtitle(subTitle);
 	}
 
-	@Override
-	public Date getInitDate() {
-		return mInitDate;
-	}
 	
 }
