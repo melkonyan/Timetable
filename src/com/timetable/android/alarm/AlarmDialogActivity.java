@@ -47,7 +47,7 @@ public class AlarmDialogActivity extends Activity {
 	
 	private Bundle eventData;
 	
-	private MediaPlayer mediaPlayer;
+	private MediaPlayer mMediaPlayer;
 	
 	private boolean ok = true;
 	
@@ -73,14 +73,6 @@ public class AlarmDialogActivity extends Activity {
 		}
 	};
 	
-	void stopPlayer() {
-		try {
-			mediaPlayer.stop();
-			mediaPlayer.release();
-		} catch (Exception e) {
-			//ignore.
-		}
-	}
 	
 	@Override 
 	protected void onCreate(Bundle savedInstanceState) 
@@ -124,14 +116,16 @@ public class AlarmDialogActivity extends Activity {
 	    eventData = getIntent().getExtras();
 		if (eventData == null) {
 			TimetableLogger.error("EventAlarmDialogActiovity.onCreate: intent with no data received");
+			ok = false;
 			return;
 		}
 		
 		try {
 			event = new Event(eventData);
+			DateFormatFactory.getDateFormat().parse("adt");
 		} catch (Exception e) {
 			TimetableLogger.error("AlarmDialogActivity.onReceive: unable to create event from received data. " + e.getMessage());
-			ok = false;
+			//ok = false;
 			return;
 		}
 		
@@ -144,23 +138,6 @@ public class AlarmDialogActivity extends Activity {
 		}
 		
 		autoKiller.postDelayed(autoKill, TIME_TO_RUN_MILLIS);
-		
-		mediaPlayer = new MediaPlayer();
-		try {
-			String songFileString = PreferenceManager.getDefaultSharedPreferences(this).getString(SettingsActivity.ALARM_SOUND_KEY, AlarmSoundPreference.DEFAULT_ALARM_SOUND);
-			
-			if (songFileString.equals(AlarmSoundPreference.DEFAULT_ALARM_SOUND) || !(new File(songFileString).exists())) {
-				mediaPlayer = AlarmSoundPreference.getDefaulPlayer(this);
-			} else {
-				mediaPlayer.setDataSource(songFileString);
-				mediaPlayer.prepare();
-			}
-		} catch (Exception e) {
-			TimetableLogger.error("AlarmDialogActivity: Could not play alarm sound " + e.getMessage());
-		}
-		
-	    mediaPlayer.setLooping(true);
-		mediaPlayer.start();
 		
 		dismissButton.setOnClickListener(new View.OnClickListener() {
 			
@@ -203,6 +180,35 @@ public class AlarmDialogActivity extends Activity {
 		super.onDestroy();
 		if (!isDismissed && !isSnoozed && ok) {
 			snooze();
+		}
+	}
+	
+	void startPlayer() {
+		mMediaPlayer = new MediaPlayer();
+		try {
+			String songFileString = PreferenceManager.getDefaultSharedPreferences(this).getString(SettingsActivity.ALARM_SOUND_KEY, AlarmSoundPreference.DEFAULT_ALARM_SOUND);
+			
+			if (songFileString.equals(AlarmSoundPreference.DEFAULT_ALARM_SOUND) || !(new File(songFileString).exists())) {
+				mMediaPlayer = AlarmSoundPreference.getDefaulPlayer(this);
+			} else {
+				mMediaPlayer.setDataSource(songFileString);
+				mMediaPlayer.prepare();
+			}
+		} catch (Exception e) {
+			TimetableLogger.error("AlarmDialogActivity: Could not play alarm sound " + e.getMessage());
+		}
+		
+	    mMediaPlayer.setLooping(true);
+		mMediaPlayer.start();
+		
+	}
+	
+	void stopPlayer() {
+		try {
+			mMediaPlayer.stop();
+			mMediaPlayer.release();
+		} catch (Exception e) {
+			//ignore.
 		}
 	}
 	
