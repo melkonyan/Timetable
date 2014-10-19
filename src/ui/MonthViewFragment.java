@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.timetable.android.EventPager;
+import com.timetable.android.DayViewPager;
 import com.timetable.android.R;
 import com.timetable.android.TimetableLogger;
 
@@ -31,6 +31,7 @@ public class MonthViewFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		TimetableLogger.log("MonthViewFragment. Fragment has creates it's view.");
+		
 		return new MonthView(mActivity);
 	}
 

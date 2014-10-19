@@ -80,7 +80,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<MainAc
 		
 		//shit-solo can not scroll screen
 		//solo.scrollViewToSide(solo.getView(R.id.event_pager) ,Solo.RIGHT);
-		//assertEquals(EventPager.ACTION_BAR_DATE_FORMAT.format(DATE_FORMAT.parse("08.07.2014")), 
+		//assertEquals(DayViewPager.ACTION_BAR_DATE_FORMAT.format(DATE_FORMAT.parse("08.07.2014")), 
 		//		mActivity.getSupportActionBar().getTitle().toString());
 		
 		solo.sendKey(Solo.MENU);
@@ -91,7 +91,7 @@ public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<MainAc
 		//TODO: create string resource
 		solo.clickOnText("Set");
 		solo.sleep(1000);//Should wait, because activity is reloaded
-		assertEquals(EventPager.ACTION_BAR_DATE_FORMAT.format(DATE_FORMAT.parse("08.07.2014")), 
+		assertEquals(DayViewPager.ACTION_BAR_DATE_FORMAT.format(DATE_FORMAT.parse("08.07.2014")), 
 						mActivity.getSupportActionBar().getTitle().toString());
 		
 	}

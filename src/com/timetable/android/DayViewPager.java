@@ -22,7 +22,7 @@ import com.timetable.android.EventView.EventViewObserver;
 /*
  * Class, that instantiates views of events for each day and allows user to slide among the days.
  */
-public class EventPager extends ViewPager {
+public class DayViewPager extends ViewPager {
 
 	private Context mContext;
 	
@@ -36,7 +36,7 @@ public class EventPager extends ViewPager {
 	
 	private EventViewProvider mEventViewProvider; 
 	
-	public EventPager(Context context, DayViewFragment fragment, Date initDate) {
+	public DayViewPager(Context context, DayViewFragment fragment, Date initDate) {
 		super(context);
 		setId(1000);
 		mContext = context;
@@ -54,7 +54,7 @@ public class EventPager extends ViewPager {
 	}
 	
 	/*
-	 * Should be could after EventPager is created to display default date. 
+	 * Should be could after DayViewPager is created to display default date. 
 	 */
 	public void prepare() {
 		setCurrentItem(INIT_PAGE_NUMBER);
@@ -82,7 +82,7 @@ public class EventPager extends ViewPager {
 	 * Display specified date.
 	 */
 	public void goToDate(Date date) {
-		//TimetableLogger.error("EventPager.goToDate: go to page: " + getPageNumberByDate(date));
+		//TimetableLogger.error("DayViewPager.goToDate: go to page: " + getPageNumberByDate(date));
 		setCurrentItem(getPageNumberByDate(date), false);
 	}
 	
@@ -127,8 +127,8 @@ public class EventPager extends ViewPager {
 		
 		@Override
 		public Object instantiateItem(View viewPager, int pageNumber) {
-			TimetableLogger.verbose("EventPager: try instantiate page " + Integer.toString(pageNumber));
-			Date currentDate = EventPager.this.getDateByPageNumber(pageNumber);
+			TimetableLogger.verbose("DayViewPager: try instantiate page " + Integer.toString(pageNumber));
+			Date currentDate = DayViewPager.this.getDateByPageNumber(pageNumber);
 			
 			LinearLayout externalLayout = new LinearLayout(mContext);
 			externalLayout.setOrientation(LinearLayout.HORIZONTAL);

@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 
 import com.timetable.android.EventController;
 import com.timetable.android.EventController.OnEventDeletedListener;
-import com.timetable.android.EventPager;
+import com.timetable.android.DayViewPager;
 import com.timetable.android.EventView;
 import com.timetable.android.EventView.EventViewObserver;
 import com.timetable.android.IEventViewer;
@@ -47,7 +47,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 	
 	private LinearLayout eventLayout;
 	
-	private EventPager eventPager;
+	private DayViewPager eventPager;
 	
 	private EventPagerListener mListener = new EventPagerListener();
 	
@@ -66,11 +66,11 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 		mInitDate = initDate;
 	}
 	
-	public EventPager getEventPager() {
+	public DayViewPager getEventPager() {
 		return eventPager;
 	}
 	
-	public void setEventPager(EventPager eventPager) {
+	public void setEventPager(DayViewPager eventPager) {
 		if (this.eventPager != null) {
 			eventLayout.removeView(this.eventPager);
 		}
@@ -97,9 +97,9 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		TimetableLogger.log("DayViewFragment. Fragment has creates it's view.");
-		View fragmentView = inflater.inflate(R.layout.activity_event_day_view);
+		View fragmentView = inflater.inflate(R.layout.fragment_day_view);
 		eventLayout = (LinearLayout) fragmentView.findViewById(R.id.events_table);
-		setEventPager(new EventPager(mActivity, this, mInitDate));
+		setEventPager(new DayViewPager(mActivity, this, mInitDate));
 		return fragmentView;
 	}
 	
@@ -112,7 +112,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 
 	@Override
 	public void goToDate(Date date) {
-		setEventPager(new EventPager(mActivity, this, date));
+		setEventPager(new DayViewPager(mActivity, this, date));
     }
 
 	@Override
@@ -196,7 +196,6 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 		public EventPagerListener() {
 			super();
 			mCurrentYear = Utils.getCurrDateTimeCal().get(Calendar.YEAR);
-			
 			TimetableLogger.log("EventPagerListener successfully created.");
 		}
 		
