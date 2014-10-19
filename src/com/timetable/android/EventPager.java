@@ -20,7 +20,7 @@ import android.widget.ScrollView;
 import com.timetable.android.EventView.EventViewObserver;
 
 /*
- * Class, that instantiate views of events for each day, and allows user to slide among the days.
+ * Class, that instantiates views of events for each day and allows user to slide among the days.
  */
 public class EventPager extends ViewPager {
 
@@ -43,7 +43,7 @@ public class EventPager extends ViewPager {
 		mInitDate = initDate;
 		mFragment = fragment;
 		
-		setOffscreenPageLimit(0);
+		setOffscreenPageLimit(1);
 		LayoutInflater layoutInflater = LayoutInflater.from(context);	
 		layoutInflater.inflate(R.layout.event_pager, this, true);
 		mEventViewProvider = EventViewProvider.getInstance(mContext);
