@@ -14,6 +14,7 @@ import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
@@ -132,7 +133,6 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 		datePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 
 				cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 		
-		//TestAlarmStarter.startAlarm(this);
 		
 	}
 	

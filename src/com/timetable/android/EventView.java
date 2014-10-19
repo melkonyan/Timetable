@@ -138,11 +138,6 @@ public class EventView extends RelativeLayout {
 	
 	public void showMenu() {
 		mMenuContainer.setVisibility(View.VISIBLE);
-		TimetableLogger.error(Boolean.toString(mBottomLine.requestFocus()));
-		TimetableLogger.error(Boolean.toString(mEventContainer.requestFocus()));
-		TimetableLogger.error(Boolean.toString(mMenuContainer.requestFocusFromTouch()));
-		TimetableLogger.error(Boolean.toString(mMenuContainer.isFocusable()));
-		TimetableLogger.error(Boolean.toString(mMenuContainer.isFocusableInTouchMode()));
 		
 	}
 	
