@@ -1,6 +1,7 @@
 package com.timetable.android.alarm;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.holoeverywhere.preference.PreferenceManager;
@@ -36,6 +37,26 @@ import com.timetable.android.utils.Utils;
  */
 public class AlarmDialogActivity extends Activity {
 	
+	public static boolean checkEvent(Context context, Bundle eventData) {
+		Event event;
+		try {
+			event = new Event(eventData);
+		} catch (Exception e) {
+			TimetableLogger.error("AlarmDialogActivity.checkEvent: unable to create mEvent from received data. " + e.getMessage());
+			return false;
+			
+		}
+		
+		TimetableDatabase db = TimetableDatabase.getInstance(context);
+		
+		if (!db.existsEvent(event)) {
+			TimetableLogger.error("AlarmDialogActivity.checkEvent: mEvent, that is not in the database received.");
+			return false;
+		}
+		
+		return true;
+		
+	}
 	public static final int DEFAULT_ALARM_SOUND = R.raw.new_gitar;
 	
 	//Time, that activity should run, until it will be automatically killed.
@@ -43,11 +64,15 @@ public class AlarmDialogActivity extends Activity {
 	
 	private static final SimpleDateFormat TITLE_TIME_FORMAT = DateFormatFactory.getTimeFormat();
 	
-	private Event event;
+	private Event mEvent;
 	
-	private Bundle eventData;
+	private Bundle mEventData;
 	
 	private MediaPlayer mMediaPlayer;
+	
+	private PowerManager.WakeLock mWakeLock;
+	
+	private KeyguardManager.KeyguardLock mKeyguardLock;
 	
 	private boolean ok = true;
 	
@@ -84,63 +109,26 @@ public class AlarmDialogActivity extends Activity {
 	    this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    
 	    setContentView(R.layout.activity_alarm_alert);
-	    
-	    PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP
-                | PowerManager.ON_AFTER_RELEASE, "My Tag");
-        wl.acquire();
-        
-        //turn on screen when alarm is fired.
-	    this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN | 
-	    	    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | 
-	    	    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | 
-	    	    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
-	    	    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-	    	    WindowManager.LayoutParams.FLAG_FULLSCREEN | 
-	    	    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | 
-	    	    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | 
-	    	    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
-	    	    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        
-	    //disable keyguard
-	    KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-	    final KeyguardManager.KeyguardLock kl = km.newKeyguardLock("MyKeyguardLock");
-	    kl.disableKeyguard();
-	    
+		
+		try {
+			mEventData = getIntent().getExtras();
+			mEvent = new Event(mEventData);
+		} catch (ParseException e) {
+			TimetableLogger.error("AlarmDialogActivity.onCreate: mEvent, that is not in the database received.");
+		}
+		
+		turnOnScreen();
+		startPlayer();
         TextView alertTitle = (TextView) findViewById(R.id.alert_title);
 	    Button dismissButton = (Button) findViewById(R.id.alert_button_dismiss);
 	    Button snoozeButton = (Button) findViewById(R.id.alert_button_snooze);
 	    
 	    TextView eventNameText = (TextView) findViewById(R.id.alert_event_name);
 	    
-	    eventData = getIntent().getExtras();
-		if (eventData == null) {
-			TimetableLogger.error("EventAlarmDialogActiovity.onCreate: intent with no data received");
-			ok = false;
-			return;
-		}
-		
-		try {
-			event = new Event(eventData);
-			DateFormatFactory.getDateFormat().parse("adt");
-		} catch (Exception e) {
-			TimetableLogger.error("AlarmDialogActivity.onReceive: unable to create event from received data. " + e.getMessage());
-			//ok = false;
-			return;
-		}
-		
-		TimetableDatabase db = TimetableDatabase.getInstance(this);
-		
-		if (!db.existsEvent(event)) {
-			TimetableLogger.error("AlarmDialogActivity.onReceive: event, that is not in the database received.");
-			ok = false;
-			return;
-		}
-		
+	    
 		autoKiller.postDelayed(autoKill, TIME_TO_RUN_MILLIS);
 		
 		dismissButton.setOnClickListener(new View.OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
 				dismiss();
@@ -157,7 +145,7 @@ public class AlarmDialogActivity extends Activity {
 			}
 		});
 		alertTitle.setText(TITLE_TIME_FORMAT.format(Utils.getCurrDateTime()) + " Reminder");
-		eventNameText.setText(event.getName());
+		eventNameText.setText(mEvent.getName());
 	}
 	
 	@Override
@@ -180,6 +168,45 @@ public class AlarmDialogActivity extends Activity {
 		super.onDestroy();
 		if (!isDismissed && !isSnoozed && ok) {
 			snooze();
+			turnOffScreen();
+		}
+	}
+	
+	void turnOnScreen() {
+		 	PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		 	mWakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP
+	                | PowerManager.ON_AFTER_RELEASE, "My Tag");
+	        mWakeLock.acquire();
+	        
+	        //turn on screen when alarm is fired.
+		    this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN | 
+		    	    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | 
+		    	    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | 
+		    	    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+		    	    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+		    	    WindowManager.LayoutParams.FLAG_FULLSCREEN | 
+		    	    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | 
+		    	    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | 
+		    	    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+		    	    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	        
+		    //disable keyguard
+		    KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+		    mKeyguardLock = km.newKeyguardLock("MyKeyguardLock");
+		    mKeyguardLock.disableKeyguard();
+		    
+	}
+	
+	void turnOffScreen() {
+		try {
+			if (mWakeLock != null) {
+				mWakeLock.release();
+			}
+			if (mKeyguardLock != null) {
+				mKeyguardLock.reenableKeyguard();
+			}
+		} catch (Exception e) {
+			//ignore
 		}
 	}
 	
@@ -220,7 +247,7 @@ public class AlarmDialogActivity extends Activity {
 		stopPlayer();
 		isSnoozed = true;
 		Intent broadcast = new Intent(AlarmService.ACTION_ALARM_SNOOZED);
-		broadcast.putExtras(eventData);
+		broadcast.putExtras(mEventData);
 		sendBroadcast(broadcast);
 	}
 	
@@ -235,12 +262,12 @@ public class AlarmDialogActivity extends Activity {
 		isDismissed = true;
 		
 		Intent broadcast = new Intent(AlarmService.ACTION_ALARM_DISMISSED);
-		broadcast.putExtras(eventData);
+		broadcast.putExtras(mEventData);
 		sendBroadcast(broadcast);
 	
 		Intent intent = new Intent(AlarmDialogActivity.this, EventDayViewActivity.class);
 		intent.putExtra(EventDayViewActivity.EXTRAS_DATE, 
-						EventDayViewActivity.EXTRAS_DATE_FORMAT.format(event.getAlarm().getEventOccurrence(Utils.getCurrDateTime())));
+						EventDayViewActivity.EXTRAS_DATE_FORMAT.format(mEvent.getAlarm().getEventOccurrence(Utils.getCurrDateTime())));
 		
 		AlarmDialogActivity.this.startActivity(intent);
 		

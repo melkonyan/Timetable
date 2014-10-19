@@ -331,9 +331,13 @@ public class AlarmService extends Service {
 			TimetableLogger.log("AlarmService.onReceive: action " + action + " received with event " + event.getName() + ", id " + Integer.toString(event.getId()));
 			
 			if (action.equals(AlarmService.ACTION_ALARM_FIRED)) {
+				if (!AlarmDialogActivity.checkEvent(context, eventData)) {
+					return;
+				}
 				Intent alarmDialogIntent = new Intent(context, AlarmDialogActivity.class);
 				alarmDialogIntent.putExtras(eventData);
-				alarmDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+				alarmDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				alarmDialogIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
 				alarmDialogIntent.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED + WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD + WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON + WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 			    context.startActivity(alarmDialogIntent);
 				return;
