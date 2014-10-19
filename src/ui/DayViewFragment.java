@@ -113,7 +113,8 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 	@Override
 	public void goToDate(Date date) {
 		setEventPager(new DayViewPager(mActivity, this, date));
-    }
+		//getEventPager().goToDate(date);
+	}
 
 	@Override
 	public Date getDisplayedDate() {

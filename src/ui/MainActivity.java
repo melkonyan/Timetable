@@ -60,9 +60,9 @@ public class MainActivity extends Activity implements IEventViewerContainer {
 		};
 		
 		mDatePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 0, 0, 0);
-		//DayViewFragment fragment = new DayViewFragment(this, mInitDate);
-		//mEventViewer = fragment;
-		MonthViewFragment fragment = new MonthViewFragment();
+		DayViewFragment fragment = new DayViewFragment(this, mInitDate);
+		mEventViewer = fragment;
+		//MonthViewFragment fragment = new MonthViewFragment();
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.add(R.id.main_container, fragment);

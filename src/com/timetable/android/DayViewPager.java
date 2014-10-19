@@ -82,7 +82,7 @@ public class DayViewPager extends ViewPager {
 	 * Display specified date.
 	 */
 	public void goToDate(Date date) {
-		//TimetableLogger.error("DayViewPager.goToDate: go to page: " + getPageNumberByDate(date));
+		TimetableLogger.error("DayViewPager.goToDate: go to page: " + getPageNumberByDate(date));
 		setCurrentItem(getPageNumberByDate(date), false);
 	}
 	
