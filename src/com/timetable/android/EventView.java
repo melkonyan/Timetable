@@ -132,6 +132,7 @@ public class EventView extends RelativeLayout {
 		
 		//TimetableLogger.verbose("Event " + event.getName() + " successfully drawed");
 	}
+	
 	public Event getEvent() {
 		return mEvent;
 	}
