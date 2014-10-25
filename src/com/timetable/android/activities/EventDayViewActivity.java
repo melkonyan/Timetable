@@ -26,7 +26,7 @@ import com.timetable.android.EventPager;
 import com.timetable.android.EventView;
 import com.timetable.android.EventView.EventViewObserver;
 import com.timetable.android.R;
-import com.timetable.android.TimetableLogger;
+import com.timetable.android.Logger;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.TestAlarmStarter;
@@ -94,7 +94,7 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 		try {
 			return EXTRAS_DATE_FORMAT.parse(dateString);
 		} catch (ParseException e) {
-			TimetableLogger.error("EventDayViewActivity.getExtraDate: could not parse date");
+			Logger.error("EventDayViewActivity.getExtraDate: could not parse date");
 			return null;
 		}
 		
@@ -143,7 +143,7 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 	private void initEventPager() {
 		Date startDate = getExtraDate();
 		if (startDate != null) {
-			TimetableLogger.log("Start EventDayViewActivity with extra date: " + startDate.toString());
+			Logger.log("Start EventDayViewActivity with extra date: " + startDate.toString());
 			setEventPager(new EventPager(this,startDate));
 			//eventPager.goToDate(startDate);
 		}
@@ -159,7 +159,7 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 	@Override
 	public void onRestart() {
 		super.onRestart();
-		TimetableLogger.log("EventDayViewAcwativity was restarted.");
+		Logger.log("EventDayViewAcwativity was restarted.");
 		getEventPager().update();
 	}
 	
@@ -167,13 +167,13 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 	public void onDestroy() {
 	
 		super.onDestroy();
-		TimetableLogger.sendReport();
+		Logger.sendReport();
 	}
 	
 	@Override 
 	public void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		TimetableLogger.log("EventDayViewAvtivity: new intent received!");
+		Logger.log("EventDayViewAvtivity: new intent received!");
 		setIntent(intent);
 		initEventPager();
 	}
@@ -183,7 +183,7 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 		if (requestCode == EVENT_ADD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
 			long dateMillis = data.getLongExtra(EXTRAS_DATE, -1);
 			if (dateMillis == -1) {
-				TimetableLogger.error("EventDayViewActivity.onActivityResult: Invalid date returned.");
+				Logger.error("EventDayViewActivity.onActivityResult: Invalid date returned.");
 				return;
 			}
 			Date date = new Date(dateMillis);
@@ -233,12 +233,12 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 			super();
 			mCurrentYear = Utils.getCurrDateTimeCal().get(Calendar.YEAR);
 			
-			TimetableLogger.log("EventPagerListener successfully created.");
+			Logger.log("EventPagerListener successfully created.");
 		}
 		
 		@Override
 		public void  onPageSelected(int pageNumber) {
-			TimetableLogger.log("EventPagerListener detected page # " + pageNumber + " selection.");
+			Logger.log("EventPagerListener detected page # " + pageNumber + " selection.");
 			mDisplayedDate = getEventPager().getDateByPageNumber(pageNumber);
 			
 			//update action bar

@@ -26,16 +26,17 @@ public class TimetableApp  extends Application {
 		 super.onCreate();
 		
 		//enable debugging
-		TimetableLogger.debugging = true;
+		Logger.debugging = true;
 			
-		TimetableLogger.sendReport = true;
+		Logger.sendReport = true;
 		
 		//send broadcast, that application is started.
 		sendBroadcast(new Intent(BroadcastActions.ACTION_APP_STARTED));
 			
 		//initialize acra
 		ACRA.init(this);
-		TimetableLogger.log("TimetableApp.onCreate: Application is created. ACRA is initialized");
+		//ACRA.init(this);
+		Logger.log("TimetableApp.onCreate: Application is created. ACRA is initialized");
 	}
 
 

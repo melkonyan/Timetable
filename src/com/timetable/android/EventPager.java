@@ -76,7 +76,7 @@ public class EventPager extends ViewPager {
 	 * Display specified date.
 	 */
 	public void goToDate(Date date) {
-		//TimetableLogger.error("EventPager.goToDate: go to page: " + getPageNumberByDate(date));
+		//Logger.error("EventPager.goToDate: go to page: " + getPageNumberByDate(date));
 		setCurrentItem(getPageNumberByDate(date), false);
 	}
 	
@@ -96,7 +96,7 @@ public class EventPager extends ViewPager {
 		private TimetableDatabase db;
 		
 		public EventPagerAdapter(Date currentDate) {
-			TimetableLogger.log("EventPagerAdapter created");
+			Logger.log("EventPagerAdapter created");
 			db = TimetableDatabase.getInstance(mActivity);
 			loadEvents();
 		}
@@ -121,7 +121,7 @@ public class EventPager extends ViewPager {
 		
 		@Override
 		public Object instantiateItem(View viewPager, int pageNumber) {
-			TimetableLogger.verbose("EventPager: try instantiate page " + Integer.toString(pageNumber));
+			Logger.verbose("EventPager: try instantiate page " + Integer.toString(pageNumber));
 			Date currentDate = EventPager.this.getDateByPageNumber(pageNumber);
 			
 			LinearLayout externalLayout = new LinearLayout(mActivity);
@@ -161,7 +161,7 @@ public class EventPager extends ViewPager {
 			
 			((ViewPager) viewPager).addView(externalLayout,0);
 			
-			TimetableLogger.log("EventPagerAdapter created page # "+ pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
+			Logger.log("EventPagerAdapter created page # "+ pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
 			//logger.log("Events added to layout: " + internalLayout.getChildCount());
 			return externalLayout;
 		}
@@ -173,7 +173,7 @@ public class EventPager extends ViewPager {
 		
 		@Override
 	    public void destroyItem(View viewPager, int pageNumber, Object view) {
-	            TimetableLogger.verbose("EventPagerAdapter destroys page number " + pageNumber);
+	            Logger.verbose("EventPagerAdapter destroys page number " + pageNumber);
 	            ((ViewPager) viewPager).removeView((View) view);
 	            mEventViewProvider.releaseViews(pageNumber);
 		}

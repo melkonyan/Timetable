@@ -17,7 +17,7 @@ import com.timetable.android.EventController.OnEventUpdatedListener;
 import com.timetable.android.EventPeriod;
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
-import com.timetable.android.TimetableLogger;
+import com.timetable.android.Logger;
 
 /*
  * Activity provides user interface to edit oldEvent
@@ -47,7 +47,7 @@ public class EventEditActivity extends EventAddActivity implements OnEventUpdate
 			db = TimetableDatabase.getInstance(this);
 			oldEvent = db.searchEventById(eventId);
 			if (oldEvent == null) {
-				TimetableLogger.error("EventEditActivity.onCreate: oldEvent not found. " + Integer.toString(eventId));
+				Logger.error("EventEditActivity.onCreate: oldEvent not found. " + Integer.toString(eventId));
 				finish();
 				return;
 			}
@@ -56,7 +56,7 @@ public class EventEditActivity extends EventAddActivity implements OnEventUpdate
 			try {
 				editDate = INIT_DATE_FORMAT.parse(extras.getString(EXTRA_DATE));
 			} catch(ParseException e) {
-				TimetableLogger.error("EventEditActivity.onCreate: could not parse date of editing. " + e.getMessage());
+				Logger.error("EventEditActivity.onCreate: could not parse date of editing. " + e.getMessage());
 				finish();
 				return;
 			}
@@ -99,7 +99,7 @@ public class EventEditActivity extends EventAddActivity implements OnEventUpdate
 			
 			eventDateVal.setText(dateFormat.format(editDate));
 			
-		TimetableLogger.log("EventEditActivity successfully created.");
+		Logger.log("EventEditActivity successfully created.");
 	}
 	
 	
@@ -115,11 +115,11 @@ public class EventEditActivity extends EventAddActivity implements OnEventUpdate
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	        case R.id.action_save_event:
-	        	TimetableLogger.log("EventEditActivity: try to save oldEvent.");
+	        	Logger.log("EventEditActivity: try to save oldEvent.");
 	        	saveEvent();
 	        	return true;
 	        case R.id.action_delete_event:
-	        	TimetableLogger.log("EventEditActivity: try to delete oldEvent.");
+	        	Logger.log("EventEditActivity: try to delete oldEvent.");
 	        	deleteEvent();
 	        	return true;
 	        default:

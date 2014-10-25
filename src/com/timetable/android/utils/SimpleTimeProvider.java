@@ -8,7 +8,7 @@ public class SimpleTimeProvider extends TimeProvider {
 		//Calendar cal = Calendar.getInstance();
 		//cal.setTime(new Date());
 		//cal.add(Calendar.MILLISECOND, TimeZone.getDefault().getOffset(new Date().getTime()));
-		//TimetableLogger.error("SimepleTimeProvider.getCurrDateTimeCal: " + cal.getTime().toString());
+		//Logger.error("SimepleTimeProvider.getCurrDateTimeCal: " + cal.getTime().toString());
 		//return cal;
 		return Calendar.getInstance();
 	}

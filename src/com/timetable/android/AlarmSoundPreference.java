@@ -84,7 +84,7 @@ public class AlarmSoundPreference extends ListPreference {
 	
 	public AlarmSoundPreference(Context context) {
 		super(context);
-		TimetableLogger.log("AlarmSouncPreference.onCreate(): preference is created.");
+		Logger.log("AlarmSouncPreference.onCreate(): preference is created.");
 	}
 	
 	
@@ -125,7 +125,7 @@ public class AlarmSoundPreference extends ListPreference {
 		             	        
 		             	        mPlayer.start();
 		                 	} catch (Exception e) {
-		                 		TimetableLogger.error("AlarmSoundPreference.onItemClick: " + e.toString());
+		                 		Logger.error("AlarmSoundPreference.onItemClick: " + e.toString());
 		                 	}
 	                	}
 	         });
@@ -148,7 +148,7 @@ public class AlarmSoundPreference extends ListPreference {
 	@Override
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
-        TimetableLogger.error("Dialog is closed. PositiveResult: " + Boolean.toString(positiveResult));
+        Logger.error("Dialog is closed. PositiveResult: " + Boolean.toString(positiveResult));
         mPlayer.stop();
         if (positiveResult) {
             if (mClickedDialogEntryIndex < 0) {
@@ -156,7 +156,7 @@ public class AlarmSoundPreference extends ListPreference {
             }
         	String value = songFiles.get(mClickedDialogEntryIndex);
             callChangeListener(value);
-            TimetableLogger.error("Update alarm sound preference");
+            Logger.error("Update alarm sound preference");
             setValue(value);
         }
     }

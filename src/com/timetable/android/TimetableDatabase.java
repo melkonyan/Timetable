@@ -40,7 +40,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 	public static TimetableDatabase getInstance(Context context, boolean updateCurrent) {
 		if (updateCurrent || mInstance == null) {
 			mInstance = new TimetableDatabase(context);
-			TimetableLogger.log("TimetableDatabase.getInstance: creating new instance.");
+			Logger.log("TimetableDatabase.getInstance: creating new instance.");
 		}
 		return mInstance;
 	}
@@ -102,7 +102,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    	TimetableLogger.log("Upgrading database from " + oldVersion + "to " + newVersion + ". All data will be deleted.");
+    	Logger.log("Upgrading database from " + oldVersion + "to " + newVersion + ". All data will be deleted.");
     	db.execSQL("DROP TABLE IF EXISTS Events");
     	db.execSQL("DROP TABLE IF EXISTS Periods");
     	db.execSQL("DROP TABLE IF EXISTS Alarms");
@@ -135,7 +135,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     public long insertEventAlarm(Event event) {
     	EventAlarm alarm = event.getAlarm();
     	if (!alarm.isOk()) {
-    		TimetableLogger.log("alarm is not Ok");
+    		Logger.log("alarm is not Ok");
         	return -1;
     	}
     	return dbWrite.insert("Alarms", null, createContentValuesFromEventAlarm(alarm));
@@ -236,7 +236,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	String query = "SELECT * FROM Periods WHERE per_id = ?";
     	Cursor cursor = dbRead.rawQuery(query, new String [] { Integer.toString(id) });
     	if (cursor.getCount() == 0) {
-    		TimetableLogger.error("TimetableDatabase.serachEventPeriodById: Error. Period with id " + Integer.toString(id) + " is not found.");
+    		Logger.error("TimetableDatabase.serachEventPeriodById: Error. Period with id " + Integer.toString(id) + " is not found.");
     		cursor.close();
     		return null;
     	}
@@ -277,7 +277,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     			Date exception = dateFormat.parse(cursor.getString(cursor.getColumnIndex("ex_date")));
     			exceptions.add(exception);
     		} catch (Exception e) {	
-    			TimetableLogger.log("TimetableDatabase.getEventException: Ivalid exception found.");
+    			Logger.log("TimetableDatabase.getEventException: Ivalid exception found.");
     		}
     	} while(cursor.moveToNext());
     	cursor.close();
@@ -334,16 +334,16 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     public Event insertEvent(Event event) {
     	event.getPeriod().setId((int) insertEventPeriod(event.getPeriod()));
     	if (event.getPeriod().getId() == -1) {
-    		TimetableLogger.log("TimetableDatabase.insertEvent: Error inserting event's period.");
+    		Logger.log("TimetableDatabase.insertEvent: Error inserting event's period.");
     		return null;
     	}
     	event.setId((int) dbWrite.insert("Events", null, createContentValuesFromEvent(event)));
-    	TimetableLogger.log("TimetablaDatabase.insertEvent: inserted id: " + Integer.toString(event.getId()));
+    	Logger.log("TimetablaDatabase.insertEvent: inserted id: " + Integer.toString(event.getId()));
     	if (event.hasAlarm()) {
     		event.getAlarm().id = (int) insertEventAlarm(event);
     		event.getAlarm().event = event;
     		if (event.getAlarm().id == -1) {
-        		TimetableLogger.log("TimetablseDatabase.insertEvent: Error inserting event's alarm");
+        		Logger.log("TimetablseDatabase.insertEvent: Error inserting event's alarm");
         		return null;
         	}
     	}
@@ -359,13 +359,13 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     		if (event.getAlarm().isNew()) {
     			event.getAlarm().id = (int) insertEventAlarm(event);
     			if (event.getAlarm().id == -1) {
-    				TimetableLogger.log("TimetableDatabase.updateEvent: Error inserting alarm.");
+    				Logger.log("TimetableDatabase.updateEvent: Error inserting alarm.");
     				return null;
     			}
     			
     		}
     		else if (updateEventAlarm(event) != 1) {
-    			TimetableLogger.log("TimetableDatabase.updateEvent: Error updating alarm.");
+    			Logger.log("TimetableDatabase.updateEvent: Error updating alarm.");
     			return null;
     		}
     	}
@@ -374,12 +374,12 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	}
     	
     	if (updateEventPeriod(event.getPeriod()) != 1) {
-    		TimetableLogger.log("TimetableDatabase.updateEvent: Error updating period.");
+    		Logger.log("TimetableDatabase.updateEvent: Error updating period.");
     		return null;
     	}
     	if (dbWrite.update("Events", createContentValuesFromEvent(event), "evt_id = ?", 
     							new String [] {Integer.toString(event.getId())}) != 1) {
-    		TimetableLogger.log("TimetableDatabase.updateEvent: Error updating event.");
+    		Logger.log("TimetableDatabase.updateEvent: Error updating event.");
         	return null;
     	}
     	return event;
@@ -411,7 +411,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
 		Event event = builder.build();
 		event.setAlarm(getEventAlarm(event));
 		event.setExceptions(getEventExceptions(event));
-		//TimetableLogger.error(event.name + " " + dateFormat.format(event.date) + " - exceptions: " + Integer.toString(event.exceptions.size()));
+		//Logger.error(event.name + " " + dateFormat.format(event.date) + " - exceptions: " + Integer.toString(event.exceptions.size()));
     	return event;
     }
     
@@ -445,7 +445,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	do {
     		Event event = getEventFromCursor(cursor);
     		if (event == null) {
-    			TimetableLogger.error("TimetableDatabase.getAllEvents: Error creating event");
+    			Logger.error("TimetableDatabase.getAllEvents: Error creating event");
     		} else {
     			events.add(event);
     		}
@@ -468,7 +468,7 @@ public class TimetableDatabase extends SQLiteOpenHelper {
     	do {
     		Event event = getEventFromCursor(cursor);
     		if (event == null) {
-    			TimetableLogger.error("TimetableDatabase.searchEventsWithAlarm: Error creating event");
+    			Logger.error("TimetableDatabase.searchEventsWithAlarm: Error creating event");
     		}
     		events.add(event);
     	} while (cursor.moveToNext());
