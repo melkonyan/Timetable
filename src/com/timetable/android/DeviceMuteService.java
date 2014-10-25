@@ -48,7 +48,7 @@ public class DeviceMuteService extends Service {
 	@Override 
 	public void onCreate() {
 		super.onCreate();
-		TimetableLogger.log("DeviceMuteService: service is created.");
+		Logger.log("DeviceMuteService: service is created.");
 		mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		mReceiver = new TaskReceiver();
@@ -62,14 +62,14 @@ public class DeviceMuteService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-		TimetableLogger.log("DeviceMuteService: service is started.");
+		Logger.log("DeviceMuteService: service is started.");
 		return Service.START_STICKY; 
 	}
 	
 	@Override
 	public void onDestroy () {
 		super.onDestroy();
-		TimetableLogger.log("DeviceMuteService.onDestroy: service is destroyed.");
+		Logger.log("DeviceMuteService.onDestroy: service is destroyed.");
 		unregisterReceiver(mReceiver);
 	}
 	
@@ -83,13 +83,13 @@ public class DeviceMuteService extends Service {
 	}
 	
 	private void muteDevice() {
-		TimetableLogger.log("DeviceMuteService.muteDevice: try to mute device.");
+		Logger.log("DeviceMuteService.muteDevice: try to mute device.");
 		mAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 		vibrate();
 	}
 	
 	private void unmuteDevice() {
-		TimetableLogger.log("DeviceMuteService.unmuteDevice: try to unmute device.");
+		Logger.log("DeviceMuteService.unmuteDevice: try to unmute device.");
 		mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 		vibrate();
 	}
@@ -106,7 +106,7 @@ public class DeviceMuteService extends Service {
 			
 			Bundle extras = intent.getExtras();
 			if (extras == null) {
-				TimetableLogger.error("DeviceMuteService.TaskReceiver.onReceive: intent with no data is received");
+				Logger.error("DeviceMuteService.TaskReceiver.onReceive: intent with no data is received");
 				return;
 			}
 			
@@ -116,10 +116,10 @@ public class DeviceMuteService extends Service {
 			try {
 				event = new Event(eventData);
 			} catch (Exception e) {
-				TimetableLogger.error("DeviceMuteService.TaskReceiver.onReceive: unable to parse event. " + e.getMessage());
+				Logger.error("DeviceMuteService.TaskReceiver.onReceive: unable to parse event. " + e.getMessage());
 				return;
 			}
-			TimetableLogger.log("DeviceMuteService.TaskReceiver: action " + action + " received with event " + event.getName() + ", id " + Integer.toString(event.getId()));
+			Logger.log("DeviceMuteService.TaskReceiver: action " + action + " received with event " + event.getName() + ", id " + Integer.toString(event.getId()));
 			
 			if (action.equals(BroadcastActions.ACTION_EVENT_STARTED) && event.mutesDevice() && !currentEvents.contains(event)) {
 				boolean deviceIsMuted = isMuted();

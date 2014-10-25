@@ -27,7 +27,7 @@ import com.timetable.android.BroadcastActions;
 import com.timetable.android.Event;
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
-import com.timetable.android.TimetableLogger;
+import com.timetable.android.Logger;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
@@ -93,7 +93,7 @@ public class AlarmService extends Service {
 		registerReceiver(mReceiver, intentFilter);
 		
 		loadAlarms();
-		TimetableLogger.log("AlarmService.onCreate: service is successfully created");
+		Logger.log("AlarmService.onCreate: service is successfully created");
 	}
 	
 	@Override 
@@ -104,7 +104,7 @@ public class AlarmService extends Service {
 	
 	@Override 
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		TimetableLogger.log("AlarmService.onStartCommand: service is successfully started");
+		Logger.log("AlarmService.onStartCommand: service is successfully started");
 		return Service.START_STICKY; 
 	}
 	
@@ -136,13 +136,13 @@ public class AlarmService extends Service {
 			return;
 		}
 		if (nextOccurrence.compareTo(Utils.getCurrDateTime()) <= 0) {
-			TimetableLogger.error("AlarmService.createAlarm: next alarm occurrence is before current time. \n Next alarm: " 
+			Logger.error("AlarmService.createAlarm: next alarm occurrence is before current time. \n Next alarm: " 
 									+ nextOccurrence.toString() + "\n current time: " + Utils.getCurrDateTime().toString() 
 									+ "Event information: \n" + event.toString());
 			return;
 		}
 		createAlarm(event, nextOccurrence.getTime());
-		TimetableLogger.log("AlarmService.createAlarm: creating alarm on date: " + nextOccurrence.toString());
+		Logger.log("AlarmService.createAlarm: creating alarm on date: " + nextOccurrence.toString());
 		
 	}
 	
@@ -152,9 +152,9 @@ public class AlarmService extends Service {
 	 * Delete notification, if needed.
 	 */
 	public void deleteAlarm(Event event) {
-		TimetableLogger.log("AlarmService.deleteAlarm: deleting alarm");
+		Logger.log("AlarmService.deleteAlarm: deleting alarm");
 		if (!mAlarmAdapter.delete(event)) {
-			TimetableLogger.log("AlarmService.deleteAlarm: no such alarm found.");
+			Logger.log("AlarmService.deleteAlarm: no such alarm found.");
 			return;
 		}
 		PendingIntent mIntent = getPendingIntentFromEvent(event);
@@ -234,7 +234,7 @@ public class AlarmService extends Service {
 			.setWhen(0)
 			.setContentIntent(mIntent);
 		notificationManager.notify(ALARM_NOTIFICATION_CODE, mBuilder.build());
-		TimetableLogger.log("AlarmService: alarm notification created.");
+		Logger.log("AlarmService: alarm notification created.");
 	}
 	
 	/*
@@ -325,10 +325,10 @@ public class AlarmService extends Service {
 			try {
 				event = new Event(eventData);
 			} catch (Exception e) {
-				TimetableLogger.error("AlarmService.onReceive: unable to create event from received data. " + e.getMessage());
+				Logger.error("AlarmService.onReceive: unable to create event from received data. " + e.getMessage());
 				return;
 			}
-			TimetableLogger.log("AlarmService.onReceive: action " + action + " received with event " + event.getName() + ", id " + Integer.toString(event.getId()));
+			Logger.log("AlarmService.onReceive: action " + action + " received with event " + event.getName() + ", id " + Integer.toString(event.getId()));
 			
 			if (action.equals(AlarmService.ACTION_ALARM_FIRED)) {
 				if (!AlarmDialogActivity.checkEvent(context, eventData)) {

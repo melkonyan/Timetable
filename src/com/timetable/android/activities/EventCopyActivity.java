@@ -10,7 +10,7 @@ import android.view.MenuItem;
 
 import com.timetable.android.Event;
 import com.timetable.android.R;
-import com.timetable.android.TimetableLogger;
+import com.timetable.android.Logger;
 
 public class EventCopyActivity extends EventAddActivity {
 	
@@ -28,7 +28,7 @@ public class EventCopyActivity extends EventAddActivity {
 				
 				
 			} catch (ParseException e) {
-				TimetableLogger.error("EventCopyActivity.onCreate. Incorrect data received");
+				Logger.error("EventCopyActivity.onCreate. Incorrect data received");
 				finish();
 				return;
 			} 

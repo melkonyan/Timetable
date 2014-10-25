@@ -7,7 +7,7 @@ import java.util.Date;
 import android.os.Bundle;
 
 import com.timetable.android.Event;
-import com.timetable.android.TimetableLogger;
+import com.timetable.android.Logger;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
@@ -151,7 +151,7 @@ public class EventAlarm {
 	 */
 	public Date getNextOccurrence(Date today) {
 		if (event == null) {
-			TimetableLogger.error("EventAlarm.getNextOccurrence: Alarm has no reference to event;");
+			Logger.error("EventAlarm.getNextOccurrence: Alarm has no reference to event;");
 			return null;
 		}
 		

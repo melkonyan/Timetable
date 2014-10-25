@@ -14,7 +14,7 @@ public class ServiceStarter extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		String action = intent.getAction();
-		TimetableLogger.log("EventStarter.onReceive: action is received " + action);
+		Logger.log("EventStarter.onReceive: action is received " + action);
 		
 		if (BroadcastActions.ACTION_APP_STARTED.equals(action) || Intent.ACTION_BOOT_COMPLETED.equals(action)) {
 			context.startService(new Intent(context, DeviceMuteService.class));

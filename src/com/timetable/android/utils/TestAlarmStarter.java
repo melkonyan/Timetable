@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.timetable.android.Event;
-import com.timetable.android.TimetableLogger;
+import com.timetable.android.Logger;
 import com.timetable.android.alarm.AlarmDialogActivity;
 
 public class TestAlarmStarter {
@@ -21,7 +21,7 @@ public class TestAlarmStarter {
 			intent.putExtras(event.convert());
 			context.startActivity(intent);
 		} catch (ParseException e) {
-			TimetableLogger.error("TestAlarmStarter: unable to create event: " + e.getMessage());
+			Logger.error("TestAlarmStarter: unable to create event: " + e.getMessage());
 			return;
 		}
 	}

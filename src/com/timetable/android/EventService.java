@@ -43,13 +43,13 @@ public class EventService extends Service {
 		intentFilter.addAction(BroadcastActions.ACTION_EVENT_DELETED);
 		registerReceiver(mReceiver, intentFilter);
 		loadEvents(this);
-		TimetableLogger.log("EventService: service is successfully created.");
+		Logger.log("EventService: service is successfully created.");
 	}
 	
 	@Override 
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-		TimetableLogger.log("EventService: service is successfully started.");
+		Logger.log("EventService: service is successfully started.");
 		return Service.START_STICKY; 
 	}
 	
@@ -57,7 +57,7 @@ public class EventService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		unregisterReceiver(mReceiver);
-		TimetableLogger.log("EventService: service is destroyed.");
+		Logger.log("EventService: service is destroyed.");
 	}
 	
 	/*
@@ -122,11 +122,11 @@ public class EventService extends Service {
 		}
 		
 		if (nextStartTime == null) {
-			TimetableLogger.log("EventService.createEventStartedAlarm: event already finished.");
+			Logger.log("EventService.createEventStartedAlarm: event already finished.");
 			return;
 		}
 		
-		TimetableLogger.log("EventService.createEventStartedAlarm: creating alarm at " + nextStartTime.toString());
+		Logger.log("EventService.createEventStartedAlarm: creating alarm at " + nextStartTime.toString());
 		alarmManager.set(AlarmManager.RTC_WAKEUP, 
 							nextStartTime.getTime(), 
 							getPendingIntentFromEvent(context, event, BroadcastActions.ACTION_EVENT_STARTED));
@@ -138,10 +138,10 @@ public class EventService extends Service {
 	private void createEventEndedAlarm(Context context, Event event) {
 		Date nextEndTime = event.getNextEndTime(Utils.getCurrDateTime());
 		if (nextEndTime == null) {
-			TimetableLogger.log("EventService.createEventEndedAlarm: event already finished.");
+			Logger.log("EventService.createEventEndedAlarm: event already finished.");
 			return;
 		}
-		TimetableLogger.log("EventService.createEventEndedAlarm: creating alarm at " + nextEndTime.toString());
+		Logger.log("EventService.createEventEndedAlarm: creating alarm at " + nextEndTime.toString());
 		alarmManager.set(AlarmManager.RTC_WAKEUP, 
 							nextEndTime.getTime(), 
 							getPendingIntentFromEvent(context, event, BroadcastActions.ACTION_EVENT_ENDED));
@@ -155,14 +155,14 @@ public class EventService extends Service {
 			if (action == null) {
 				return;
 			}
-			TimetableLogger.log("EventService.onReceive: received action " + action);
+			Logger.log("EventService.onReceive: received action " + action);
 			alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 			Bundle eventData = intent.getExtras();
 			Event event;
 			try {
 				event = new Event(eventData);
 			} catch (ParseException e) {
-				TimetableLogger.error("EventService.onReceive: unable to create event from received data. " + e.getMessage());
+				Logger.error("EventService.onReceive: unable to create event from received data. " + e.getMessage());
 				return;
 			}
 			

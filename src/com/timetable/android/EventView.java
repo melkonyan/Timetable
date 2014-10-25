@@ -130,7 +130,7 @@ public class EventView extends RelativeLayout {
 		mHasAlarmIcon.setVisibility(event.hasAlarm() ? View.VISIBLE : View.INVISIBLE);
 		mMutesDeviceIcon.setVisibility(event.mutesDevice() ? View.VISIBLE : View.INVISIBLE);
 		
-		//TimetableLogger.verbose("Event " + event.getName() + " successfully drawed");
+		//Logger.verbose("Event " + event.getName() + " successfully drawed");
 	}
 	
 	public Event getEvent() {
@@ -165,7 +165,7 @@ public class EventView extends RelativeLayout {
 			
 			@Override
 			public void onClick(View arg0) {
-				TimetableLogger.verbose("EventView: edit button clicked");
+				Logger.verbose("EventView: edit button clicked");
 				if (mObserver != null) {
 					mObserver.onButtonEditClicked(EventView.this);
 				}
@@ -176,7 +176,7 @@ public class EventView extends RelativeLayout {
 			
 			@Override
 			public void onClick(View v) {
-				TimetableLogger.verbose("EventView: copy button clicked.");
+				Logger.verbose("EventView: copy button clicked.");
 				mObserver.onButtonCopyClicked(EventView.this);
 			}
 		});
@@ -185,7 +185,7 @@ public class EventView extends RelativeLayout {
 			
 			@Override
 			public void onClick(View v) {
-				TimetableLogger.verbose("EventView: delete button clicked.");
+				Logger.verbose("EventView: delete button clicked.");
 				mObserver.onButtonDeleteClicked(EventView.this);
 			}
 		});
@@ -194,7 +194,7 @@ public class EventView extends RelativeLayout {
 			
 			@Override
 			public void onClick(View v) {
-				TimetableLogger.verbose("EventView: event clicked.");
+				Logger.verbose("EventView: event clicked.");
 				mObserver.onEventViewClicked(EventView.this);
 			}
 		});

@@ -46,7 +46,7 @@ import com.timetable.android.EventController.OnEventSavedListener;
 import com.timetable.android.EventPeriod;
 import com.timetable.android.IllegalEventDataException;
 import com.timetable.android.R;
-import com.timetable.android.TimetableLogger;
+import com.timetable.android.Logger;
 import com.timetable.android.alarm.AlarmService;
 import com.timetable.android.alarm.EventAlarm;
 import com.timetable.android.utils.DateFormatFactory;
@@ -289,7 +289,7 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 				DatePickerDialog mDialog = DatePickerDialog.newInstance(mOnDateSetListener, 
 						getEventDate().get(Calendar.YEAR), getEventDate().get(Calendar.MONTH), getEventDate().get(Calendar.DAY_OF_MONTH));
 				if (getSupportFragmentManager() == null) {
-					TimetableLogger.error("EventAddActivity: fragmentmanager is null");
+					Logger.error("EventAddActivity: fragmentmanager is null");
 				}
 				mDialog.show(getSupportFragmentManager());
 				
@@ -302,7 +302,7 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 			
 			@Override
 			public void onClick(View v) {
-				TimetableLogger.log("Creating StartTimePickerDialog");
+				Logger.log("Creating StartTimePickerDialog");
 				TimePickerDialog.OnTimeSetListener mOnTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
 					
 					@Override
@@ -370,7 +370,7 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 				DatePickerDialog mDialog = DatePickerDialog.newInstance(mOnDateSetListener, 
 						getPeriodEndDate().get(Calendar.YEAR), getPeriodEndDate().get(Calendar.MONTH), getPeriodEndDate().get(Calendar.DAY_OF_MONTH));
 				if (getSupportFragmentManager() == null) {
-					TimetableLogger.error("EventAddActivity: fragmentmanager is null");
+					Logger.error("EventAddActivity: fragmentmanager is null");
 				}
 				mDialog.show(getSupportFragmentManager());
 				
@@ -386,7 +386,7 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 		setInitValues();
 		showEventPeriod();
 		showEventAlarm();
-		TimetableLogger.log("EventAddActivity created.");
+		Logger.log("EventAddActivity created.");
 		
 	}
 
@@ -416,7 +416,7 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 	@Override 
 	public void onResume() {
 		super.onResume();
-		TimetableLogger.log("EventAddActivity: onResume()");
+		Logger.log("EventAddActivity: onResume()");
 	}
 	
 	@Override 
@@ -429,7 +429,7 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 	private void setInitValues() {
 		Bundle extras = getIntent().getExtras();
 		if (extras == null) {
-			TimetableLogger.error("EventAddActivity.setInitValues. Intent with no extra data received.");
+			Logger.error("EventAddActivity.setInitValues. Intent with no extra data received.");
 			return;
 		}
 		try {
@@ -442,7 +442,7 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 			setEventPeriodWeekOccurrences(getInitWeekOccurences());
 			
 		} catch (Exception e) {
-			TimetableLogger.error("EventAddActivity.setInitValues:\n" + e.getMessage());
+			Logger.error("EventAddActivity.setInitValues:\n" + e.getMessage());
 		}
 	}
 	
@@ -507,7 +507,7 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	        case R.id.action_save_event:
-	        	TimetableLogger.log("Try to save event.");
+	        	Logger.log("Try to save event.");
 	        		saveEvent();
 	        		return true;
 	        default:
@@ -661,7 +661,7 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 		EventPeriod.Type type = getEventPeriodType();
 		int isVisible = (type == EventPeriod.Type.NONE ? View.GONE : View.VISIBLE); 
 		showEventPeriodWeekOccurrences();
-		//TimetableLogger.log("EventAddActivity. Show event type: " + type.toString() + Boolean.toString(isVisible == View.VISIBLE));
+		//Logger.log("EventAddActivity. Show event type: " + type.toString() + Boolean.toString(isVisible == View.VISIBLE));
 		eventPeriodIntervalVal.setVisibility(isVisible);
 		eventPeriodIntervalTextLeft.setVisibility(isVisible);
 		eventPeriodIntervalTextRight.setVisibility(isVisible);
@@ -790,7 +790,7 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 				event.getAlarm().time = alarmTime;
 			}
 			checker.checkEvent(event);
-			TimetableLogger.log("EventAddActivity.getEvent:\n" +  event.toString());
+			Logger.log("EventAddActivity.getEvent:\n" +  event.toString());
 			return event;
 		} catch (IllegalEventNameException e) {
     		eventNameVal.requestFocus();

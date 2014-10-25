@@ -24,7 +24,7 @@ import com.timetable.android.AlarmSoundPreference;
 import com.timetable.android.Event;
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
-import com.timetable.android.TimetableLogger;
+import com.timetable.android.Logger;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.activities.SettingsActivity;
 import com.timetable.android.utils.DateFormatFactory;
@@ -42,7 +42,7 @@ public class AlarmDialogActivity extends Activity {
 		try {
 			event = new Event(eventData);
 		} catch (Exception e) {
-			TimetableLogger.error("AlarmDialogActivity.checkEvent: unable to create mEvent from received data. " + e.getMessage());
+			Logger.error("AlarmDialogActivity.checkEvent: unable to create mEvent from received data. " + e.getMessage());
 			return false;
 			
 		}
@@ -50,7 +50,7 @@ public class AlarmDialogActivity extends Activity {
 		TimetableDatabase db = TimetableDatabase.getInstance(context);
 		
 		if (!db.existsEvent(event)) {
-			TimetableLogger.error("AlarmDialogActivity.checkEvent: mEvent, that is not in the database received.");
+			Logger.error("AlarmDialogActivity.checkEvent: mEvent, that is not in the database received.");
 			return false;
 		}
 		
@@ -92,7 +92,7 @@ public class AlarmDialogActivity extends Activity {
 			if (isSnoozed || isDismissed) {
 				return;
 			}
-			TimetableLogger.log("AlarmDialogActivity.autoKill: user has not dissmised alarm. Stopping alarm self.");
+			Logger.log("AlarmDialogActivity.autoKill: user has not dissmised alarm. Stopping alarm self.");
 			snooze();
 			AlarmDialogActivity.this.finish();
 		}
@@ -103,7 +103,7 @@ public class AlarmDialogActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 	    super.onCreate(savedInstanceState);
-	    TimetableLogger.log("AlarmDialogActivity.onCreate: creating activity.");
+	    Logger.log("AlarmDialogActivity.onCreate: creating activity.");
 	    
 	    //remove title
 	    this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -114,7 +114,7 @@ public class AlarmDialogActivity extends Activity {
 			mEventData = getIntent().getExtras();
 			mEvent = new Event(mEventData);
 		} catch (ParseException e) {
-			TimetableLogger.error("AlarmDialogActivity.onCreate: mEvent, that is not in the database received.");
+			Logger.error("AlarmDialogActivity.onCreate: mEvent, that is not in the database received.");
 		}
 		
 		turnOnScreen();
@@ -160,7 +160,7 @@ public class AlarmDialogActivity extends Activity {
 	@Override 
 	public void onRestart() {
 		super.onRestart();
-		TimetableLogger.log("AlarmDialogActivity.onRestart: restarting activity.");
+		Logger.log("AlarmDialogActivity.onRestart: restarting activity.");
 	}
 	
 	@Override 
@@ -222,7 +222,7 @@ public class AlarmDialogActivity extends Activity {
 				mMediaPlayer.prepare();
 			}
 		} catch (Exception e) {
-			TimetableLogger.error("AlarmDialogActivity: Could not play alarm sound " + e.getMessage());
+			Logger.error("AlarmDialogActivity: Could not play alarm sound " + e.getMessage());
 		}
 		
 	    mMediaPlayer.setLooping(true);
@@ -243,7 +243,7 @@ public class AlarmDialogActivity extends Activity {
 	 * Snooze alarm.
 	 */
 	private void snooze() {
-		TimetableLogger.log("AlarmDialogActity.snooze: snoozing alarm.");
+		Logger.log("AlarmDialogActity.snooze: snoozing alarm.");
 		stopPlayer();
 		isSnoozed = true;
 		Intent broadcast = new Intent(AlarmService.ACTION_ALARM_SNOOZED);
@@ -255,7 +255,7 @@ public class AlarmDialogActivity extends Activity {
 	 * Dismiss alarm.
 	 */
 	private void dismiss() {
-		TimetableLogger.log("AlarmDialogActivity.dismiss: dismissing alarm.");
+		Logger.log("AlarmDialogActivity.dismiss: dismissing alarm.");
 		
 		stopPlayer();
 		
