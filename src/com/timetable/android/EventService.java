@@ -14,12 +14,12 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
 
 /*
- * Class, that receives such actions as ACTION_EVENT_ADDED, ACTION_EVENT_UPDATED, ACTION_EVENT_DELETED 
- * and sends action ACTION_EVENT_STARTED, ACTION_EVENT_ENDED.
+ * Class, that receives such actions as ACTION_EVENT_ADDED, ACTION_EVENT_UPDATED, ACTION_EVENT_DELETED,
+ * when events are changed. It creates alarms, notifying that event has started or ended by  
+ * sending actions ACTION_EVENT_STARTED, ACTION_EVENT_ENDED.
  */
 public class EventService extends Service {
 	
@@ -60,12 +60,15 @@ public class EventService extends Service {
 		TimetableLogger.log("EventService: service is destroyed.");
 	}
 	
-	
+	/*
+	 * Function to call when service is created.
+	 * Load all events from database and create alarms if needed.
+	 */
 	private void loadEvents(Context context) {
 		TimetableDatabase db = TimetableDatabase.getInstance(context);
 		Vector<Event> events = db.getAllEvents();
 		for (Event event: events) {
-			createEventStartedAlarm(this, event);
+			createEventAlarms(context, event);
 		}
 	}
 
@@ -75,6 +78,39 @@ public class EventService extends Service {
 		return PendingIntent.getBroadcast(context, event.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 	}
 	
+	/*
+	 * If event has start and end time, alarms would be created.
+	 */
+	private void createEventAlarms(Context context, Event event) {
+		if (event.hasStartTime() && event.hasEndTime()) {
+			createEventStartedAlarm(context, event);
+			createEventEndedAlarm(context, event);
+		}
+	}
+	
+	/*
+	 * Function to call, when event was updated.
+	 * It checks whether event has occurrence in the future, and creates or deletes alarm for it.
+	 */
+	private void updateEventAlarms(Context context, Event event) {
+		if (event.getNextStartTime(Utils.getCurrDateTime()) != null || event.isCurrent(Utils.getCurrDateTime())) {
+			createEventAlarms(context, event);
+		} else {
+			deleteEventAlarms(context, event);
+		}
+	}
+	
+	/*
+	 * If event was deleted, we need to delete alarms, notifying about the start or the end of event.
+	 */
+	private void deleteEventAlarms(Context context, Event event) {
+		alarmManager.cancel(getPendingIntentFromEvent(context, event, BroadcastActions.ACTION_EVENT_STARTED));
+		alarmManager.cancel(getPendingIntentFromEvent(context, event, BroadcastActions.ACTION_EVENT_ENDED));
+	}
+	
+	/*
+	 * Create alarm, notifying, that event has started. 
+	 */
 	private void createEventStartedAlarm(Context context, Event event) {
 		Date nextStartTime;
 		Date currentTime = Utils.getCurrDateTime();
@@ -96,6 +132,9 @@ public class EventService extends Service {
 							getPendingIntentFromEvent(context, event, BroadcastActions.ACTION_EVENT_STARTED));
 	}
 	
+	/*
+	 * Create alarm, notifying, that event has ended.
+	 */
 	private void createEventEndedAlarm(Context context, Event event) {
 		Date nextEndTime = event.getNextEndTime(Utils.getCurrDateTime());
 		if (nextEndTime == null) {
@@ -108,18 +147,6 @@ public class EventService extends Service {
 							getPendingIntentFromEvent(context, event, BroadcastActions.ACTION_EVENT_ENDED));
 	}
 	
-	private void updateAlarm(Context context, Event event) {
-		if (event.getNextStartTime(Utils.getCurrDateTime()) != null || event.isCurrent(Utils.getCurrDateTime())) {
-			createEventStartedAlarm(context, event);
-			createEventEndedAlarm(context, event);
-		} else {
-			deleteAlarm(context, event);
-		}
-	}
-	
-	private void deleteAlarm(Context context, Event event) {
-		alarmManager.cancel(getPendingIntentFromEvent(context, event, BroadcastActions.ACTION_EVENT_STARTED));
-	}
 	
 	private class EventReceiver extends BroadcastReceiver {
 		@Override
@@ -140,15 +167,14 @@ public class EventService extends Service {
 			}
 			
 			if (BroadcastActions.ACTION_EVENT_ADDED.equals(action)) {
-				createEventStartedAlarm(context, event);
-				createEventEndedAlarm(context, event);
+				createEventAlarms(context, event);
 			} else if (BroadcastActions.ACTION_EVENT_UPDATED.equals(action)) {
-				updateAlarm(context, event);
+				updateEventAlarms(context, event);
 				if (!event.isCurrent(Utils.getCurrDateTime())) {
 					EventBroadcastSender.sendEventEndedBroadcast(context, eventData);
 				}
 			} else if (BroadcastActions.ACTION_EVENT_DELETED.equals(action)) {
-				deleteAlarm(context, event);
+				deleteEventAlarms(context, event);
 				if (event.isCurrent(Utils.getCurrDateTime())) {
 					EventBroadcastSender.sendEventEndedBroadcast(context, eventData);
 				}
