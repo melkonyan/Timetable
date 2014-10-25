@@ -72,7 +72,7 @@ public class Logger {
 	         logFile.createNewFile();
 	      } 
 	      catch (IOException e) {
-	    	  Log.e(logTag, e.getMessage());
+	    	  //Log.e(logTag, e.getMessage());
 			  //that's bad.
 	      }
 	   }
@@ -86,7 +86,7 @@ public class Logger {
 	   }
 	   catch (IOException e)
 	   {
-		   Log.e(logTag, e.getMessage());
+		   //Log.e(logTag, e.getMessage());
 		   //that's bad
 	   }
 	}
