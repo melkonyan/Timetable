@@ -2,7 +2,10 @@
 <resources>
 
     <string name="app_name">Simple Calendar</string>
-    
+	  <string-array name="view_modes">
+        <item>Day View</item> 
+        <item>Month View</item>
+    </string-array>    
     
     <string name="event_add_name">Name:</string>
 	<string name="event_add_place">Place:</string>

@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.holoeverywhere.app.Activity;
+import org.holoeverywhere.widget.ArrayAdapter;
 import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 
 import android.content.Intent;
@@ -13,8 +14,10 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.OnNavigationListener;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SpinnerAdapter;
 
 import com.timetable.android.IEventViewer;
 import com.timetable.android.IEventViewerContainer;
@@ -23,7 +26,7 @@ import com.timetable.android.TimetableLogger;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.Utils;
 
-public class MainActivity extends Activity implements IEventViewerContainer {
+public class MainActivity extends Activity implements IEventViewerContainer, OnNavigationListener {
 
 	private IEventViewer mEventViewer;
 	
@@ -39,11 +42,20 @@ public class MainActivity extends Activity implements IEventViewerContainer {
 	
 	private Date mInitDate;
 	
+	private final static int NAVIGATION_DAY_VIEW = 1;
+	
+	private final static int NAVIGATION_MONTH_VIEW = 2;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		mActionBar = getSupportActionBar();
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		SpinnerAdapter spinnerAdapter = ArrayAdapter.createFromResource(getSupportActionBar().getThemedContext(),
+		        R.array.view_modes, R.layout.support_simple_spinner_dropdown_item);
+		
+		mActionBar.setListNavigationCallbacks(spinnerAdapter, this);
 		setInitDate();
 		DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
@@ -80,6 +92,11 @@ public class MainActivity extends Activity implements IEventViewerContainer {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_event_view, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onNavigationItemSelected(int position, long itemId) {
 		return true;
 	}
 	
