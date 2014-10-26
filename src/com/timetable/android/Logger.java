@@ -7,6 +7,9 @@ import java.io.IOException;
 
 import org.acra.ACRA;
 
+import com.timetable.android.utils.DateFormatFactory;
+import com.timetable.android.utils.Utils;
+
 import android.util.Log;
 
 /*
@@ -22,8 +25,12 @@ public class Logger {
 	//If set to true, report will be send to server, when error is found.
 	public static boolean sendReport = true;
 	
+	//If set to true, addition log to file will be saved.
+	public static boolean logToFile = true;
+	
 	//If set to true, logger has logged error messages.
 	private static boolean errorFound = false;
+	
 	
 	private static final String FILE_NAME = "sdcard/Timetable.log";
 	
@@ -66,28 +73,32 @@ public class Logger {
 	 * Log message to file.
 	 */
 	public static void logToFile(String tag, String message) {
-	File logFile = new File(FILE_NAME);
-	if (!logFile.exists()) {
-	      try {
-	         logFile.createNewFile();
-	      } 
-	      catch (IOException e) {
-	    	  //Log.e(logTag, e.getMessage());
-			  //that's bad.
-	      }
-	   }
-	   try {
-	      //BufferedWriter for performance, true to set append to file flag
-	      BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true)); 
-	      buf.append(message);
-	      buf.newLine();
-	      buf.close();
-	      Log.e(logTag, "Message successfully logged.");
-	   }
-	   catch (IOException e)
-	   {
-		   //Log.e(logTag, e.getMessage());
-		   //that's bad
-	   }
-	}
+		if (!logToFile) {
+			return;
+		}
+		File logFile = new File(FILE_NAME);
+		if (!logFile.exists()) {
+		      try {
+		         logFile.createNewFile();
+		      } 
+		      catch (IOException e) {
+		    	  //Log.e(logTag, e.getMessage());
+				  //that's bad.
+		      }
+		   }
+		   try {
+			  String messageToLog = DateFormatFactory.getLongDateTimeFormat().format(Utils.getCurrDateTime());
+			  messageToLog += "; " + message; 
+		      //BufferedWriter for performance, true to set append to file flag
+		      BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true)); 
+		      buf.append(messageToLog);
+		      buf.newLine();
+		      buf.close();
+		   }
+		   catch (IOException e)
+		   {
+			   //Log.e(logTag, e.getMessage());
+			   //that's bad
+		   }
+		}
 }

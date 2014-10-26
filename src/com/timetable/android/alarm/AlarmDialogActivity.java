@@ -22,9 +22,9 @@ import android.view.WindowManager;
 
 import com.timetable.android.AlarmSoundPreference;
 import com.timetable.android.Event;
+import com.timetable.android.Logger;
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
-import com.timetable.android.Logger;
 import com.timetable.android.activities.EventDayViewActivity;
 import com.timetable.android.activities.SettingsActivity;
 import com.timetable.android.utils.DateFormatFactory;
