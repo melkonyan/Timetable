@@ -2,13 +2,18 @@ package ui;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.widget.ArrayAdapter;
+import org.holoeverywhere.widget.TextView;
 import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +22,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.OnNavigationListener;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.SpinnerAdapter;
 
 import com.timetable.android.IEventViewer;
@@ -42,9 +51,11 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	
 	private Date mInitDate;
 	
-	private final static int NAVIGATION_DAY_VIEW = 1;
+	private NavigationAdapter mNavigationAdapter;
 	
-	private final static int NAVIGATION_MONTH_VIEW = 2;
+	private final static int NAVIGATION_DAY_VIEW = 0;
+	
+	private final static int NAVIGATION_MONTH_VIEW = 1;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -52,10 +63,9 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		setContentView(R.layout.activity_main);
 		mActionBar = getSupportActionBar();
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		SpinnerAdapter spinnerAdapter = ArrayAdapter.createFromResource(getSupportActionBar().getThemedContext(),
-		        R.array.view_modes, R.layout.support_simple_spinner_dropdown_item);
+		mNavigationAdapter = new NavigationAdapter(getSupportActionBar().getThemedContext());
 		
-		mActionBar.setListNavigationCallbacks(spinnerAdapter, this);
+		mActionBar.setListNavigationCallbacks(mNavigationAdapter, this);
 		setInitDate();
 		DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
@@ -194,12 +204,114 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	@Override
 	public void setActionBarTitle(String title) {
 		mActionBar.setTitle(title);
+		mNavigationAdapter.setTitle(title);
 	}
 
 	@Override
-	public void setActionBarSubTitle(String subTitle) {
-		mActionBar.setSubtitle(subTitle);
+	public void setActionBarSubtitle(String subtitle) {
+		mActionBar.setSubtitle(subtitle);
+		mNavigationAdapter.setSubtitle(subtitle);
 	}
-
 	
+	/*
+	 * Adapter for navigation spinner of the action bar.
+	 */
+	public class NavigationAdapter extends BaseAdapter {
+		 
+		//If function setTitle() or SetSubtitle() is called before spinner is drawn, save title or subtitle in this variables 
+		//and show them, after spinner is drawn.
+	    private String mSavedTitle;
+	    private String mSavedSubtitle;
+		
+	    private TextView mCurrentTitleView;
+		private TextView mCurrentSubtitleView;
+		private ArrayList<String> mSpinnerItems;
+	    private Context mContext;
+	 
+	    public NavigationAdapter(Context context) {
+	        mContext = context;
+	        mSpinnerItems = new ArrayList<String>(Arrays.asList(mContext.getResources().getStringArray(R.array.view_modes)));
+	    }
+	 
+	    @Override
+	    public int getCount() {
+	    	return mSpinnerItems.size();
+	    }
+	 
+	    @Override
+	    public Object getItem(int index) {
+	        return mSpinnerItems.get(index);
+	    }
+	 
+	    @Override
+	    public long getItemId(int position) {
+	        return position;
+	    }
+	 
+	    @Override
+	    public View getView(int position, View convertView, ViewGroup parent) { 
+	        return createView(convertView, position, true);
+	    }
+	     
+	 
+	    @Override
+	    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+	    	return createView(convertView, position, false);
+	    }
+	    
+	    /*
+	     * Create spinner item view.
+	     */
+	    View createView(View convertView, int position, boolean isTitle) {
+	    	if (convertView == null) {
+	            LayoutInflater mInflater = (LayoutInflater)
+	                    mContext.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+	            convertView = mInflater.inflate(R.layout.navigation_spinner_item, null);
+	        }
+	    	TextView title = (TextView) convertView.findViewById(R.id.item_title);
+	        TextView subtitle = (TextView) convertView.findViewById(R.id.item_subtitle);
+	    	
+	        subtitle.setVisibility(View.GONE);
+	        title.setText(mSpinnerItems.get(position));
+	        
+	        if (isTitle) {
+	        	mCurrentTitleView = title;
+	        	mCurrentSubtitleView = subtitle;
+	        	if (mSavedTitle != null) {
+	        		mCurrentTitleView.setText(mSavedTitle);
+	        	}
+	        	if (mSavedSubtitle != null) {
+	        		if (mSavedSubtitle != "") {
+	        			mCurrentSubtitleView.setVisibility(View.VISIBLE);
+	        		}
+	        		mCurrentSubtitleView.setText(mSavedSubtitle);
+	        	}
+	        }
+	        return convertView;
+	    }
+	    
+	    public void setTitle(String title) {
+	    	if (mCurrentTitleView != null) {
+	    		mCurrentTitleView.setText(title);
+	    		mSavedTitle = null;
+	    	} else {
+	    		mSavedTitle = title;
+	    	}
+	    	
+	    }
+	    
+	    public void setSubtitle(String subtitle) {
+	    	if (mCurrentSubtitleView != null) {
+		    	if (subtitle != "") {
+		    		mCurrentSubtitleView.setVisibility(View.GONE);
+		    	} else {
+		    		mCurrentSubtitleView.setVisibility(View.VISIBLE);
+		    	}
+		    	mCurrentSubtitleView.setText(subtitle);
+		    	mSavedSubtitle = null;
+		    } else {
+		    	mSavedSubtitle = subtitle;
+		    }
+	    }
+	}
 }

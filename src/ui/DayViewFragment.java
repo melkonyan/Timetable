@@ -227,7 +227,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 				subtitleString = getResources().getString(R.string.actionbar_date_today);
 			}
 			mContainer.setActionBarTitle(titleString);
-			mContainer.setActionBarSubTitle(subtitleString);
+			mContainer.setActionBarSubtitle(subtitleString);
 		}
 	}
 

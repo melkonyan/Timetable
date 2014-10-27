@@ -5,5 +5,5 @@ public interface IEventViewerContainer {
 
 	public void setActionBarTitle(String title);
 	
-	public void setActionBarSubTitle(String subTitle);
+	public void setActionBarSubtitle(String subTitle);
 }
