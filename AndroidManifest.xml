@@ -53,6 +53,7 @@
    	        <activity
    	            android:name="com.timetable.android.alarm.AlarmDialogActivity"
    	            android:launchMode="singleTask"
+   	            android:taskAffinity=""
    	            android:theme="@android:style/Theme.Dialog" >
    	        </activity>
 
