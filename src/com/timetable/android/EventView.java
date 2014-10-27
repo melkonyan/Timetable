@@ -140,11 +140,10 @@ public class EventView extends RelativeLayout {
 	public void showMenu() {
 		mMenuContainer.setVisibility(View.VISIBLE);
 		mBottomLine.requestFocus();
-		
 	}
 	
 	public void hideMenu() {
-		//mMenuContainer.clearFocus();
+		mBottomLine.clearFocus();
 		mMenuContainer.setVisibility(View.GONE);
 	}
 	

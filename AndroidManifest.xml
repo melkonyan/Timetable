@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.timetable.android"
-    android:versionCode="22"
-    android:versionName="1.8.3.1" >
+    android:versionCode="23"
+    android:versionName="1.8.3.2" >
 	<supports-screens
 	    android:largeScreens="true"
 	    android:xlargeScreens="false"/>
@@ -53,6 +53,7 @@
    	        <activity
    	            android:name="com.timetable.android.alarm.AlarmDialogActivity"
    	            android:launchMode="singleTask"
+   	            android:taskAffinity=""
    	            android:theme="@android:style/Theme.Dialog" >
    	        </activity>
 
