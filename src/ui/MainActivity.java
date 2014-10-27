@@ -9,6 +9,7 @@ import java.util.Date;
 
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.app.Activity;
+import org.holoeverywhere.app.Fragment;
 import org.holoeverywhere.widget.ArrayAdapter;
 import org.holoeverywhere.widget.TextView;
 import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
@@ -36,7 +37,9 @@ import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.Utils;
 
 public class MainActivity extends Activity implements IEventViewerContainer, OnNavigationListener {
-
+	 
+	
+	
 	private IEventViewer mEventViewer;
 	
 	public static final int EVENT_ADD_ACTIVITY_REQUEST_CODE = 10001;
@@ -53,6 +56,8 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	
 	private NavigationAdapter mNavigationAdapter;
 	
+	int mCurrentViewMode = NAVIGATION_DAY_VIEW;
+	
 	private final static int NAVIGATION_DAY_VIEW = 0;
 	
 	private final static int NAVIGATION_MONTH_VIEW = 1;
@@ -63,6 +68,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		setContentView(R.layout.activity_main);
 		mActionBar = getSupportActionBar();
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		mActionBar.setDisplayShowTitleEnabled(false);
 		mNavigationAdapter = new NavigationAdapter(getSupportActionBar().getThemedContext());
 		
 		mActionBar.setListNavigationCallbacks(mNavigationAdapter, this);
@@ -107,6 +113,26 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	
 	@Override
 	public boolean onNavigationItemSelected(int position, long itemId) {
+		if (position == mCurrentViewMode) {
+			return true;
+		}
+		Fragment fragment;
+		
+		switch (position) {
+			case NAVIGATION_DAY_VIEW:
+				fragment = new DayViewFragment(this, mEventViewer.getDisplayedDate());
+				break;
+			case NAVIGATION_MONTH_VIEW:
+				fragment = new MonthViewFragment();
+				break;
+			default:
+				return false;
+		}
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.main_container, fragment);
+		fragmentTransaction.commit();
+		mCurrentViewMode = position;
 		return true;
 	}
 	
@@ -203,13 +229,11 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 
 	@Override
 	public void setActionBarTitle(String title) {
-		mActionBar.setTitle(title);
 		mNavigationAdapter.setTitle(title);
 	}
 
 	@Override
 	public void setActionBarSubtitle(String subtitle) {
-		mActionBar.setSubtitle(subtitle);
 		mNavigationAdapter.setSubtitle(subtitle);
 	}
 	
@@ -218,13 +242,9 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	 */
 	public class NavigationAdapter extends BaseAdapter {
 		 
-		//If function setTitle() or SetSubtitle() is called before spinner is drawn, save title or subtitle in this variables 
-		//and show them, after spinner is drawn.
-	    private String mSavedTitle;
-	    private String mSavedSubtitle;
+		private String mTitle;
+		private String mSubtitle;
 		
-	    private TextView mCurrentTitleView;
-		private TextView mCurrentSubtitleView;
 		private ArrayList<String> mSpinnerItems;
 	    private Context mContext;
 	 
@@ -250,68 +270,52 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	 
 	    @Override
 	    public View getView(int position, View convertView, ViewGroup parent) { 
-	        return createView(convertView, position, true);
-	    }
-	     
-	 
-	    @Override
-	    public View getDropDownView(int position, View convertView, ViewGroup parent) {
-	    	return createView(convertView, position, false);
-	    }
-	    
-	    /*
-	     * Create spinner item view.
-	     */
-	    View createView(View convertView, int position, boolean isTitle) {
 	    	if (convertView == null) {
 	            LayoutInflater mInflater = (LayoutInflater)
 	                    mContext.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-	            convertView = mInflater.inflate(R.layout.navigation_spinner_item, null);
+	            convertView = mInflater.inflate(R.layout.navigation_spinner_title, null);
 	        }
 	    	TextView title = (TextView) convertView.findViewById(R.id.item_title);
 	        TextView subtitle = (TextView) convertView.findViewById(R.id.item_subtitle);
 	    	
 	        subtitle.setVisibility(View.GONE);
-	        title.setText(mSpinnerItems.get(position));
 	        
-	        if (isTitle) {
-	        	mCurrentTitleView = title;
-	        	mCurrentSubtitleView = subtitle;
-	        	if (mSavedTitle != null) {
-	        		mCurrentTitleView.setText(mSavedTitle);
-	        	}
-	        	if (mSavedSubtitle != null) {
-	        		if (mSavedSubtitle != "") {
-	        			mCurrentSubtitleView.setVisibility(View.VISIBLE);
-	        		}
-	        		mCurrentSubtitleView.setText(mSavedSubtitle);
-	        	}
-	        }
-	        return convertView;
+        	if (mTitle != null) {
+        		title.setText(mTitle);
+        	}
+        	if (mSubtitle != null) {
+        		if (mSubtitle != "") {
+        			subtitle.setVisibility(View.VISIBLE);
+        		}
+        		subtitle.setText(mSubtitle);
+        	}
+            return convertView;
+	    }
+	     
+	 
+	    @Override
+	    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+	    	if (convertView == null) {
+	            LayoutInflater mInflater = (LayoutInflater)
+	            			mContext.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+	            convertView = mInflater.inflate(R.layout.navigation_spinner_item, null);
+	    		
+    		}
+    		TextView item = (TextView) convertView; 
+    		item.setText(mSpinnerItems.get(position));
+            return item;
+    
 	    }
 	    
+	   
 	    public void setTitle(String title) {
-	    	if (mCurrentTitleView != null) {
-	    		mCurrentTitleView.setText(title);
-	    		mSavedTitle = null;
-	    	} else {
-	    		mSavedTitle = title;
-	    	}
-	    	
+	    	mTitle = title;
+	    	notifyDataSetChanged();
 	    }
 	    
 	    public void setSubtitle(String subtitle) {
-	    	if (mCurrentSubtitleView != null) {
-		    	if (subtitle != "") {
-		    		mCurrentSubtitleView.setVisibility(View.GONE);
-		    	} else {
-		    		mCurrentSubtitleView.setVisibility(View.VISIBLE);
-		    	}
-		    	mCurrentSubtitleView.setText(subtitle);
-		    	mSavedSubtitle = null;
-		    } else {
-		    	mSavedSubtitle = subtitle;
-		    }
+	    	mSubtitle = subtitle;
+	    	notifyDataSetChanged();
 	    }
 	}
 }
