@@ -78,7 +78,7 @@ public class AlarmSoundPreference extends ListPreference {
 		songFiles.add(DEFAULT_ALARM_SOUND);
 		//Add media from SD card
 		loadMedia(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
-		//Add medio from phone.
+		//Add media from phone.
 		loadMedia(MediaStore.Audio.Media.INTERNAL_CONTENT_URI);
 	}
 	
@@ -148,7 +148,6 @@ public class AlarmSoundPreference extends ListPreference {
 	@Override
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
-        Logger.error("Dialog is closed. PositiveResult: " + Boolean.toString(positiveResult));
         mPlayer.stop();
         if (positiveResult) {
             if (mClickedDialogEntryIndex < 0) {
@@ -156,7 +155,6 @@ public class AlarmSoundPreference extends ListPreference {
             }
         	String value = songFiles.get(mClickedDialogEntryIndex);
             callChangeListener(value);
-            Logger.error("Update alarm sound preference");
             setValue(value);
         }
     }
