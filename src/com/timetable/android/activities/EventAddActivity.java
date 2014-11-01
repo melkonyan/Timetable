@@ -437,7 +437,6 @@ public class EventAddActivity extends Activity implements OnEventSavedListener {
 			initEventDate.setTime(INIT_DATE_FORMAT.parse(extras.getString(EventAddActivity.EXTRA_DATE)));
 			setEventDate(getInitDate());
 			setEventStartTime(getInitStartTime());
-			setEventEndTime(getInitEndTime());
 			setEventAlarmTime(getInitAlarmTime());
 			setEventPeriodWeekOccurrences(getInitWeekOccurences());
 			
