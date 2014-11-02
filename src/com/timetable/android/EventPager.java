@@ -5,12 +5,9 @@ import java.util.Vector;
 
 import org.holoeverywhere.LayoutInflater;
 
-import com.timetable.android.DayViewPager.DayViewPagerAdapter;
-
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.AttributeSet;
 import android.view.View;
 
 public abstract class EventPager extends ViewPager {
@@ -50,8 +47,9 @@ public abstract class EventPager extends ViewPager {
 		TimetableLogger.error("DayViewPager.goToDate: go to page: " + getPageNumberByDate(date));
 		setCurrentItem(getPageNumberByDate(date), false);
 	}
-
+	
 	public void update() {
+		mDayViewPagerAdapter.update();
 		mDayViewPagerAdapter.notifyDataSetChanged();
 	}
 	

@@ -48,7 +48,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 	
 	private LinearLayout eventLayout;
 	
-	private EventPager eventPager;
+	private DayViewPager eventPager;
 	
 	private EventPagerListener mListener = new EventPagerListener();
 	
@@ -71,7 +71,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 		return eventPager;
 	}
 	
-	public void setEventPager(EventPager eventPager) {
+	public void setEventPager(DayViewPager eventPager) {
 		if (this.eventPager != null) {
 			eventLayout.removeView(this.eventPager);
 		}
@@ -98,7 +98,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 		TimetableLogger.log("DayViewFragment. Fragment has creates it's view.");
 		View fragmentView = inflater.inflate(R.layout.fragment_day_view);
 		eventLayout = (LinearLayout) fragmentView.findViewById(R.id.events_table);
-		setEventPager(DayViewPager.getInstance(mActivity, this, mInitDate));
+		setEventPager(new DayViewPager(mActivity, this, mInitDate));
 		return fragmentView;
 	}
 	
@@ -111,7 +111,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 
 	@Override
 	public void goToDate(Date date) {
-		setEventPager(DayViewPager.getInstance(mActivity, this, date));
+		setEventPager(new DayViewPager(mActivity, this, date));
 		//getEventPager().goToDate(date);
 	}
 

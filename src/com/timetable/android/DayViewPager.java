@@ -24,13 +24,8 @@ public class DayViewPager extends EventPager {
 	private EventViewProvider mEventViewProvider; 
 	
 	
-	public static DayViewPager getInstance(Context context, DayViewFragment fragment, Date initDate) {
-		DayViewPager pager = new DayViewPager(context, fragment, initDate);
-		pager.prepare();
-		return pager;
-	}
 	
-	private DayViewPager(Context context, DayViewFragment fragment, Date initDate) {
+	public DayViewPager(Context context, DayViewFragment fragment, Date initDate) {
 		super(context, fragment.getEventPagerListener(), initDate);
 		mFragment = fragment;
 		
