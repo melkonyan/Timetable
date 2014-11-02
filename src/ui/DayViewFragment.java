@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import com.timetable.android.EventController;
 import com.timetable.android.EventController.OnEventDeletedListener;
 import com.timetable.android.DayViewPager;
+import com.timetable.android.EventPager;
 import com.timetable.android.EventView;
 import com.timetable.android.EventView.EventViewObserver;
 import com.timetable.android.IEventViewer;
@@ -47,7 +48,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 	
 	private LinearLayout eventLayout;
 	
-	private DayViewPager eventPager;
+	private EventPager eventPager;
 	
 	private EventPagerListener mListener = new EventPagerListener();
 	
@@ -66,17 +67,15 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 		mInitDate = initDate;
 	}
 	
-	public DayViewPager getEventPager() {
+	public EventPager getEventPager() {
 		return eventPager;
 	}
 	
-	public void setEventPager(DayViewPager eventPager) {
+	public void setEventPager(EventPager eventPager) {
 		if (this.eventPager != null) {
 			eventLayout.removeView(this.eventPager);
 		}
-		
 		this.eventPager = eventPager;
-		this.eventPager.prepare();
 		eventLayout.addView(eventPager,0);
 	}
 
@@ -99,7 +98,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 		TimetableLogger.log("DayViewFragment. Fragment has creates it's view.");
 		View fragmentView = inflater.inflate(R.layout.fragment_day_view);
 		eventLayout = (LinearLayout) fragmentView.findViewById(R.id.events_table);
-		setEventPager(new DayViewPager(mActivity, this, mInitDate));
+		setEventPager(DayViewPager.getInstance(mActivity, this, mInitDate));
 		return fragmentView;
 	}
 	
@@ -112,7 +111,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 
 	@Override
 	public void goToDate(Date date) {
-		setEventPager(new DayViewPager(mActivity, this, date));
+		setEventPager(DayViewPager.getInstance(mActivity, this, date));
 		//getEventPager().goToDate(date);
 	}
 
