@@ -58,8 +58,6 @@ public class EventView extends RelativeLayout {
 
 	private LinearLayout mDeleteButton;
 
-	private ScrollView mScrollView;
-	
 	private View mBottomLine;
 	
 	/*
@@ -152,12 +150,6 @@ public class EventView extends RelativeLayout {
 		mMenuContainer.setVisibility(View.GONE);
 	}
 	
-	/*
-	 * If event view is contained in scroll view, it should has a reference to it.
-	 */
-	public void setScrollView(ScrollView scrollView) {
-		mScrollView = scrollView;
-	}
 	/*
 	 * Set observer, that implement EventView.EventViewObserver interface.
 	 * His methods will be called, when corresponding elements are clicked.

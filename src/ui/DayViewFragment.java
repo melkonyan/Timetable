@@ -76,6 +76,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 			eventLayout.removeView(this.eventPager);
 		}
 		this.eventPager = eventPager;
+		eventPager.prepare();
 		eventLayout.addView(eventPager,0);
 	}
 

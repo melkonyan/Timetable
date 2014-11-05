@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@+id/event_pager" >
-
+<!-- 	<com.timetable.android.EventScrollView
+	  android:layout_width="fill_parent"
+	  android:layout_height="fill_parent"
+	  android:id="@+id/event_scroll_view"
+	  android:fillViewport="true">
+	</com.timetable.android.EventScrollView>
+ -->
 </android.support.v4.view.ViewPager>

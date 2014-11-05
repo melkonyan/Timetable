@@ -10,16 +10,22 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
+/*
+ * Class for paging events. It's descendant is used in DayViewFragment.
+ */
 public abstract class EventPager extends ViewPager {
 
-	protected Context mContext;
+	private Context mContext;
 	
-	protected Date mInitDate;
+	private  Date mInitDate;
 	
 	public static final int INIT_PAGE_NUMBER = 1000;
 	
-	protected EventPagerAdapter mDayViewPagerAdapter;
+	private EventPagerAdapter mEventPagerAdapter;
 
+	/*
+	 * Construct EventPager using given context, onPageChangeListener.  
+	 */
 	public EventPager(Context context, OnPageChangeListener onPageChangeListener, Date initDate) {
 		super(context);
 		mContext = context;
@@ -31,28 +37,57 @@ public abstract class EventPager extends ViewPager {
 		setOnPageChangeListener(onPageChangeListener);
 	}
 
+	/*
+	 * Need to be called, to set start page, which shows initDate. 
+	 */
 	public void prepare() {
 		setCurrentItem(INIT_PAGE_NUMBER);
 	}
 
+	protected EventPagerAdapter getEventPagerAdapter() {
+		return mEventPagerAdapter;
+	}
+
+	protected void setEventPagerAdapter(EventPagerAdapter eventPagerAdapter) {
+		mEventPagerAdapter = eventPagerAdapter;
+	}
+
+	protected Date getInitDate() {
+		return mInitDate;
+	}
+
+	protected void setInitDate(Date initDate) {
+		mInitDate = initDate;
+	}
+
+	/*
+	 * Get currently displayed date.
+	 */
 	public Date getDisplayedDate() {
 		return getDateByPageNumber(getCurrentItem());
 	}
-
+	
+	/*
+	 * Get date, that is displayed on given page.
+	 */
 	public abstract Date getDateByPageNumber(int pageNumber);
 
+	/*
+	 * Get number of page, that should display given date.
+	 */
 	protected abstract int getPageNumberByDate(Date date);
 	
-	public void goToDate(Date date) {
-		TimetableLogger.error("DayViewPager.goToDate: go to page: " + getPageNumberByDate(date));
-		setCurrentItem(getPageNumberByDate(date), false);
-	}
-	
+	/*
+	 * Update content of EventPager. 
+	 */
 	public void update() {
-		mDayViewPagerAdapter.update();
-		mDayViewPagerAdapter.notifyDataSetChanged();
+		mEventPagerAdapter.update();
+		mEventPagerAdapter.notifyDataSetChanged();
 	}
 	
+	/*
+	 * Adapter, that provides data for EventPager.
+	 */
 	public abstract class EventPagerAdapter extends PagerAdapter {
 		
 		//save all events from database into adaptor

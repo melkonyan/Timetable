@@ -3,16 +3,15 @@ package com.timetable.android;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.TextView;
 
 import ui.DayViewFragment;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 
 /*
  * Class, that instantiates views of events for each day and allows user to slide among the days.
@@ -28,24 +27,23 @@ public class DayViewPager extends EventPager {
 	public DayViewPager(Context context, DayViewFragment fragment, Date initDate) {
 		super(context, fragment.getEventPagerListener(), initDate);
 		mFragment = fragment;
-		
-		mEventViewProvider = EventViewProvider.getInstance(mContext);
-		mDayViewPagerAdapter = new DayViewPagerAdapter(initDate);
-		setAdapter(mDayViewPagerAdapter);
+		mEventViewProvider = EventViewProvider.getInstance(context);
+		setEventPagerAdapter(new DayViewPagerAdapter(initDate));
+		setAdapter(getEventPagerAdapter());
 		
 	}
 	
 	@Override
 	public Date getDateByPageNumber(int pageNumber) {
 		Date date = new Date();
-		date.setTime(mInitDate.getTime() + (long) (pageNumber-INIT_PAGE_NUMBER)*24*3600*1000);
+		date.setTime(getInitDate().getTime() + (long) (pageNumber-INIT_PAGE_NUMBER)*24*3600*1000);
 		return date;
 	}
 	
 	@Override
 	protected int getPageNumberByDate(Date date) {
 		long day = 24*3600*1000;
-		return  INIT_PAGE_NUMBER + (int) ((date.getTime() - mInitDate.getTime()) / day);
+		return  INIT_PAGE_NUMBER + (int) ((date.getTime() - getInitDate().getTime()) / day);
 	}
 	
 	class DayViewPagerAdapter extends EventPagerAdapter{
@@ -61,15 +59,10 @@ public class DayViewPager extends EventPager {
 			TimetableLogger.verbose("DayViewPager: try instantiate page " + Integer.toString(pageNumber));
 			Date currentDate = DayViewPager.this.getDateByPageNumber(pageNumber);
 			
-			LinearLayout externalLayout = new LinearLayout(mContext);
-			externalLayout.setOrientation(LinearLayout.HORIZONTAL);
-			ScrollView scrollView = new ScrollView(mContext);
-			scrollView.setLayoutParams(new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.MATCH_PARENT));
-			scrollView.setFillViewport(true);
+			LayoutInflater inflater = LayoutInflater.from(getContext());
+			View itemView = inflater.inflate(R.layout.event_pager_container, null, true);
 			
-			LinearLayout internalLayout = new LinearLayout(mContext); 
-			internalLayout.setOrientation(LinearLayout.VERTICAL);
-			internalLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+			LinearLayout container = (LinearLayout) itemView.findViewById(R.id.container);
 			
 			boolean hasEventsToday = false;
 			
@@ -81,26 +74,23 @@ public class DayViewPager extends EventPager {
 				EventView eventView = mEventViewProvider.getView(pageNumber);
 				eventView.populate(event, currentDate);
 				eventView.setEventViewObserver(mFragment);
-				eventView.setScrollView(scrollView);
-				internalLayout.addView(eventView);
+				container.addView(eventView);
 				hasEventsToday = true;
 			}
 			if (!hasEventsToday) {
-				TextView textView = new TextView(mContext);
+				TextView textView = new TextView(getContext());
 				textView.setPadding(0,60,0,0);
 				textView.setGravity(Gravity.CENTER_HORIZONTAL);
 				textView.setText(R.string.event_pager_no_events);
-				internalLayout.addView(textView);
+				container.addView(textView);
 			}
 			
-			scrollView.addView(internalLayout,0);
-			externalLayout.addView(scrollView,0);
-			
-			((ViewPager) viewPager).addView(externalLayout,0);
+			((ViewPager) viewPager).addView(itemView,0);
 			
 			TimetableLogger.log("DayViewPagerAdapter created page # "+ pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
+			TimetableLogger.error(Integer.toString(container.getHeight()));
 			//logger.log("Events added to layout: " + internalLayout.getChildCount());
-			return externalLayout;
+			return itemView;
 		}
 		
 		
