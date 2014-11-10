@@ -42,6 +42,7 @@
    	            android:name="com.timetable.android.activities.SettingsActivity"
    	            android:label="@string/pref_title"
    	            android:theme="@style/Holo.Theme.Light.DarkActionBar" >
+   	        	
    	        </activity>
    	        <activity android:name="com.timetable.android.activities.EventAddActivity" >
    	        </activity>
@@ -52,7 +53,7 @@
    	        
    	        <activity
    	            android:name="com.timetable.android.alarm.AlarmDialogActivity"
-   	            android:launchMode="singleTask"
+   	            android:launchMode="singleInstance"
    	            android:taskAffinity=""
    	            android:theme="@android:style/Theme.Dialog" >
    	        </activity>
