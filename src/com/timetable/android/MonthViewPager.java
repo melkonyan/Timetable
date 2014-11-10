@@ -3,8 +3,9 @@ package com.timetable.android;
 import java.util.Calendar;
 import java.util.Date;
 
-import ui.MonthView;
-import ui.MonthViewFragment;
+import com.timetable.android.ui.MonthView;
+import com.timetable.android.ui.MonthViewFragment;
+
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.view.View;

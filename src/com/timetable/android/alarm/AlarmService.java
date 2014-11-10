@@ -9,8 +9,6 @@ import java.util.Locale;
 import java.util.PriorityQueue;
 import java.util.Vector;
 
-import ui.DayViewFragment;
-import ui.MainActivity;
 
 import android.app.AlarmManager;
 import android.app.NotificationManager;
@@ -31,6 +29,8 @@ import com.timetable.android.Event;
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
+import com.timetable.android.ui.DayViewFragment;
+import com.timetable.android.ui.MainActivity;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
 

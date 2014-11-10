@@ -7,7 +7,6 @@ import java.util.TimeZone;
 
 import org.holoeverywhere.widget.EditText;
 
-import ui.EventAddActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +16,7 @@ import android.test.UiThreadTest;
 import android.view.View;
 
 import com.timetable.android.R;
+import com.timetable.android.ui.EventAddActivity;
 
 public class EventAddActivityTestCase extends ActivityInstrumentationTestCase2<EventAddActivity> {
 	

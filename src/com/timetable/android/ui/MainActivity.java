@@ -1,4 +1,4 @@
-package ui;
+package com.timetable.android.ui;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,7 +10,6 @@ import java.util.Date;
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.app.Fragment;
-import org.holoeverywhere.widget.ArrayAdapter;
 import org.holoeverywhere.widget.TextView;
 import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 
@@ -26,8 +25,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.SpinnerAdapter;
 
 import com.timetable.android.IEventViewer;
 import com.timetable.android.IEventViewerContainer;
@@ -56,7 +53,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	
 	private NavigationAdapter mNavigationAdapter;
 	
-	int mCurrentViewMode = NAVIGATION_DAY_VIEW;
+	int mCurrentViewMode = NAVIGATION_MONTH_VIEW;
 	
 	private final static int NAVIGATION_DAY_VIEW = 0;
 	
@@ -134,6 +131,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.replace(R.id.main_container, fragment);
 		fragmentTransaction.commit();
+		mEventViewer = (IEventViewer) fragment;
 		mCurrentViewMode = position;
 		
 		return true;

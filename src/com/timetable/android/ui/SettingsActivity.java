@@ -1,5 +1,5 @@
 
-package ui;
+package com.timetable.android.ui;
 
 import org.holoeverywhere.preference.PreferenceActivity;
 

@@ -7,9 +7,6 @@ import org.holoeverywhere.preference.PreferenceManager;
 import org.holoeverywhere.widget.Button;
 import org.holoeverywhere.widget.TextView;
 
-import ui.DayViewFragment;
-import ui.MainActivity;
-import ui.SettingsActivity;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -28,6 +25,9 @@ import com.timetable.android.Event;
 import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
+import com.timetable.android.ui.DayViewFragment;
+import com.timetable.android.ui.MainActivity;
+import com.timetable.android.ui.SettingsActivity;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;

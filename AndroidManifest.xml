@@ -30,7 +30,7 @@
    	        android:theme="@style/Holo.Theme.Light.DarkActionBar" >
    	        
 			<activity 
-   	            android:name="ui.MainActivity"
+   	            android:name="com.timetable.android.ui.MainActivity"
    	            android:label="@string/app_name">
    	       		<intent-filter>
 				   	<action android:name="android.intent.action.MAIN" />
@@ -40,24 +40,29 @@
    	       </activity>
    	        	        
    	        <activity
-   	            android:name="ui.DayViewFragment"
+   	            android:name="com.timetable.android.ui.DayViewFragment"
    	            android:label="@string/app_name" >
 			</activity>
-   	        <activity 
-   	            android:name="ui.MonthViewFragment"
+			<activity    
+   	        	android:name="com.timetable.android.ui.MonthViewFragment"
    	            android:label="@string/app_name">
-   	       </activity>
+   	       	</activity>
    	     
-   	        <activity
-   	            android:name="ui.SettingsActivity"
+   	    	<activity
+   	    	    android:name="com.timetable.android.ui.SettingsActivity"
    	            android:label="@string/pref_title"
-   	            android:theme="@style/Holo.Theme.Light.DarkActionBar" >
+   	            android:theme="@style/Holo.Theme.Light.DarkActionBar">
    	        </activity>
-   	        <activity android:name="ui.EventAddActivity" >
+   	        <activity 
+   	            android:name="com.timetable.android.ui.EventAddActivity">
    	        </activity>
-   	        <activity android:name="ui.EventEditActivity" >
+   	      
+   	        <activity
+   	            android:name="com.timetable.android.ui.EventEditActivity" >
    	        </activity>
-   	        <activity android:name="ui.EventCopyActivity" >
+   	        
+   	        <activity 
+   	            android:name="com.timetable.android.ui.EventCopyActivity" >
    	        </activity>
    	        
    	        <activity

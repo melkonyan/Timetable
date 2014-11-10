@@ -5,7 +5,8 @@ import java.util.Date;
 
 import org.holoeverywhere.widget.TextView;
 
-import ui.DayViewFragment;
+import com.timetable.android.ui.DayViewFragment;
+
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;

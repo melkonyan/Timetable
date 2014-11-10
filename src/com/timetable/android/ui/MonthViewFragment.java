@@ -1,4 +1,4 @@
-package ui;
+package com.timetable.android.ui;
 
 
 
@@ -80,7 +80,7 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 		}
 		this.mPager = eventPager;
 		eventPager.prepare();
-		mFragmentView.addView(eventPager,0);
+		mFragmentView.addView(eventPager,1);
 	}
 
 	@Override

@@ -6,10 +6,6 @@ import java.text.SimpleDateFormat;
 import org.holoeverywhere.widget.EditText;
 import org.holoeverywhere.widget.Spinner;
 
-import ui.DayViewFragment;
-import ui.EventAddActivity;
-import ui.EventEditActivity;
-import ui.MainActivity;
 
 import android.content.res.Resources;
 import android.test.ActivityInstrumentationTestCase2;
@@ -20,6 +16,10 @@ import com.timetable.android.Event;
 import com.timetable.android.EventPeriod;
 import com.timetable.android.EventView;
 import com.timetable.android.R;
+import com.timetable.android.ui.DayViewFragment;
+import com.timetable.android.ui.EventAddActivity;
+import com.timetable.android.ui.EventEditActivity;
+import com.timetable.android.ui.MainActivity;
 
 public class TimetableUiTestCase extends ActivityInstrumentationTestCase2<MainActivity> {
 

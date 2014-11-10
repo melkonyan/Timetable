@@ -1,4 +1,4 @@
-package ui;
+package com.timetable.android.ui;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
