@@ -88,9 +88,10 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		};
 		
 		mDatePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 0, 0, 0);
-		DayViewFragment fragment = new DayViewFragment(this, mInitDate);
+		//DayViewFragment fragment = new DayViewFragment(this, mInitDate);
+		MonthViewFragment fragment = new MonthViewFragment(this, mInitDate);
 		mEventViewer = fragment;
-		//MonthViewFragment fragment = new MonthViewFragment();
+		
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.add(R.id.main_container, fragment);
@@ -123,16 +124,18 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 				fragment = new DayViewFragment(this, mEventViewer.getDisplayedDate());
 				break;
 			case NAVIGATION_MONTH_VIEW:
-				fragment = new MonthViewFragment();
+				fragment = new MonthViewFragment(this, mEventViewer.getDisplayedDate());
 				break;
 			default:
 				return false;
 		}
+		
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.replace(R.id.main_container, fragment);
 		fragmentTransaction.commit();
 		mCurrentViewMode = position;
+		
 		return true;
 	}
 	

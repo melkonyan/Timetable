@@ -50,7 +50,7 @@ public class DayViewPager extends EventPager {
 	
 		public DayViewPagerAdapter(Date currentDate) {
 			super(currentDate);
-			TimetableLogger.log("DayViewPagerAdapter created");
+			TimetableLogger.log("MonthViewPagerAdapter created");
 		}
 		
 
@@ -60,9 +60,9 @@ public class DayViewPager extends EventPager {
 			Date currentDate = DayViewPager.this.getDateByPageNumber(pageNumber);
 			
 			LayoutInflater inflater = LayoutInflater.from(getContext());
-			View itemView = inflater.inflate(R.layout.event_pager_container, null, true);
+			View externalContainer = inflater.inflate(R.layout.event_pager_container, null, true);
 			
-			LinearLayout container = (LinearLayout) itemView.findViewById(R.id.container);
+			LinearLayout internalContainer = (LinearLayout) externalContainer.findViewById(R.id.container);
 			
 			boolean hasEventsToday = false;
 			
@@ -74,7 +74,7 @@ public class DayViewPager extends EventPager {
 				EventView eventView = mEventViewProvider.getView(pageNumber);
 				eventView.populate(event, currentDate);
 				eventView.setEventViewObserver(mFragment);
-				container.addView(eventView);
+				internalContainer.addView(eventView);
 				hasEventsToday = true;
 			}
 			if (!hasEventsToday) {
@@ -82,15 +82,13 @@ public class DayViewPager extends EventPager {
 				textView.setPadding(0,60,0,0);
 				textView.setGravity(Gravity.CENTER_HORIZONTAL);
 				textView.setText(R.string.event_pager_no_events);
-				container.addView(textView);
+				internalContainer.addView(textView);
 			}
 			
-			((ViewPager) viewPager).addView(itemView,0);
+			((ViewPager) viewPager).addView(externalContainer,0);
 			
-			TimetableLogger.log("DayViewPagerAdapter created page # "+ pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
-			TimetableLogger.error(Integer.toString(container.getHeight()));
-			//logger.log("Events added to layout: " + internalLayout.getChildCount());
-			return itemView;
+			TimetableLogger.log("MonthViewPagerAdapter created page # "+ pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
+			return externalContainer;
 		}
 		
 		
