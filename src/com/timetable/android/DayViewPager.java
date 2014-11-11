@@ -88,7 +88,7 @@ public class DayViewPager extends EventPager {
 			
 			((ViewPager) viewPager).addView(externalContainer,0);
 			
-			TimetableLogger.log("MonthViewPagerAdapter created page # "+ pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
+			TimetableLogger.log("DayViewPagerAdapter created page # "+ pageNumber + " " + new SimpleDateFormat("dd.MM.yyy").format(currentDate.getTime()));
 			return externalContainer;
 		}
 		

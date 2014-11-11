@@ -28,7 +28,7 @@ import com.timetable.android.utils.Utils;
 
 public class MonthViewFragment extends Fragment implements IEventViewer {
 	
-	public static SimpleDateFormat ACTION_BAR_DATE_FORMAT = DateFormatFactory.getFormat("MMMMMM");
+	public static SimpleDateFormat ACTION_BAR_DATE_FORMAT = DateFormatFactory.getFormat("MMMMMM yyyy");
 	
 	Date mInitDate;
 	
@@ -103,11 +103,10 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 	 */
 	private class EventPagerListener extends SimpleOnPageChangeListener {
 		
-		private int mCurrentYear;
 		
 		public EventPagerListener() {
 			super();
-			mCurrentYear = Utils.getCurrDateTimeCal().get(Calendar.YEAR);
+			//mCurrentYear = Utils.getCurrDateTimeCal().get(Calendar.YEAR);
 			TimetableLogger.log("EventPagerListener successfully created.");
 		}
 		

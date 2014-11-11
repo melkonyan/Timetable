@@ -28,13 +28,17 @@ public class MonthView extends LinearLayout {
 	LayoutInflater mLayoutInflater;
 	
 	Context mContext;
-	public MonthView(Context context) {
+	/*
+	 * Create MonthView
+	 * date - month of events to show.
+	 */
+	public MonthView(Context context, Date date) {
 		super(context);
 		mContext = context;
 		mLayoutInflater = LayoutInflater.from(mContext);
 		mLayoutInflater.inflate(R.layout.layout_month_view, this, true);
 		mGreedView = (GridView) findViewById(R.id.month_days);
-		mGreedView.setAdapter(new MonthViewAdapter(context));
+		mGreedView.setAdapter(new MonthViewAdapter(context, date));
 	
 	}
 
@@ -60,9 +64,15 @@ public class MonthView extends LinearLayout {
 		//number of events displayed on each day of month.
 		int[] mEventCounts = new int[mGreedSize];
 		
-		public MonthViewAdapter(Context context) {
+		/*
+		 * Create MonthViewAdapter 
+		 * date - date, that contains the month of events that adapter will provide.
+		 */
+		public MonthViewAdapter(Context context, Date date) {
 			mContext = context;
-			setDisplayedMonth(Utils.getCurrDateTimeCal());
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(date);
+			setDisplayedMonth(cal);
 			calcEventsArray();
 		}
 		
@@ -79,7 +89,7 @@ public class MonthView extends LinearLayout {
 			boolean showingCurrentMonth = !showingPreviousMonth;
 			int previousMonthDaysCount = firstDisplayedDate.getActualMaximum(Calendar.DAY_OF_MONTH);
 			int currentMonthDaysCount = month.getActualMaximum(Calendar.DAY_OF_MONTH);
-			TimetableLogger.error(firstDisplayedDate.getTime() + " " + month.getTime());
+			//TimetableLogger.error(firstDisplayedDate.getTime() + " " + month.getTime());
 			for (int i = 0; i < mGreedSize; i++) {
 				mDisplayedDays[i] = currentlyDisplayedDay;
 				mIsCurrentMonth[i] = showingCurrentMonth;
@@ -124,7 +134,6 @@ public class MonthView extends LinearLayout {
 		
 		@Override
 		public long getItemId(int position) {
-			// TODO Auto-generated method stub
 			return 0;
 		}
 	
@@ -143,7 +152,6 @@ public class MonthView extends LinearLayout {
 	
 		@Override
 		public int getCount() {
-			// TODO Auto-generated method stub
 			return mGreedSize;
 		}
 	

@@ -109,8 +109,15 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		return true;
 	}
 	
+	@Deprecated
+	private boolean firstCall = true;
+	
 	@Override
 	public boolean onNavigationItemSelected(int position, long itemId) {
+		if (firstCall) {
+			firstCall = false;
+			return true;
+		}
 		if (position == mCurrentViewMode) {
 			return true;
 		}
@@ -118,6 +125,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		
 		switch (position) {
 			case NAVIGATION_DAY_VIEW:
+				TimetableLogger.error("Navigate to day view");
 				fragment = new DayViewFragment(this, mEventViewer.getDisplayedDate());
 				break;
 			case NAVIGATION_MONTH_VIEW:
