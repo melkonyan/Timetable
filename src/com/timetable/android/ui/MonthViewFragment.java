@@ -114,6 +114,7 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 		public void  onPageSelected(int pageNumber) {
 			mDisplayedDate = getEventPager().getDateByPageNumber(pageNumber);
 			mContainer.setActionBarTitle(ACTION_BAR_DATE_FORMAT.format(mDisplayedDate));
+			mContainer.setActionBarSubtitle("");
 		}
 
 		

@@ -53,7 +53,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	
 	private NavigationAdapter mNavigationAdapter;
 	
-	int mCurrentViewMode = NAVIGATION_MONTH_VIEW;
+	int mCurrentViewMode = -1;
 	
 	private final static int NAVIGATION_DAY_VIEW = 0;
 	
@@ -84,7 +84,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 			
 		};
 		
-		mDatePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 0, 0, 0);
+		/*mDatePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 0, 0, 0);
 		//DayViewFragment fragment = new DayViewFragment(this, mInitDate);
 		MonthViewFragment fragment = new MonthViewFragment(this, mInitDate);
 		mEventViewer = fragment;
@@ -93,6 +93,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.add(R.id.main_container, fragment);
 		fragmentTransaction.commit();
+		*/
 	}
 	
 	@Override
@@ -114,10 +115,10 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	
 	@Override
 	public boolean onNavigationItemSelected(int position, long itemId) {
-		if (firstCall) {
+		/*if (firstCall) {
 			firstCall = false;
 			return true;
-		}
+		}*/
 		if (position == mCurrentViewMode) {
 			return true;
 		}
@@ -126,10 +127,10 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		switch (position) {
 			case NAVIGATION_DAY_VIEW:
 				TimetableLogger.error("Navigate to day view");
-				fragment = new DayViewFragment(this, mEventViewer.getDisplayedDate());
+				fragment = new DayViewFragment(this, getDateToDislpay());
 				break;
 			case NAVIGATION_MONTH_VIEW:
-				fragment = new MonthViewFragment(this, mEventViewer.getDisplayedDate());
+				fragment = new MonthViewFragment(this, getDateToDislpay());
 				break;
 			default:
 				return false;
@@ -174,8 +175,22 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	    }
 	}
 	
-	/*
-	 * Set init date from intent of current date.
+	/**
+	 * @return - date to be displayed by EventViewer.
+	 * If there is some EventViewer already set, return date, that is displayed by it. 
+	 * Else return @mInitDate.
+	 */
+	private Date getDateToDislpay() {
+		if (mEventViewer == null) {
+			return mInitDate;
+		} else {
+			return mEventViewer.getDisplayedDate();
+		}
+	}
+	
+	/**
+	 * Set initDate from intent. 
+	 * If there is no date in intent specified, set to current date.
 	 */
 	private void setInitDate() {
 		mInitDate = getInitDateFromIntent();
@@ -184,7 +199,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		}
 	}
 	
-	/*
+	/**
 	 * Try to get init date from intent.
 	 */
 	private Date getInitDateFromIntent() {
@@ -220,7 +235,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	}
 	
 	
-	/*
+	/**
 	 * Method that is called, when EventAddActivity adds event to database. 
 	 */
 	@Override
@@ -246,7 +261,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		mNavigationAdapter.setSubtitle(subtitle);
 	}
 	
-	/*
+	/**
 	 * Adapter for navigation spinner of the action bar.
 	 */
 	public class NavigationAdapter extends BaseAdapter {
@@ -301,7 +316,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
             return convertView;
 	    }
 	     
-	 
+	    
 	    @Override
 	    public View getDropDownView(int position, View convertView, ViewGroup parent) {
 	    	if (convertView == null) {

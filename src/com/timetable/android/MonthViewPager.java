@@ -50,9 +50,11 @@ public class MonthViewPager extends EventPager {
 
 		@Override
 		public Object instantiateItem(View viewPager, int pageNumber) {
-			MonthView view = new MonthView(mFragment.getActivity(), getDateByPageNumber(pageNumber));
+			Context context = mFragment.getActivity();
+			Date date = getDateByPageNumber(pageNumber);
+			MonthView view = new MonthView(context, date);
 			((ViewPager) viewPager).addView(view, 0);
-			
+			TimetableLogger.log("MonthViewPager. Showing page " + pageNumber + "with date: " + getDateByPageNumber(pageNumber));
 			return view;
 		}
 		

@@ -1,5 +1,6 @@
 package com.timetable.android.ui;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
@@ -9,6 +10,7 @@ import org.holoeverywhere.widget.LinearLayout;
 import org.holoeverywhere.widget.TextView;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -19,7 +21,6 @@ import com.timetable.android.R;
 import com.timetable.android.TimetableDatabase;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.utils.DateUtils;
-import com.timetable.android.utils.Utils;
 
 public class MonthView extends LinearLayout {
 
@@ -44,6 +45,8 @@ public class MonthView extends LinearLayout {
 
 	public class MonthViewAdapter extends BaseAdapter {
 	
+		private final int[] COLORS = { 0xFFC0C0C0, 0xFF98FF98, 0xFF00FF00, 0xFF008000, 0x006400 }; 
+		
 		private Context mContext;
 		
 		int mDayViewHeight = -1;
@@ -69,6 +72,7 @@ public class MonthView extends LinearLayout {
 		 * date - date, that contains the month of events that adapter will provide.
 		 */
 		public MonthViewAdapter(Context context, Date date) {
+			TimetableLogger.log("Creating MonthViewAdapter.");
 			mContext = context;
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(date);
@@ -82,6 +86,7 @@ public class MonthView extends LinearLayout {
 			firstDisplayedDate.set(Calendar.DAY_OF_MONTH, 1);
 			firstDisplayedDate.add(Calendar.DATE, -firstDisplayedDate.get(Calendar.DAY_OF_WEEK) + 1);
 			mFirstDisplayedDate = firstDisplayedDate.getTime(); 
+			//TimetableLogger.error(mDisplayedMonth.getTime().toString() + " " + mFirstDisplayedDate.toString());
 			int firstDisplayedDay = firstDisplayedDate.get(Calendar.DAY_OF_MONTH);
 			int currentlyDisplayedDay = firstDisplayedDay;
 			boolean showPreviousMonth = firstDisplayedDate.get(Calendar.MONTH) != month.get(Calendar.MONTH);
@@ -89,20 +94,32 @@ public class MonthView extends LinearLayout {
 			boolean showingCurrentMonth = !showingPreviousMonth;
 			int previousMonthDaysCount = firstDisplayedDate.getActualMaximum(Calendar.DAY_OF_MONTH);
 			int currentMonthDaysCount = month.getActualMaximum(Calendar.DAY_OF_MONTH);
+			//TimetableLogger.error(Boolean.toString(showPreviousMonth));
+			//TimetableLogger.error(Boolean.toString(showingPreviousMonth));
+			//TimetableLogger.error(Integer.toString(previousMonthDaysCount));
+			//TimetableLogger.error(Integer.toString(currentlyDisplayedDay));
+			//TimetableLogger.error(Integer.toString(currentMonthDaysCount));
+			
 			//TimetableLogger.error(firstDisplayedDate.getTime() + " " + month.getTime());
 			for (int i = 0; i < mGreedSize; i++) {
 				mDisplayedDays[i] = currentlyDisplayedDay;
 				mIsCurrentMonth[i] = showingCurrentMonth;
+
+				//TimetableLogger.error(Integer.toString(currentlyDisplayedDay) + " " + Boolean.toString(mIsCurrentMonth[i]));
 				currentlyDisplayedDay++;
 				if (showingPreviousMonth && currentlyDisplayedDay > previousMonthDaysCount) {
+					//TimetableLogger.error("Showing current month");
 					showingPreviousMonth = false;
 					showingCurrentMonth = true;
 					currentlyDisplayedDay = 1;
-				} else if (currentlyDisplayedDay > currentMonthDaysCount) {
+				} else if (showingCurrentMonth && currentlyDisplayedDay > currentMonthDaysCount) {
 					currentlyDisplayedDay = 1;
 					showingCurrentMonth = false;
+					//TimetableLogger.error("Showing next month");
 				}
 			}
+			
+			//TimetableLogger.error(Arrays.toString(mIsCurrentMonth));
 		}
 		
 		private void calcEventsArray() {
@@ -119,6 +136,8 @@ public class MonthView extends LinearLayout {
 						mEventCounts[i]++;
 					}
 				}
+				
+				//TimetableLogger.log("Month: " + (mDisplayedMonth.get(Calendar.MONTH)+1) + " Cell # " + i + " Date: " + currentDate + "Events #: " + mEventCounts[i] );
 				currentDate = DateUtils.addDay(currentDate, 1);
 			}
 		}
@@ -147,9 +166,26 @@ public class MonthView extends LinearLayout {
 				}
 			}
 			textView.setText(Integer.toString(mDisplayedDays[position]) + " " + Integer.toString(mEventCounts[position]));
+			textView.setBackgroundColor(getCellColor(position));
+			
 			return textView;
 		}
-	
+		
+		private int getCellColor(int position) {
+			int num = mEventCounts[position];
+			int colorPos = 0;
+			if (num >= 6) {
+				colorPos = 4;
+			} else if (num >= 3) {
+				colorPos = 3;
+			} else if (num >= 1) {
+				colorPos = 2;
+			} else if (num >= 0) {
+				colorPos = 1;
+			}
+			return COLORS[colorPos];
+		}
+		
 		@Override
 		public int getCount() {
 			return mGreedSize;
