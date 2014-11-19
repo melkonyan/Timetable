@@ -53,14 +53,19 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	
 	private NavigationAdapter mNavigationAdapter;
 	
-	int mCurrentViewMode = -1;
+	static int mCurrentViewMode = -1;
 	
 	private final static int NAVIGATION_DAY_VIEW = 0;
 	
 	private final static int NAVIGATION_MONTH_VIEW = 1;
 	
+	public MainActivity() {
+		super();
+		TimetableLogger.log("MainActivite. Creating new instance.");
+	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		TimetableLogger.log("MainActivity. Creating Activity.");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		mActionBar = getSupportActionBar();
@@ -98,8 +103,8 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	
 	@Override
 	public void onRestart() {
+		TimetableLogger.log("MainActivity. Restarting activity.");
 		super.onRestart();
-		TimetableLogger.log("MainActivity was restarted.");
 		mEventViewer.update();
 	}
 	
@@ -119,6 +124,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 			firstCall = false;
 			return true;
 		}*/
+		TimetableLogger.error("ViewMode: " + mCurrentViewMode);
 		if (position == mCurrentViewMode) {
 			return true;
 		}
@@ -127,7 +133,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		switch (position) {
 			case NAVIGATION_DAY_VIEW:
 				TimetableLogger.error("Navigate to day view");
-				fragment = new DayViewFragment(this, getDateToDislpay());
+				fragment = DayViewFragment.newInstance(getDateToDislpay());
 				break;
 			case NAVIGATION_MONTH_VIEW:
 				fragment = MonthViewFragment.newInstance(getDateToDislpay());

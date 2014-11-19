@@ -31,11 +31,15 @@ import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
 
 
-/*
+/**
  * Fragment that displays all events for certain day.
  * User can view events for next or previous day by shifting page right or left.
  */
 public class DayViewFragment extends Fragment implements EventViewObserver, OnEventDeletedListener, IEventViewer {
+	
+	public static final SimpleDateFormat ACTION_BAR_DATE_FORMAT = DateFormatFactory.getFormat("EEE, dd.MM"); 
+
+	public static final String ARGUMENT_INIT_DATE = "init_date";  
 	
 	//Activity, to which fragment is attached.
 	private Activity mActivity;
@@ -55,16 +59,22 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 	//Date, which fragment should display initially.
 	private Date mInitDate;
 	
-	public static final SimpleDateFormat ACTION_BAR_DATE_FORMAT = DateFormatFactory.getFormat("EEE, dd.MM"); 
-	
 	public static final SimpleDateFormat ACTION_BAR_DATE_FORMAT_WITH_YEAR = DateFormatFactory.getFormat("EEE, dd.MM.yyyy");
 	
 	//Event view, that shows it's menu.
 	private EventView mSelectedEventView;
 	
-	public DayViewFragment(IEventViewerContainer container, Date initDate) {
-		mContainer = container;
-		mInitDate = initDate;
+	public static DayViewFragment newInstance(Date initDate) {
+		DayViewFragment fragment = new DayViewFragment();
+		Bundle args = new Bundle();
+		args.putLong(ARGUMENT_INIT_DATE, initDate.getTime());
+		fragment.setArguments(args);
+		return fragment;
+	}
+	
+	public DayViewFragment() {
+		super();
+		TimetableLogger.log("DayViewFragment. New instance is being created");
 	}
 	
 	public EventPager getEventPager() {
@@ -84,44 +94,68 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 		return mListener;
 	}
 	
-	
+	@Override 
+	public void onCreate(Bundle savedInstanceState) {
+		TimetableLogger.log("DayViewFragment. Creating fragment.");
+		super.onCreate(savedInstanceState);
+		//setRetainInstance(true);
+		if (savedInstanceState == null) {
+			TimetableLogger.error("savedInstanceState is null");
+			savedInstanceState = getArguments();
+		}
+		mInitDate = new Date(savedInstanceState.getLong(ARGUMENT_INIT_DATE));
+		
+	}
 	@Override 
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		TimetableLogger.log("DayViewFragment. Fragment attaches to activity.");
+		TimetableLogger.log("DayViewFragment. Attaching fragment to activity.");
 		mActivity = activity;
+		mContainer = (IEventViewerContainer) activity;
 	}
 	
 	
 	@Override 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		TimetableLogger.log("DayViewFragment. Creating fragment's view.");
 		super.onCreateView(inflater, container, savedInstanceState);
-		TimetableLogger.log("DayViewFragment. Fragment has creates it's view.");
 		View fragmentView = inflater.inflate(R.layout.fragment_day_view);
 		eventLayout = (LinearLayout) fragmentView.findViewById(R.id.events_table);
 		setEventPager(new DayViewPager(mActivity, this, mInitDate));
+		TimetableLogger.error(mInitDate.toString());
 		return fragmentView;
 	}
 	
 	@Override 
 	public void onPause() {
-		super.onPause();
 		TimetableLogger.log("DayViewFragment. Fragment is being paused.");
+		super.onPause();
 		hideOpenedMenu();
 	}
 
+	@Override 
+	public void onSaveInstanceState(Bundle outState) {
+		TimetableLogger.log("DayViewFragment. Saving fragment's state.");
+		super.onSaveInstanceState(outState);
+		outState.putLong(ARGUMENT_INIT_DATE, getDisplayedDate().getTime());
+		TimetableLogger.error(mDisplayedDate.toString());
+	}
+	
 	@Override
 	public void goToDate(Date date) {
 		setEventPager(new DayViewPager(mActivity, this, date));
-		//getEventPager().goToDate(date);
 	}
 
+	
+	/**
+	 * @return date, that is displayed by fragment.
+	 */
 	@Override
 	public Date getDisplayedDate() {
 		return mDisplayedDate;
 	}
 	
-	/*
+	/**
 	 * Update content of fragment.
 	 */
 	@Override
@@ -130,7 +164,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 	}
 
 	
-	/*
+	/**
 	 * Hide menu of currently selected EventView
 	 */
 	private void hideOpenedMenu() {
@@ -187,7 +221,7 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 		onButtonEditClicked(eventView);
 	}
 
-	/*
+	/**
 	 * Listener, that is called, when user slides to other page.
 	 */
 	private class EventPagerListener extends SimpleOnPageChangeListener {

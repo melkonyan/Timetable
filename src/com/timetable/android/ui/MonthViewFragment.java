@@ -51,6 +51,7 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 	
 	public MonthViewFragment() {
 		super();
+		
 	}
 	
 	/**
@@ -91,8 +92,9 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 	public void onSaveInstanceState(Bundle outState) {
 		TimetableLogger.log("MonthViewFragment. Saving instance state.");
 		super.onSaveInstanceState(outState);
-		outState.putLong(ARGUMENT_INIT_DATE, mInitDate.getTime());
+		outState.putLong(ARGUMENT_INIT_DATE, getDisplayedDate().getTime());
 	}
+	
 	public SimpleOnPageChangeListener getEventPagerListener() {
 		return mPagerListener;
 	}
