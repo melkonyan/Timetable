@@ -23,7 +23,7 @@ public abstract class EventPager extends ViewPager {
 	
 	private EventPagerAdapter mEventPagerAdapter;
 
-	/*
+	/**
 	 * Construct EventPager using given context, onPageChangeListener.  
 	 */
 	public EventPager(Context context, OnPageChangeListener onPageChangeListener, Date initDate) {
@@ -37,7 +37,7 @@ public abstract class EventPager extends ViewPager {
 		setOnPageChangeListener(onPageChangeListener);
 	}
 
-	/*
+	/**
 	 * Need to be called, to set start page, which shows initDate. 
 	 */
 	public void prepare() {
@@ -60,24 +60,24 @@ public abstract class EventPager extends ViewPager {
 		mInitDate = initDate;
 	}
 
-	/*
+	/**
 	 * Get currently displayed date.
 	 */
 	public Date getDisplayedDate() {
 		return getDateByPageNumber(getCurrentItem());
 	}
 	
-	/*
+	/**
 	 * Get date, that is displayed on given page.
 	 */
 	public abstract Date getDateByPageNumber(int pageNumber);
 
-	/*
+	/**
 	 * Get number of page, that should display given date.
 	 */
 	protected abstract int getPageNumberByDate(Date date);
 	
-	/*
+	/**
 	 * Update content of EventPager. 
 	 */
 	public void update() {
@@ -85,7 +85,7 @@ public abstract class EventPager extends ViewPager {
 		mEventPagerAdapter.notifyDataSetChanged();
 	}
 	
-	/*
+	/**
 	 * Adapter, that provides data for EventPager.
 	 */
 	public abstract class EventPagerAdapter extends PagerAdapter {
@@ -110,6 +110,11 @@ public abstract class EventPager extends ViewPager {
 			return view == ((View) object);
 		}
 		
+		@Override 
+		public Object instantiateItem(View viewPager, int pageNumber) {
+			return null;
+		}
+		
 		public void update() {
 			loadEvents();
 		}
@@ -129,5 +134,19 @@ public abstract class EventPager extends ViewPager {
             ((ViewPager) viewPager).removeView((View) view);
         }
 	
+	}
+	
+	/**
+	 * 
+	 */
+	public abstract class ViewProvider {
+		
+		public abstract View getInitView();
+		
+		public abstract void computeData();
+		
+		public abstract void populate();
+		
+		
 	}
 }

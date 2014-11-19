@@ -130,7 +130,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 				fragment = new DayViewFragment(this, getDateToDislpay());
 				break;
 			case NAVIGATION_MONTH_VIEW:
-				fragment = new MonthViewFragment(this, getDateToDislpay());
+				fragment = MonthViewFragment.newInstance(getDateToDislpay());
 				break;
 			default:
 				return false;

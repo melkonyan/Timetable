@@ -1,6 +1,5 @@
 package com.timetable.android.ui;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
@@ -10,7 +9,7 @@ import org.holoeverywhere.widget.LinearLayout;
 import org.holoeverywhere.widget.TextView;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.os.AsyncTask;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -29,9 +28,11 @@ public class MonthView extends LinearLayout {
 	LayoutInflater mLayoutInflater;
 	
 	Context mContext;
-	/*
+	
+
+	/**
 	 * Create MonthView
-	 * date - month of events to show.
+	 * @date - month to show.
 	 */
 	public MonthView(Context context, Date date) {
 		super(context);
@@ -67,9 +68,9 @@ public class MonthView extends LinearLayout {
 		//number of events displayed on each day of month.
 		int[] mEventCounts = new int[mGreedSize];
 		
-		/*
+		/**
 		 * Create MonthViewAdapter 
-		 * date - date, that contains the month of events that adapter will provide.
+		 * @date - date, that contains the month of events that adapter will provide.
 		 */
 		public MonthViewAdapter(Context context, Date date) {
 			TimetableLogger.log("Creating MonthViewAdapter.");
@@ -77,7 +78,7 @@ public class MonthView extends LinearLayout {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(date);
 			setDisplayedMonth(cal);
-			calcEventsArray();
+			new EventsLoader().execute();
 		}
 		
 		public void setDisplayedMonth(Calendar month) {
@@ -197,5 +198,20 @@ public class MonthView extends LinearLayout {
 			return null;
 		}
 		
+		private class EventsLoader extends AsyncTask<Void, Void, Void> {
+
+			@Override
+			protected Void doInBackground(Void... arg0) {
+				MonthViewAdapter.this.calcEventsArray();
+				return null;
+			}
+			
+			@Override
+			protected void onPostExecute(Void result) {
+				MonthViewAdapter.this.notifyDataSetChanged();
+			}
+
+			
+		}
 	}
 }

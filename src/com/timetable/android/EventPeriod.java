@@ -88,23 +88,17 @@ public class EventPeriod {
 	
 	public static final SimpleDateFormat dateFormat = DateFormatFactory.getDateFormat();
 	
-	@Deprecated
-	public int id;
+	private int id;
 	
-	@Deprecated
-	public EventPeriod.Type type = EventPeriod.Type.NONE;
+	private EventPeriod.Type type = EventPeriod.Type.NONE;
 	
-	@Deprecated
-	public int interval;
+	private int interval;
 	
-	@Deprecated
-	public boolean [] weekOccurrences = new boolean[7];
+	private boolean [] weekOccurrences = new boolean[7];
 	
-	@Deprecated
-	public Date endDate;
+	private Date endDate;
 	
-	@Deprecated
-	public int numberOfRepeats;
+	private int numberOfRepeats;
 	
 	public EventPeriod(Bundle data) throws ParseException {
 		id = data.getInt(BUNDLE_PERIOD_ID);
@@ -345,6 +339,20 @@ public class EventPeriod {
 		if (DateUtils.compareDates(startDate, today) != DateUtils.BEFORE && !isFinished(today)){
 			return startDate;
 		}
+		if (isFinished(today) || type == NONE) {
+			return null;
+		}
+		int diff;
+		long dateLong = startDate.getTime(), todayLong = today.getTime(); 
+		long day = 1000*60*60*24, week = 1000*60*60*24*7;
+		
+		if (type == DAILY) {
+			diff = this.interval - (int) (todayLong / day - dateLong / day) % this.interval;
+			System.out.println(todayLong + " " + dateLong + " " + todayLong / day + " " + dateLong / day);
+			
+			if (diff == this.interval) diff = 0;
+			return DateUtils.addDay(today, diff);
+		}
 		
 		Calendar todayCal = Calendar.getInstance();
 		todayCal.setTime(today);
@@ -352,22 +360,9 @@ public class EventPeriod {
 		dateCal.setTime(startDate);
 		Calendar ansCal = Calendar.getInstance();
 		
-		long dateLong = startDate.getTime(), todayLong = todayCal.getTime().getTime(); 
-		long day = 1000*60*60*24, week = 1000*60*60*24*7;
 		
-		int diff;
+		
 		switch(type) {
-			case NONE:
-				return null;
-			case DAILY:
-				diff = this.interval - (int) (todayLong / day - dateLong / day) % this.interval;
-				System.out.println(todayLong + " " + dateLong + " " + todayLong / day + " " + dateLong / day);
-				
-				if (diff == this.interval) diff = 0;
-				ansCal.setTime(todayCal.getTime());
-				ansCal.add(Calendar.DATE, diff);
-				System.out.println(diff);
-				break;
 			case WEEKLY:
 				if (getFirstWeekOccurrence() == -1) {
 					return null;

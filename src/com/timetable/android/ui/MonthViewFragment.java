@@ -26,10 +26,15 @@ import com.timetable.android.TimetableLogger;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.Utils;
 
+/**
+ * Class for showing events, grouped by month.
+ * Activity to which Fragment is attached should implement {@link IEventViewerConainer}
+ */
 public class MonthViewFragment extends Fragment implements IEventViewer {
 	
 	public static SimpleDateFormat ACTION_BAR_DATE_FORMAT = DateFormatFactory.getFormat("MMMMMM yyyy");
 	
+	public static String ARGUMENT_INIT_DATE = "init_date";
 	Date mInitDate;
 	
 	Date mDisplayedDate;
@@ -44,28 +49,50 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 	
 	LinearLayout mFragmentView;
 	
-	public MonthViewFragment(IEventViewerContainer container, Date initDate) {
-		mContainer = container;
-		mInitDate = initDate;
+	public MonthViewFragment() {
+		super();
+	}
+	
+	/**
+	 * Create new instance of MonthViewFragment
+	 * @param initDate - date to display.
+	 */
+	public static MonthViewFragment newInstance(Date initDate) {
+		MonthViewFragment fragment = new MonthViewFragment();
+		Bundle args = new Bundle();
+		args.putLong(ARGUMENT_INIT_DATE, initDate.getTime());
+		fragment.setArguments(args);
+		return fragment;
 	}
 	
 	@Override 
 	public void onAttach(Activity activity) {
+		TimetableLogger.log("MonthViewFragment. Attaching fragment.");
 		super.onAttach(activity);
-		TimetableLogger.log("MonthViewFragment. Fragment is being attached.");
 		mActivity = activity;
+		mContainer = (IEventViewerContainer) activity;
 	}
 	
 	@Override 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		TimetableLogger.log("MonthViewFragment. Fragment creates it's view.");
+		TimetableLogger.log("MonthViewFragment. Creating fragment's view.");
+		if (savedInstanceState == null) {
+			savedInstanceState = getArguments();
+		}
+		mInitDate = new Date(savedInstanceState.getLong(ARGUMENT_INIT_DATE));
 		mPagerListener = new EventPagerListener();
 		mFragmentView = (LinearLayout) inflater.inflate(R.layout.fragment_month_view, null);
 		setEventPager(new MonthViewPager(getActivity(), this, mInitDate));
 		return mFragmentView;
 	}
-
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		TimetableLogger.log("MonthViewFragment. Saving instance state.");
+		super.onSaveInstanceState(outState);
+		outState.putLong(ARGUMENT_INIT_DATE, mInitDate.getTime());
+	}
 	public SimpleOnPageChangeListener getEventPagerListener() {
 		return mPagerListener;
 	}
