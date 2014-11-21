@@ -31,6 +31,7 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 	public static SimpleDateFormat ACTION_BAR_DATE_FORMAT = DateFormatFactory.getFormat("MMMMMM yyyy");
 	
 	public static String ARGUMENT_INIT_DATE = "init_date";
+	
 	Date mInitDate;
 	
 	Date mDisplayedDate;
@@ -47,19 +48,18 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 	
 	public MonthViewFragment() {
 		super();
-		
+		TimetableLogger.error("MonthViewFragment. Creating new instance.");
 	}
 	
 	/**
 	 * Create new instance of MonthViewFragment
 	 * @param initDate - date to display.
 	 */
-	public static MonthViewFragment newInstance(Date initDate) {
-		MonthViewFragment fragment = new MonthViewFragment();
+	public MonthViewFragment(Date initDate) {
+		super();
 		Bundle args = new Bundle();
 		args.putLong(ARGUMENT_INIT_DATE, initDate.getTime());
-		fragment.setArguments(args);
-		return fragment;
+		setArguments(args);
 	}
 	
 	@Override 
@@ -74,25 +74,15 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		TimetableLogger.log("MonthViewFragment. Creating fragment's view.");
-		if (savedInstanceState == null) {
-			savedInstanceState = getArguments();
-		}
-		mInitDate = new Date(savedInstanceState.getLong(ARGUMENT_INIT_DATE));
+		mInitDate = new Date(getArguments().getLong(ARGUMENT_INIT_DATE));
+		mDisplayedDate = mInitDate;
+		
 		mPagerListener = new EventPagerListener();
 		mFragmentView = (LinearLayout) inflater.inflate(R.layout.fragment_month_view, null);
 		setEventPager(new MonthViewPager(getActivity(), this, mInitDate));
 		return mFragmentView;
 	}
 	
-	/**
-	 * Save displayed date of MonthViewFragment.
-	 */
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		TimetableLogger.log("MonthViewFragment. Saving instance state.");
-		super.onSaveInstanceState(outState);
-		outState.putLong(ARGUMENT_INIT_DATE, getDisplayedDate().getTime());
-	}
 	
 	public SimpleOnPageChangeListener getEventPagerListener() {
 		return mPagerListener;

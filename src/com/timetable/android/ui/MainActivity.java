@@ -33,46 +33,51 @@ import com.timetable.android.TimetableLogger;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.Utils;
 
+/**
+ * Main activity, that holds all Fragments, showing events.
+ */
 public class MainActivity extends Activity implements IEventViewerContainer, OnNavigationListener {
 	 
-	private static IEventViewer mEventViewer;
-	
-	public static final int EVENT_ADD_ACTIVITY_REQUEST_CODE = 10001;
-	
-	private DatePickerDialog mDatePickerDialog;
-	
-	private ActionBar mActionBar;
-	
 	public static final String EXTRAS_DATE = "date";
 	
 	public static final SimpleDateFormat EXTRAS_DATE_FORMAT = DateFormatFactory.getDateFormat();
 	
-	private Date mInitDate;
+	public static final int EVENT_ADD_ACTIVITY_REQUEST_CODE = 10001;
 	
-	private NavigationAdapter mNavigationAdapter;
+	final static int NAVIGATION_DAY_VIEW = 0;
 	
-	static int mCurrentViewMode = -1;
+	final static int NAVIGATION_MONTH_VIEW = 1;
 	
-	private final static int NAVIGATION_DAY_VIEW = 0;
+	static IEventViewer mEventViewer;
 	
-	private final static int NAVIGATION_MONTH_VIEW = 1;
+	static Date mInitDate;
 	
-	public MainActivity() {
-		super();
-		TimetableLogger.log("MainActivite. Creating new instance.");
-	}
+	static NavigationAdapter mNavigationAdapter;
+	
+	static int mCurrentViewMode = NAVIGATION_MONTH_VIEW;
+	
+	DatePickerDialog mDatePickerDialog;
+	
+	ActionBar mActionBar;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		TimetableLogger.log("MainActivity. Creating Activity.");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		
+		if (mNavigationAdapter == null) {
+			mNavigationAdapter = new NavigationAdapter(getSupportActionBar().getThemedContext());
+		}
+		
 		mActionBar = getSupportActionBar();
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		mActionBar.setDisplayShowTitleEnabled(false);
-		mNavigationAdapter = new NavigationAdapter(getSupportActionBar().getThemedContext());
-		
 		mActionBar.setListNavigationCallbacks(mNavigationAdapter, this);
+		mActionBar.setSelectedNavigationItem(mCurrentViewMode);
 		setInitDate();
+		
 		DatePickerDialog.OnDateSetListener mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
 
 			@Override
@@ -88,15 +93,6 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		};
 		
 		mDatePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 0, 0, 0);
-		//DayViewFragment fragment = new DayViewFragment(this, mInitDate);
-		/*MonthViewFragment fragment = MonthViewFragment.newInstance(mInitDate);
-		mEventViewer = fragment;
-		
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.add(R.id.main_container, fragment);
-		fragmentTransaction.commit();
-		*/
 	}
 	
 	@Override
@@ -113,32 +109,21 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		return true;
 	}
 	
-	private boolean initializing = true;
 	
 	@Override
 	public boolean onNavigationItemSelected(int position, long itemId) {
-		if (initializing) {
-			initializing = false;
-			return true;
-		}
-		TimetableLogger.error("ViewMode: " + mCurrentViewMode);
-		if (position == mCurrentViewMode) {
-			return true;
-		}
 		Fragment fragment;
-		
 		switch (position) {
 			case NAVIGATION_DAY_VIEW:
-				TimetableLogger.error("Navigate to day view");
-				fragment = DayViewFragment.newInstance(getDateToDislpay());
+				fragment = new DayViewFragment(getDateToDislpay());
 				break;
 			case NAVIGATION_MONTH_VIEW:
-				fragment = MonthViewFragment.newInstance(getDateToDislpay());
+				fragment = new MonthViewFragment(getDateToDislpay());
 				break;
 			default:
 				return false;
 		}
-		
+		fragment.setRetainInstance(true);
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.replace(R.id.main_container, fragment);

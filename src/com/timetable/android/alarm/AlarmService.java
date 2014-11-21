@@ -198,7 +198,7 @@ public class AlarmService extends Service {
 	}
 	
 	public Intent getNotificationIntent() {
-		Intent notificationIntent = new Intent(this, DayViewFragment.class);
+		Intent notificationIntent = new Intent(this, MainActivity.class);
 		if (mAlarmAdapter.getNextAlarm() != null) {
 			Date nextAlarmEventDate = mAlarmAdapter.getNextAlarm().nextOccurrence;
 			notificationIntent.putExtra(MainActivity.EXTRAS_DATE, MainActivity.EXTRAS_DATE_FORMAT.format(nextAlarmEventDate));

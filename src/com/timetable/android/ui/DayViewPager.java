@@ -21,7 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
-/*
+/**
  * Class, that instantiates views of events for each day and allows user to slide among the days.
  */
 public class DayViewPager extends EventPager {
@@ -29,8 +29,6 @@ public class DayViewPager extends EventPager {
 	private DayViewFragment mFragment;
 	
 	private EventViewProvider mEventViewProvider; 
-	
-	
 	
 	public DayViewPager(Context context, DayViewFragment fragment, Date initDate) {
 		super(context, fragment.getEventPagerListener(), initDate);
@@ -58,7 +56,7 @@ public class DayViewPager extends EventPager {
 	
 		public DayViewPagerAdapter(Date currentDate) {
 			super(currentDate);
-			TimetableLogger.log("MonthViewPagerAdapter created");
+			TimetableLogger.log("DayViewPagerAdapter created");
 		}
 		
 

@@ -62,17 +62,17 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 	//Event view, that shows it's menu.
 	private EventView mSelectedEventView;
 	
-	public static DayViewFragment newInstance(Date initDate) {
-		DayViewFragment fragment = new DayViewFragment();
-		Bundle args = new Bundle();
-		args.putLong(ARGUMENT_INIT_DATE, initDate.getTime());
-		fragment.setArguments(args);
-		return fragment;
-	}
 	
 	public DayViewFragment() {
 		super();
-		TimetableLogger.log("DayViewFragment. New instance is being created");
+		TimetableLogger.error("DayViewFragment. New instance is being created");
+	}
+	
+	public DayViewFragment(Date initDate) {
+		super();
+		Bundle args = new Bundle();
+		args.putLong(ARGUMENT_INIT_DATE, initDate.getTime());
+		setArguments(args);
 	}
 	
 	public EventPager getEventPager() {
@@ -96,14 +96,8 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 	public void onCreate(Bundle savedInstanceState) {
 		TimetableLogger.log("DayViewFragment. Creating fragment.");
 		super.onCreate(savedInstanceState);
-		//setRetainInstance(true);
-		if (savedInstanceState == null) {
-			TimetableLogger.error("savedInstanceState is null");
-			savedInstanceState = getArguments();
-		}
-		mInitDate = new Date(savedInstanceState.getLong(ARGUMENT_INIT_DATE));
-		
 	}
+	
 	@Override 
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -117,10 +111,11 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		TimetableLogger.log("DayViewFragment. Creating fragment's view.");
 		super.onCreateView(inflater, container, savedInstanceState);
+		mInitDate = new Date(getArguments().getLong(ARGUMENT_INIT_DATE));
+		mDisplayedDate = mInitDate;
 		View fragmentView = inflater.inflate(R.layout.fragment_day_view);
 		eventLayout = (LinearLayout) fragmentView.findViewById(R.id.events_table);
 		setEventPager(new DayViewPager(mActivity, this, mInitDate));
-		TimetableLogger.error(mInitDate.toString());
 		return fragmentView;
 	}
 	
@@ -131,14 +126,6 @@ public class DayViewFragment extends Fragment implements EventViewObserver, OnEv
 		hideOpenedMenu();
 	}
 
-	@Override 
-	public void onSaveInstanceState(Bundle outState) {
-		TimetableLogger.log("DayViewFragment. Saving fragment's state.");
-		super.onSaveInstanceState(outState);
-		outState.putLong(ARGUMENT_INIT_DATE, getDisplayedDate().getTime());
-		TimetableLogger.error(mDisplayedDate.toString());
-	}
-	
 	@Override
 	public void goToDate(Date date) {
 		setEventPager(new DayViewPager(mActivity, this, date));

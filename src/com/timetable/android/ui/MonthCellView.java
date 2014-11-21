@@ -1,5 +1,8 @@
 package com.timetable.android.ui;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.holoeverywhere.widget.LinearLayout;
 import org.holoeverywhere.widget.TextView;
 
@@ -13,9 +16,14 @@ import com.timetable.android.Event;
  */
 public class MonthCellView extends LinearLayout {
 
-	public MonthCellView(Context context) {
+	/**
+	 * @param day - number of day to show.
+	 */
+	public MonthCellView(Context context, int day) {
 		super(context);
 		setOrientation(VERTICAL);
+		TextView dateView = new TextView(context);
+		dateView.setText(day);
 	}
 	
 	public void addEvent(Event event) {
