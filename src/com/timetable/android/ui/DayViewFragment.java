@@ -18,8 +18,6 @@ import android.view.ViewGroup;
 
 import com.timetable.android.EventController;
 import com.timetable.android.EventController.OnEventDeletedListener;
-import com.timetable.android.DayViewPager;
-import com.timetable.android.EventPager;
 import com.timetable.android.EventView;
 import com.timetable.android.EventView.EventViewObserver;
 import com.timetable.android.IEventViewer;

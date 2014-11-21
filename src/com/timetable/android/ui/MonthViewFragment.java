@@ -4,7 +4,6 @@ package com.timetable.android.ui;
 
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.holoeverywhere.LayoutInflater;
@@ -17,14 +16,11 @@ import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.timetable.android.EventPager;
 import com.timetable.android.IEventViewer;
 import com.timetable.android.IEventViewerContainer;
-import com.timetable.android.MonthViewPager;
 import com.timetable.android.R;
 import com.timetable.android.TimetableLogger;
 import com.timetable.android.utils.DateFormatFactory;
-import com.timetable.android.utils.Utils;
 
 /**
  * Class for showing events, grouped by month.
@@ -88,6 +84,9 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 		return mFragmentView;
 	}
 	
+	/**
+	 * Save displayed date of MonthViewFragment.
+	 */
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		TimetableLogger.log("MonthViewFragment. Saving instance state.");
@@ -127,7 +126,7 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 		getEventPager().update();
 	}
 
-	/*
+	/**
 	 * Listener, that is called, when user slides to other page.
 	 */
 	private class EventPagerListener extends SimpleOnPageChangeListener {
@@ -141,6 +140,7 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 		
 		@Override
 		public void  onPageSelected(int pageNumber) {
+			TimetableLogger.log("MonthViewFragment.EventPagerListener: page # " + pageNumber + " seletion deteced.");
 			mDisplayedDate = getEventPager().getDateByPageNumber(pageNumber);
 			mContainer.setActionBarTitle(ACTION_BAR_DATE_FORMAT.format(mDisplayedDate));
 			mContainer.setActionBarSubtitle("");

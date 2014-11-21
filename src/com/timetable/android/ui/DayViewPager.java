@@ -1,11 +1,18 @@
-package com.timetable.android;
+package com.timetable.android.ui;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.holoeverywhere.widget.TextView;
 
-import com.timetable.android.ui.DayViewFragment;
+import com.timetable.android.Event;
+import com.timetable.android.EventView;
+import com.timetable.android.EventViewProvider;
+import com.timetable.android.R;
+import com.timetable.android.TimetableLogger;
+import com.timetable.android.R.id;
+import com.timetable.android.R.layout;
+import com.timetable.android.R.string;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

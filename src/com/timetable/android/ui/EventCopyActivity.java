@@ -5,8 +5,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.timetable.android.Event;
 import com.timetable.android.R;

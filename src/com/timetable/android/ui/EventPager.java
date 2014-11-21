@@ -1,4 +1,4 @@
-package com.timetable.android;
+package com.timetable.android.ui;
 
 import java.util.Date;
 import java.util.Vector;
@@ -10,8 +10,13 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
-/*
- * Class for paging events. It's descendant is used in DayViewFragment.
+import com.timetable.android.Event;
+import com.timetable.android.R;
+import com.timetable.android.TimetableDatabase;
+import com.timetable.android.TimetableLogger;
+
+/**
+ * Class for paging events. 
  */
 public abstract class EventPager extends ViewPager {
 
@@ -136,17 +141,4 @@ public abstract class EventPager extends ViewPager {
 	
 	}
 	
-	/**
-	 * 
-	 */
-	public abstract class ViewProvider {
-		
-		public abstract View getInitView();
-		
-		public abstract void computeData();
-		
-		public abstract void populate();
-		
-		
-	}
 }

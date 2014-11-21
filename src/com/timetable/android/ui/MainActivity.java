@@ -35,9 +35,7 @@ import com.timetable.android.utils.Utils;
 
 public class MainActivity extends Activity implements IEventViewerContainer, OnNavigationListener {
 	 
-	
-	
-	private IEventViewer mEventViewer;
+	private static IEventViewer mEventViewer;
 	
 	public static final int EVENT_ADD_ACTIVITY_REQUEST_CODE = 10001;
 	
@@ -89,9 +87,9 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 			
 		};
 		
-		/*mDatePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 0, 0, 0);
+		mDatePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 0, 0, 0);
 		//DayViewFragment fragment = new DayViewFragment(this, mInitDate);
-		MonthViewFragment fragment = new MonthViewFragment(this, mInitDate);
+		/*MonthViewFragment fragment = MonthViewFragment.newInstance(mInitDate);
 		mEventViewer = fragment;
 		
 		FragmentManager fragmentManager = getSupportFragmentManager();
@@ -115,15 +113,14 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		return true;
 	}
 	
-	@Deprecated
-	private boolean firstCall = true;
+	private boolean initializing = true;
 	
 	@Override
 	public boolean onNavigationItemSelected(int position, long itemId) {
-		/*if (firstCall) {
-			firstCall = false;
+		if (initializing) {
+			initializing = false;
 			return true;
-		}*/
+		}
 		TimetableLogger.error("ViewMode: " + mCurrentViewMode);
 		if (position == mCurrentViewMode) {
 			return true;
@@ -184,7 +181,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	/**
 	 * @return - date to be displayed by EventViewer.
 	 * If there is some EventViewer already set, return date, that is displayed by it. 
-	 * Else return @mInitDate.
+	 * Else return {@link mInitDate}.
 	 */
 	private Date getDateToDislpay() {
 		if (mEventViewer == null) {
@@ -206,7 +203,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	}
 	
 	/**
-	 * Try to get init date from intent.
+	 * Try to get initDate from intent.
 	 */
 	private Date getInitDateFromIntent() {
 		Bundle extras = getIntent().getExtras();

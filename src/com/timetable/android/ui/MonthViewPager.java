@@ -1,15 +1,19 @@
-package com.timetable.android;
+package com.timetable.android.ui;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import com.timetable.android.ui.MonthView;
-import com.timetable.android.ui.MonthViewFragment;
+import com.timetable.android.TimetableLogger;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
+/**
+ * Class that allows user to navigate from month to month.
+ * Each month is shown on single page of MonthViewPager and is represented by {@link MonthView}.
+ * User navigates through pages by sliding to the left or to the right. 
+ */
 public class MonthViewPager extends EventPager {
 
 	Calendar mInitDate;
@@ -54,7 +58,7 @@ public class MonthViewPager extends EventPager {
 			Date date = getDateByPageNumber(pageNumber);
 			MonthView view = new MonthView(context, date);
 			((ViewPager) viewPager).addView(view, 0);
-			TimetableLogger.log("MonthViewPager. Showing page " + pageNumber + "with date: " + getDateByPageNumber(pageNumber));
+			TimetableLogger.log("MonthViewPager. Creating page " + pageNumber + ", that displays date: " + getDateByPageNumber(pageNumber));
 			return view;
 		}
 		
