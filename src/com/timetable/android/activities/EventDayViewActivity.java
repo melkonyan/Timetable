@@ -5,8 +5,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.widget.LinearLayout;
@@ -14,9 +12,9 @@ import org.holoeverywhere.widget.datetimepicker.date.DatePickerDialog;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.support.v7.app.ActionBar;
+import android.util.TimingLogger;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -25,11 +23,10 @@ import com.timetable.android.EventController.OnEventDeletedListener;
 import com.timetable.android.EventPager;
 import com.timetable.android.EventView;
 import com.timetable.android.EventView.EventViewObserver;
-import com.timetable.android.R;
 import com.timetable.android.Logger;
+import com.timetable.android.R;
 import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
-import com.timetable.android.utils.TestAlarmStarter;
 import com.timetable.android.utils.Utils;
 
 
@@ -103,7 +100,7 @@ public class EventDayViewActivity extends Activity implements EventViewObserver,
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		Logger.log("EventDayViewActivity. Creating activity");
 		setContentView(R.layout.activity_event_day_view);
 		
 		eventLayout = (LinearLayout) findViewById(R.id.events_table);
