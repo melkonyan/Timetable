@@ -1,5 +1,6 @@
 package com.timetable.android.ui;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
@@ -66,7 +67,7 @@ public class MonthView extends LinearLayout {
 		boolean[] mIsCurrentMonth = new boolean[mGreedSize];
 		
 		//number of events displayed on each day of month.
-		int[] mEventCounts = new int[mGreedSize];
+		ArrayList<ArrayList<String>> mEvents;
 		
 		/**
 		 * Create MonthViewAdapter 
@@ -125,20 +126,20 @@ public class MonthView extends LinearLayout {
 		
 		private void calcEventsArray() {
 			Vector<Event> events = TimetableDatabase.getInstance(mContext).getAllEvents();
+			mEvents = new ArrayList<ArrayList<String>>(mGreedSize);
 			Date currentDate = mFirstDisplayedDate;
 			for (int i = 0; i < mGreedSize; i++) {
+				mEvents.add(new ArrayList<String>());
 				if (!mIsCurrentMonth[i]) {
-					mEventCounts[i] = -1;
 					continue;
 				}
-				mEventCounts[i] = 0;
 				for(Event event: events) {
 					if (event.isToday(currentDate)) {
-						mEventCounts[i]++;
+						mEvents.get(i).add(event.getName());
 					}
 				}
 				
-				//TimetableLogger.log("Month: " + (mDisplayedMonth.get(Calendar.MONTH)+1) + " Cell # " + i + " Date: " + currentDate + "Events #: " + mEventCounts[i] );
+				//TimetableLogger.log("Month: " + (mDisplayedMonth.get(Calendar.MONTH)+1) + " Cell # " + i + " Date: " + currentDate + "Events #: " + mEvents[i] );
 				currentDate = DateUtils.addDay(currentDate, 1);
 			}
 		}
@@ -146,6 +147,7 @@ public class MonthView extends LinearLayout {
 		private int getDayViewHeight() {
 			if (mDayViewHeight <= 0) {
 				mDayViewHeight = MonthView.this.mGreedView.getHeight() / mRowsNum;
+				
 			}
 	
 			return mDayViewHeight;
@@ -159,32 +161,19 @@ public class MonthView extends LinearLayout {
 	
 		@Override
 		public View getView(int position, View convertView, ViewGroup Parent) {
-			TextView textView = (TextView) convertView;
-			if (textView == null ) {
-				textView = (TextView) MonthView.this.mLayoutInflater.inflate(R.layout.month_day_view, null);
-				if (getDayViewHeight() > 0) {
-					textView.setHeight(getDayViewHeight());
-				}
+			MonthCellView view = new MonthCellView(mContext, mDisplayedDays[position]);
+			if (getDayViewHeight() > 0) {				
+				view.setMinimumHeight(getDayViewHeight());
 			}
-			textView.setText(Integer.toString(mDisplayedDays[position]) + " " + Integer.toString(mEventCounts[position]));
-			textView.setBackgroundColor(getCellColor(position));
-			
-			return textView;
-		}
+			if (mEvents == null) {
+				return view;
+			}
+			//TimetableLogger.error(""+mEvents.size());
+			for (String name: mEvents.get(position)) {
+				view.addEventName(name);
+			}
+			return view;
 		
-		private int getCellColor(int position) {
-			int num = mEventCounts[position];
-			int colorPos = 0;
-			if (num >= 6) {
-				colorPos = 4;
-			} else if (num >= 3) {
-				colorPos = 3;
-			} else if (num >= 1) {
-				colorPos = 2;
-			} else if (num >= 0) {
-				colorPos = 1;
-			}
-			return COLORS[colorPos];
 		}
 		
 		@Override
