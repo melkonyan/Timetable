@@ -28,27 +28,47 @@ public class MonthView extends LinearLayout {
 	
 	LayoutInflater mLayoutInflater;
 	
-	Context mContext;
+	IMonthViewObserver mObserver;
 	
-
+	onDayClickedListener mListener;
+	
+	
 	/**
 	 * Create MonthView
 	 * @date - month to show.
 	 */
-	public MonthView(Context context, Date date) {
+	public MonthView(Context context, Date date, IMonthViewObserver observer) {
 		super(context);
-		mContext = context;
-		mLayoutInflater = LayoutInflater.from(mContext);
+		mObserver = observer;
+		mListener = new onDayClickedListener();
+		mLayoutInflater = LayoutInflater.from(context);
 		mLayoutInflater.inflate(R.layout.layout_month_view, this, true);
 		mGreedView = (GridView) findViewById(R.id.month_days);
 		mGreedView.setAdapter(new MonthViewAdapter(context, date));
-	
+		
 	}
 
-	public class MonthViewAdapter extends BaseAdapter {
+	public static interface IMonthViewObserver {
+
+		/**
+		 * Called by {@link:MonthView}, when user selects day to show. 
+		 * @param date - date to show.
+		 */
+		public void onDateSelected(Date date);
+	}
 	
-		private final int[] COLORS = { 0xFFC0C0C0, 0xFF98FF98, 0xFF00FF00, 0xFF008000, 0x006400 }; 
+	class onDayClickedListener implements View.OnClickListener {
+
+		@Override
+		public void onClick(View v) {
+			TimetableLogger.error("onDayClickedListener: view clicked");
+			MonthView.this.mObserver.onDateSelected(((MonthCellView) v).getDate());
+		}
 		
+	}
+	
+	class MonthViewAdapter extends BaseAdapter {
+	
 		private Context mContext;
 		
 		int mDayViewHeight = -1;
@@ -57,6 +77,7 @@ public class MonthView extends LinearLayout {
 		
 		Date mFirstDisplayedDate;
 		
+		boolean mDataIsLoaded = false;
 		//Number of displayed days
 		final int mGreedSize = 42;
 		
@@ -130,15 +151,13 @@ public class MonthView extends LinearLayout {
 			Date currentDate = mFirstDisplayedDate;
 			for (int i = 0; i < mGreedSize; i++) {
 				mEvents.add(new ArrayList<String>());
-				if (!mIsCurrentMonth[i]) {
-					continue;
-				}
-				for(Event event: events) {
-					if (event.isToday(currentDate)) {
-						mEvents.get(i).add(event.getName());
+				if (mIsCurrentMonth[i]) {
+					for(Event event: events) {
+						if (event.isToday(currentDate)) {
+							mEvents.get(i).add(event.getName());
+						}
 					}
 				}
-				
 				//TimetableLogger.log("Month: " + (mDisplayedMonth.get(Calendar.MONTH)+1) + " Cell # " + i + " Date: " + currentDate + "Events #: " + mEvents[i] );
 				currentDate = DateUtils.addDay(currentDate, 1);
 			}
@@ -153,6 +172,9 @@ public class MonthView extends LinearLayout {
 			return mDayViewHeight;
 		}
 		
+		Date getDateToDisplay(int position) {
+			return DateUtils.addDay(mFirstDisplayedDate, position);
+		}
 		
 		@Override
 		public long getItemId(int position) {
@@ -161,11 +183,12 @@ public class MonthView extends LinearLayout {
 	
 		@Override
 		public View getView(int position, View convertView, ViewGroup Parent) {
-			MonthCellView view = new MonthCellView(mContext, mDisplayedDays[position]);
+			MonthCellView view = new MonthCellView(mContext, mDisplayedDays[position], getDateToDisplay(position));
 			if (getDayViewHeight() > 0) {				
 				view.setMinimumHeight(getDayViewHeight());
 			}
-			if (mEvents == null) {
+			view.setOnClickListener(MonthView.this.mListener);
+			if (!mDataIsLoaded) {
 				return view;
 			}
 			//TimetableLogger.error(""+mEvents.size());
@@ -197,6 +220,7 @@ public class MonthView extends LinearLayout {
 			
 			@Override
 			protected void onPostExecute(Void result) {
+				mDataIsLoaded = true;
 				MonthViewAdapter.this.notifyDataSetChanged();
 			}
 

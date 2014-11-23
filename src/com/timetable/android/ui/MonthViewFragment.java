@@ -24,7 +24,7 @@ import com.timetable.android.utils.DateFormatFactory;
 
 /**
  * Class for showing events, grouped by month.
- * Activity to which Fragment is attached should implement {@link IEventViewerConainer}
+ * Activity to which Fragment is attached should implement {@link IEventViewerConainer} and {@link MonthView.IMonthViewObserver}
  */
 public class MonthViewFragment extends Fragment implements IEventViewer {
 	
@@ -38,13 +38,14 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 	
 	IEventViewerContainer mContainer;
 	
-	Activity mActivity;
+	MonthView.IMonthViewObserver mMonthViewObserver;
 	
 	EventPagerListener mPagerListener;
 	
 	MonthViewPager mPager;
 	
 	LinearLayout mFragmentView;
+	
 	
 	public MonthViewFragment() {
 		super();
@@ -66,8 +67,8 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 	public void onAttach(Activity activity) {
 		TimetableLogger.log("MonthViewFragment. Attaching fragment.");
 		super.onAttach(activity);
-		mActivity = activity;
 		mContainer = (IEventViewerContainer) activity;
+		mMonthViewObserver = (MonthView.IMonthViewObserver) activity;
 	}
 	
 	@Override 
@@ -90,6 +91,10 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 
 	public EventPager getEventPager() {
 		return mPager;
+	}
+	
+	public MonthView.IMonthViewObserver getMonthViewObserver() {
+		return mMonthViewObserver;
 	}
 	
 	public void setEventPager(MonthViewPager eventPager) {
@@ -115,7 +120,7 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 	public void update() {
 		getEventPager().update();
 	}
-
+	
 	/**
 	 * Listener, that is called, when user slides to other page.
 	 */
@@ -138,7 +143,5 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 
 		
 	}
-
-
 
 }

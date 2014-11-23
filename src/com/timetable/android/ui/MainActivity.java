@@ -36,7 +36,7 @@ import com.timetable.android.utils.Utils;
 /**
  * Main activity, that holds all Fragments, showing events.
  */
-public class MainActivity extends Activity implements IEventViewerContainer, OnNavigationListener {
+public class MainActivity extends Activity implements IEventViewerContainer, OnNavigationListener, MonthView.IMonthViewObserver {
 	 
 	public static final String EXTRAS_DATE = "date";
 	
@@ -112,25 +112,16 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	
 	@Override
 	public boolean onNavigationItemSelected(int position, long itemId) {
-		Fragment fragment;
 		switch (position) {
 			case NAVIGATION_DAY_VIEW:
-				fragment = new DayViewFragment(getDateToDislpay());
+				switchToDayView(getDateToDislpay());
 				break;
 			case NAVIGATION_MONTH_VIEW:
-				fragment = new MonthViewFragment(getDateToDislpay());
+				switchToMonthView(getDateToDislpay());
 				break;
 			default:
 				return false;
 		}
-		fragment.setRetainInstance(true);
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.replace(R.id.main_container, fragment);
-		fragmentTransaction.commit();
-		mEventViewer = (IEventViewer) fragment;
-		mCurrentViewMode = position;
-		
 		return true;
 	}
 	
@@ -161,6 +152,37 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	/**
+	 * Create {@link DayViewFragment} with a given date and display it.
+	 * @param dateToDisplay
+	 */
+	private void switchToDayView(Date dateToDisplay) {
+		switchToFragment(new DayViewFragment(dateToDisplay));
+		mCurrentViewMode = NAVIGATION_DAY_VIEW; 
+	}
+	
+	/**
+	 * Create {@link MonthViewFragment} with a given date and display it.
+	 * @param dateToDisplay
+	 */
+	private void switchToMonthView(Date dateToDisplay) {
+		switchToFragment(new MonthViewFragment(dateToDisplay));
+		mCurrentViewMode = NAVIGATION_MONTH_VIEW;
+	}
+	
+	/**
+	 * Display fragment
+	 * @param fragment - fragment to display
+	 */
+	private void switchToFragment(Fragment fragment) {
+		fragment.setRetainInstance(true);
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.main_container, fragment);
+		fragmentTransaction.commit();
+		mEventViewer = (IEventViewer) fragment;
 	}
 	
 	/**
@@ -239,6 +261,12 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		}
 	}
 
+	@Override
+	public void onDateSelected(Date date) {
+		switchToDayView(date);
+		mActionBar.setSelectedNavigationItem(NAVIGATION_DAY_VIEW);
+	}
+	
 	@Override
 	public void setActionBarTitle(String title) {
 		mNavigationAdapter.setTitle(title);
@@ -330,4 +358,5 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	    	notifyDataSetChanged();
 	    }
 	}
+
 }
