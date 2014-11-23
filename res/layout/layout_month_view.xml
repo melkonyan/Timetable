@@ -9,7 +9,9 @@
 	    android:id="@+id/month_days"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:numColumns="7">
+	    android:numColumns="7"
+	    android:columnWidth="200dp"
+	    android:stretchMode="columnWidth">
 	
 	</GridView>
 

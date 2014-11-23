@@ -7,10 +7,10 @@ import java.util.Vector;
 
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.LinearLayout;
-import org.holoeverywhere.widget.TextView;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -24,7 +24,9 @@ import com.timetable.android.utils.DateUtils;
 
 public class MonthView extends LinearLayout {
 
-	GridView mGreedView;
+	Date mInitDate; 
+	
+	GridView mGridView;
 	
 	LayoutInflater mLayoutInflater;
 	
@@ -40,12 +42,24 @@ public class MonthView extends LinearLayout {
 	public MonthView(Context context, Date date, IMonthViewObserver observer) {
 		super(context);
 		mObserver = observer;
+		mInitDate = date;
 		mListener = new onDayClickedListener();
 		mLayoutInflater = LayoutInflater.from(context);
 		mLayoutInflater.inflate(R.layout.layout_month_view, this, true);
-		mGreedView = (GridView) findViewById(R.id.month_days);
-		mGreedView.setAdapter(new MonthViewAdapter(context, date));
-		
+		mGridView = (GridView) findViewById(R.id.month_days);
+		mGridView.setAdapter(new MonthViewAdapter(context, date));
+		//Prevent mGridVeiw from scrolling 
+		mGridView.setOnTouchListener(new OnTouchListener(){
+
+		    @Override
+		    public boolean onTouch(View v, MotionEvent event) {
+		        if(event.getAction() == MotionEvent.ACTION_MOVE){
+		            return true;
+		        }
+		        return false;
+		    }
+
+		});
 	}
 
 	public static interface IMonthViewObserver {
@@ -61,8 +75,15 @@ public class MonthView extends LinearLayout {
 
 		@Override
 		public void onClick(View v) {
-			TimetableLogger.error("onDayClickedListener: view clicked");
-			MonthView.this.mObserver.onDateSelected(((MonthCellView) v).getDate());
+			Date selectedDate = ((MonthCellView) v).getDate();
+			TimetableLogger.error("onDayClickedListener: view clicked on date " + selectedDate);
+			TimetableLogger.error("Actual cell width: " + v.getWidth());
+			if (selectedDate == null) {
+				TimetableLogger.error("MonthView.onDayClickedListener.onClick(): selected date is null");
+				selectedDate = mInitDate;
+			}
+			MonthView.this.mObserver.onDateSelected(selectedDate);
+			
 		}
 		
 	}
@@ -73,15 +94,20 @@ public class MonthView extends LinearLayout {
 		
 		int mDayViewHeight = -1;
 		
+		int mDayViewWidth = -1;
+		
 		Calendar mDisplayedMonth;
 		
 		Date mFirstDisplayedDate;
 		
 		boolean mDataIsLoaded = false;
-		//Number of displayed days
-		final int mGreedSize = 42;
 		
-		final int mRowsNum = 6;
+		//Number of displayed days
+		static final int mGreedSize = 42;
+		
+		static final int mRowsNum = 6;
+		
+		static final int mColsNum = 7;
 		
 		int[] mDisplayedDays = new int[mGreedSize];
 		
@@ -165,11 +191,29 @@ public class MonthView extends LinearLayout {
 		
 		private int getDayViewHeight() {
 			if (mDayViewHeight <= 0) {
-				mDayViewHeight = MonthView.this.mGreedView.getHeight() / mRowsNum;
+				int gridViewHeight = MonthView.this.mGridView.getHeight();
+				mDayViewHeight = gridViewHeight / mRowsNum;
+				if (gridViewHeight % mRowsNum > 0) {
+					mDayViewHeight++;
+				}
+			}
+			return mDayViewHeight;
+		}
+		
+		private int getDayViewWidth() {
+			if (mDayViewWidth <= 0) {
+				int gridViewWidth =  MonthView.this.mGridView.getWidth();
+				TimetableLogger.error("Grid width: "+ gridViewWidth);
+				
+				mDayViewWidth = gridViewWidth / mColsNum;
+				if (gridViewWidth % mColsNum > 0) {
+					mDayViewWidth++;
+					TimetableLogger.error("add on pixel");
+				}
+				TimetableLogger.error("Cell width: "+ mDayViewWidth);
 				
 			}
-	
-			return mDayViewHeight;
+			return mDayViewWidth;
 		}
 		
 		Date getDateToDisplay(int position) {
@@ -183,10 +227,8 @@ public class MonthView extends LinearLayout {
 	
 		@Override
 		public View getView(int position, View convertView, ViewGroup Parent) {
-			MonthCellView view = new MonthCellView(mContext, mDisplayedDays[position], getDateToDisplay(position));
-			if (getDayViewHeight() > 0) {				
-				view.setMinimumHeight(getDayViewHeight());
-			}
+			MonthCellView view = new MonthCellView(mContext, mDisplayedDays[position], getDateToDisplay(position), getDayViewHeight(), getDayViewWidth());
+			view.setMinimumWidth(50);
 			view.setOnClickListener(MonthView.this.mListener);
 			if (!mDataIsLoaded) {
 				return view;

@@ -81,6 +81,7 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 		mPagerListener = new EventPagerListener();
 		mFragmentView = (LinearLayout) inflater.inflate(R.layout.fragment_month_view, null);
 		setEventPager(new MonthViewPager(getActivity(), this, mInitDate));
+		TimetableLogger.error("Screen size: " + getActivity().getWindow().getDecorView().getWidth());
 		return mFragmentView;
 	}
 	
@@ -93,10 +94,6 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 		return mPager;
 	}
 	
-	public MonthView.IMonthViewObserver getMonthViewObserver() {
-		return mMonthViewObserver;
-	}
-	
 	public void setEventPager(MonthViewPager eventPager) {
 		if (this.mPager != null) {
 			mFragmentView.removeView(this.mPager);
@@ -106,6 +103,10 @@ public class MonthViewFragment extends Fragment implements IEventViewer {
 		mFragmentView.addView(eventPager,1);
 	}
 
+	public MonthView.IMonthViewObserver getMonthViewObserver() {
+		return mMonthViewObserver;
+	}
+	
 	@Override
 	public void goToDate(Date date) {
 		setEventPager(new MonthViewPager(getActivity(), this, date));

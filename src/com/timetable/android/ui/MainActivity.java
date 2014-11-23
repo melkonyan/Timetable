@@ -93,6 +93,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		};
 		
 		mDatePickerDialog = DatePickerDialog.newInstance(mOnDateSetListener, 0, 0, 0);
+		switchToMonthView(mInitDate);
 	}
 	
 	@Override
@@ -112,6 +113,9 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 	
 	@Override
 	public boolean onNavigationItemSelected(int position, long itemId) {
+		if (position == mCurrentViewMode) {
+			return true;
+		}
 		switch (position) {
 			case NAVIGATION_DAY_VIEW:
 				switchToDayView(getDateToDislpay());
@@ -235,7 +239,7 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 		TimetableLogger.log("EventDayViewAvtivity: new intent received!");
 		setIntent(intent);
 		setInitDate();
-		mEventViewer.goToDate(mInitDate);
+		switchToDayView(mInitDate);
 	}
 	
 	@Override 
