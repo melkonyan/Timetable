@@ -11,8 +11,8 @@ import com.timetable.android.utils.DateFormatFactory;
 import com.timetable.android.utils.DateUtils;
 import com.timetable.android.utils.Utils;
 
-/*
- * Class, that contains information about event period and methods to work with it.
+/**
+ * Class, that contains information about {@link event}'s period and methods to work with it.
  */
 public class EventPeriod {
 	
@@ -167,10 +167,18 @@ public class EventPeriod {
 		return endDate;
 	}
 
+	/**
+	 * 
+	 * @return end date in milliseconds, if period has one. Null otherwise.
+	 */
 	public long getEndDateMillis() {
 		return hasEndDate() ? endDate.getTime() : 0;
 	}
 	
+	/**
+	 * 
+	 * @return end date, formated by standard date formatter. If there is no end date, empty string is returned. 
+	 */
 	public String getEndDateString() {
 		return hasEndDate() ? dateFormat.format(endDate) : "";
 	}
@@ -183,6 +191,11 @@ public class EventPeriod {
 		endDate = DateUtils.getDateFromString(dateFormat,endDateString);
 	}
 	
+	/**
+	 * Set end date given it's milliseconds.
+	 * If parameter is 0, end date is set to null.
+	 * @param millis - number of milliseconds
+	 */
 	public void setEndDate(long millis) {
 		endDate = millis == 0 ? null : new Date(millis);
 	}
@@ -199,8 +212,8 @@ public class EventPeriod {
 		this.numberOfRepeats = numberOfRepeats;
 	}
 
-	/*
-	 * Return true, if weekly event has occurrence on the given day of week.  
+	/**
+	 * @return true, if weekly event has occurrence on the given day of week.  
 	 */
 	public boolean isWeekOccurrence(int day) {
 		if (day > 6 || type != WEEKLY) {
@@ -210,8 +223,8 @@ public class EventPeriod {
 		return weekOccurrences[day];
 	}
 	
-	/*
-	 * Return the first day of the week, on which weekly event has occurrence.
+	/**
+	 * @return the first day of the week, on which weekly event has occurrence.
 	 */
 	public int getFirstWeekOccurrence() {
 		for (int i = 0; i < 7; i++) {
@@ -222,6 +235,10 @@ public class EventPeriod {
 		return -1;
 	}
 	
+	/**
+	 * 
+	 * @return the days of week, on which period has occurrences, represented by integer. If period is not weekly, 0 is returned.
+	 */
 	public int getWeekOccurrencesInt() {
 		if (type != WEEKLY) {
 			return 0;
@@ -247,7 +264,8 @@ public class EventPeriod {
 	public void setWeekOccurrences(boolean[] occurrences) {
 		this.weekOccurrences = occurrences;
 	}
-	/*
+	
+	/**
 	 * Add session of weekly period on given day of the week.
 	 */
 	public void addWeekOccurrence(int day) {
@@ -257,7 +275,7 @@ public class EventPeriod {
 		weekOccurrences[day] = true;
 	}
 	
-	/*
+	/**
 	 * Delete session of weekly period on given day of the week.
 	 */
 	public void deleteWeekOccurrence(int day) {
@@ -267,12 +285,17 @@ public class EventPeriod {
 		weekOccurrences[day] = false;
 	}
 	
+	/**
+	 * Test whether period is finished on given date.
+	 * @param today 
+	 * @return true, if given date is greater or equal to period's end date.
+	 */
 	public boolean isFinished(Date today) {
 		return hasEndDate() && DateUtils.compareDates(today, endDate) != DateUtils.BEFORE;
 	}
 	
-	/*
-	 * returns true if period is valid
+	/**
+	 * @return true if period is valid
 	 */
 	public boolean isOk() {
 		if (type == null || type != Type.NONE && interval <= 0 || type == Type.WEEKLY && weekOccurrences == null) {
@@ -291,8 +314,8 @@ public class EventPeriod {
 		return type == Type.WEEKLY;
 	}
 	
-	/*
-	 * returns true if two periods are equal. 
+	/**
+	 * @return true if two periods are equal. 
 	 * Only fields that are important for current period.type should be equal 
 	 */
 	@Override
@@ -321,23 +344,26 @@ public class EventPeriod {
 				+ (endDate != null ? endDate.toString() : "null"); 
 	}
 	
-	/*
-	 * Return true, if period, that was started on given @startDate, has occurrence on given @date.
+	/**
+	 * @return true, if period, that was started on given @startDate, has occurrence on given @date.
 	 */
 	public boolean hasOccurrenceOnDate(Date startDate, Date date) {
 		return DateUtils.areSameDates(date, getNextOccurrence(startDate, date));
 	}
 	
-	/*
-	 * Return the nearest occurrence of period in the future.
+	/**
+	 * Search the nearest occurrence of period in the future.
 	 * Return null of there is no occurrences in the future.
 	 * Only date is considered, time plays no role.
 	 * If startDate and today are the same, today will be returned. 
 	 * Assume, that if period is weekly, it has occurrence on it's startDate
+	 * @return - date of nearest occurrence. Null if there is no occurrences in the future.
 	 */
-	public Date getNextOccurrence(Date startDate, Date today) {
+	public Calendar getNextOccurrenceCal(Date startDate, Date today) {
 		if (DateUtils.compareDates(startDate, today) != DateUtils.BEFORE && !isFinished(today)){
-			return startDate;
+			Calendar ansCal = Calendar.getInstance();
+			ansCal.setTime(startDate);
+			return ansCal;
 		}
 		if (isFinished(today) || type == NONE) {
 			return null;
@@ -346,23 +372,23 @@ public class EventPeriod {
 		long dateLong = startDate.getTime(), todayLong = today.getTime(); 
 		long day = 1000*60*60*24, week = 1000*60*60*24*7;
 		
-		if (type == DAILY) {
-			diff = this.interval - (int) (todayLong / day - dateLong / day) % this.interval;
-			System.out.println(todayLong + " " + dateLong + " " + todayLong / day + " " + dateLong / day);
-			
-			if (diff == this.interval) diff = 0;
-			return DateUtils.addDay(today, diff);
-		}
-		
 		Calendar todayCal = Calendar.getInstance();
 		todayCal.setTime(today);
 		Calendar dateCal = Calendar.getInstance();
 		dateCal.setTime(startDate);
 		Calendar ansCal = Calendar.getInstance();
 		
-		
-		
 		switch(type) {
+			case NONE:
+				return null;
+			case DAILY:
+				diff = this.interval - (int) (todayLong / day - dateLong / day) % this.interval;
+				System.out.println(todayLong + " " + dateLong + " " + todayLong / day + " " + dateLong / day);
+				
+				if (diff == this.interval) diff = 0;
+				ansCal.setTime(todayCal.getTime());
+				ansCal.add(Calendar.DATE, diff);
+				break;
 			case WEEKLY:
 				if (getFirstWeekOccurrence() == -1) {
 					return null;
@@ -420,7 +446,12 @@ public class EventPeriod {
 		if (isFinished(ansCal.getTime())) {
 			return null;
 		}
-		return ansCal.getTime();
+		return ansCal;
 	}
 
+	public Date getNextOccurrence(Date startDate, Date today) {
+		Calendar nextOccurrence = getNextOccurrenceCal(startDate, today); 
+		return (nextOccurrence != null ? nextOccurrence.getTime() : null);
+	}
+	
 }

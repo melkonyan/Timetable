@@ -261,7 +261,8 @@ public class MainActivity extends Activity implements IEventViewerContainer, OnN
 				return;
 			}
 			Date date = new Date(dateMillis);
-			mEventViewer.goToDate(date);
+			//mEventViewer.goToDate(date);
+			switchToDayView(date);
 		}
 	}
 

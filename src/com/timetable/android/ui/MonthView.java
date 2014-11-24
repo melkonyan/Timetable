@@ -129,6 +129,10 @@ public class MonthView extends LinearLayout {
 			new EventsLoader().execute();
 		}
 		
+		/**
+		 * Calculate appropriate fields, according to month, that is shown.
+		 * @param month - calendar, that contains month, that should be shown.
+		 */
 		public void setDisplayedMonth(Calendar month) {
 			mDisplayedMonth = month;
 			Calendar firstDisplayedDate = (Calendar) month.clone();
@@ -143,34 +147,24 @@ public class MonthView extends LinearLayout {
 			boolean showingCurrentMonth = !showingPreviousMonth;
 			int previousMonthDaysCount = firstDisplayedDate.getActualMaximum(Calendar.DAY_OF_MONTH);
 			int currentMonthDaysCount = month.getActualMaximum(Calendar.DAY_OF_MONTH);
-			//TimetableLogger.error(Boolean.toString(showPreviousMonth));
-			//TimetableLogger.error(Boolean.toString(showingPreviousMonth));
-			//TimetableLogger.error(Integer.toString(previousMonthDaysCount));
-			//TimetableLogger.error(Integer.toString(currentlyDisplayedDay));
-			//TimetableLogger.error(Integer.toString(currentMonthDaysCount));
-			
-			//TimetableLogger.error(firstDisplayedDate.getTime() + " " + month.getTime());
 			for (int i = 0; i < mGreedSize; i++) {
 				mDisplayedDays[i] = currentlyDisplayedDay;
 				mIsCurrentMonth[i] = showingCurrentMonth;
-
-				//TimetableLogger.error(Integer.toString(currentlyDisplayedDay) + " " + Boolean.toString(mIsCurrentMonth[i]));
 				currentlyDisplayedDay++;
 				if (showingPreviousMonth && currentlyDisplayedDay > previousMonthDaysCount) {
-					//TimetableLogger.error("Showing current month");
 					showingPreviousMonth = false;
 					showingCurrentMonth = true;
 					currentlyDisplayedDay = 1;
 				} else if (showingCurrentMonth && currentlyDisplayedDay > currentMonthDaysCount) {
 					currentlyDisplayedDay = 1;
 					showingCurrentMonth = false;
-					//TimetableLogger.error("Showing next month");
 				}
 			}
-			
-			//TimetableLogger.error(Arrays.toString(mIsCurrentMonth));
 		}
 		
+		/**
+		 * Calculate two-dimensional array of events, that should be shown on each day of month.
+		 */
 		private void calcEventsArray() {
 			Vector<Event> events = TimetableDatabase.getInstance(mContext).getAllEvents();
 			mEvents = new ArrayList<ArrayList<String>>(mGreedSize);
